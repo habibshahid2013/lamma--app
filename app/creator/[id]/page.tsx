@@ -1,0 +1,139 @@
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Share2, MapPin, Globe, BookOpen, Star, Check } from "lucide-react";
+import { CREATORS } from "@/lib/data/creators";
+import { CATEGORIES } from "@/lib/data/creators"; // Assuming this is where CATEGORIES is exported, or I'll define a map if not
+import Button from "@/components/ui/Button";
+import { useState } from "react";
+import ShareModal from "@/components/ui/ShareModal";
+
+export default function CreatorProfilePage() {
+  const params = useParams();
+  const router = useRouter();
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  
+  const creator = CREATORS.find(c => c.id === params.id);
+
+  if (!creator) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <h1 className="text-2xl font-bold mb-2">Creator Not Found</h1>
+        <p className="text-muted-foreground mb-4">We couldn't find the scholar you're looking for.</p>
+        <Button onClick={() => router.push("/home")}>Return Home</Button>
+      </div>
+    );
+  }
+
+  const isPublicFigure = creator.category === "public_figure";
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Header Image / Pattern */}
+      <div className="h-32 bg-teal relative">
+        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
+        <button 
+          onClick={() => router.back()}
+          className="absolute top-4 left-4 p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <button 
+          onClick={() => setIsShareOpen(true)}
+          className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+        >
+          <Share2 className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Profile Info */}
+      <div className="px-4 -mt-16 relative z-10">
+        <div className="flex flex-col items-center">
+          <div className="relative">
+             <img
+              src={creator.avatar || `https://i.pravatar.cc/150?u=${creator.name}`}
+              alt={creator.name}
+              className={`w-32 h-32 rounded-full border-4 border-white shadow-md object-cover bg-gray-200 ${creator.isHistorical ? 'sepia-[.3]' : ''}`}
+            />
+            {creator.verified && !creator.isHistorical && (
+              <div className="absolute bottom-2 right-2 bg-teal text-white p-1.5 rounded-full border-4 border-white">
+                <Check className="w-4 h-4" />
+              </div>
+            )}
+             {isPublicFigure && (
+                <div className="absolute bottom-2 right-2 bg-gold text-white p-1.5 rounded-full border-4 border-white">
+                  <Star className="w-4 h-4 fill-current" />
+                </div>
+              )}
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 mt-3 text-center">{creator.name}</h1>
+          
+          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1 mb-4">
+             {creator.countryFlag}
+             <span className="capitalize">{creator.category.replace("_", " ")}</span>
+             {creator.lifespan && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">{creator.lifespan}</span>}
+          </div>
+
+          {creator.note && (
+             <p className="text-center text-gray-600 max-w-xs text-sm mb-6 italic">
+              "{creator.note}"
+             </p>
+          )}
+
+          <div className="flex gap-3 w-full max-w-xs mb-6">
+             <Button className="flex-1 bg-teal text-white hover:bg-teal-dark rounded-full py-2.5">
+               Follow
+             </Button>
+             <Button variant="outline" className="flex-1 border-teal text-teal hover:bg-teal-light rounded-full py-2.5">
+               Message
+             </Button>
+          </div>
+          
+          {/* Metadata Cards */}
+          <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-2 mb-2 text-teal">
+                    <Globe className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Languages</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                    {creator.languages.map(lang => (
+                        <span key={lang} className="text-xs bg-gray-50 px-2 py-1 rounded-md text-gray-600">{lang}</span>
+                    ))}
+                </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-2 mb-2 text-gold">
+                    <MapPin className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Region</span>
+                </div>
+                <p className="text-sm text-gray-700 font-medium">
+                    {creator.region?.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+                </p>
+            </div>
+            
+            <div className="col-span-2 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                 <div className="flex items-center gap-2 mb-2 text-purple-600">
+                    <BookOpen className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Topics</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                     {creator.topics.map(topic => (
+                        <span key={topic} className="text-xs border border-purple-100 text-purple-700 px-2 py-1 rounded-full">{topic}</span>
+                    ))}
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <ShareModal 
+        creator={creator}
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+      />
+    </div>
+  );
+}

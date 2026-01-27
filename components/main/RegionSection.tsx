@@ -32,7 +32,7 @@ export default function RegionSection() {
         subtitle="Voices from the West"
         emoji="🌎"
         action="Explore Regions"
-        onAction={() => router.push("/search")} // Or a dedicated regions page if we had one
+        href="/search?region=americas,europe"
       />
       <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x px-4">
         {westernCreators.map((creator) => (

@@ -21,7 +21,7 @@ export default function HistoricalSection() {
         subtitle="Classical scholars & legacy"
         emoji="🏛️"
         action="See Library"
-        onAction={() => router.push("/collection/historical")}
+        href="/collection/historical"
       />
       <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x">
         {historicalCreators.map((creator) => (

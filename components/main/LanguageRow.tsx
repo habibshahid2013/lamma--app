@@ -2,6 +2,7 @@
 
 import CreatorCard from "../ui/CreatorCard";
 import { CREATORS } from "@/lib/data/creators";
+import Link from "next/link";
 
 interface LanguageRowProps {
   language: string;
@@ -24,7 +25,7 @@ export default function LanguageRow({ language, defaultTitle, emoji = "🗣️" 
         <h3 className="font-bold text-gray-dark text-lg flex items-center">
          {emoji} {defaultTitle || `Speaks ${language}`}
         </h3>
-        <button className="text-teal text-xs font-semibold">See All</button>
+        <Link href={`/search?language=${language}`} className="text-teal text-xs font-semibold">See All</Link>
       </div>
       <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x pr-4">
         {creators.map((creator) => (

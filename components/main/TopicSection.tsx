@@ -23,7 +23,7 @@ export default function TopicSection() {
        <SectionHeader 
         title="Explore Topics" 
         action="See All"
-        onAction={() => router.push("/search")}
+        href="/search"
       />
       <div className="grid grid-cols-4 gap-3">
         {TOPICS.map((topic) => (

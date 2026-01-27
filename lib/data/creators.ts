@@ -1,5 +1,18 @@
 import { Creator } from "../types/creator";
 
+export const CATEGORIES: Record<string, { label: string; emoji: string }> = {
+  scholar: { label: "Scholar", emoji: "📚" },
+  speaker: { label: "Speaker", emoji: "🎤" },
+  educator: { label: "Educator", emoji: "👨‍🏫" },
+  reciter: { label: "Reciter", emoji: "🎙️" },
+  author: { label: "Author", emoji: "📖" },
+  activist: { label: "Activist", emoji: "✊" },
+  youth_leader: { label: "Youth Leader", emoji: "🌟" },
+  podcaster: { label: "Podcaster", emoji: "🎧" },
+  influencer: { label: "Influencer", emoji: "📱" },
+  public_figure: { label: "Public Figure", emoji: "⭐" },
+};
+
 export const CREATORS: Creator[] = [
     {
       "id": "omar-suleiman",

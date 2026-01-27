@@ -1,12 +1,15 @@
+import Link from "next/link";
+
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
   action?: string;
   onAction?: () => void;
+  href?: string;
   emoji?: string;
 }
 
-export default function SectionHeader({ title, subtitle, action, onAction, emoji }: SectionHeaderProps) {
+export default function SectionHeader({ title, subtitle, action, onAction, href, emoji }: SectionHeaderProps) {
   return (
     <div className="flex items-end justify-between px-4 mb-4">
       <div>
@@ -18,11 +21,15 @@ export default function SectionHeader({ title, subtitle, action, onAction, emoji
             <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
         )}
       </div>
-      {action && (
+      {action && href ? (
+        <Link href={href} className="text-teal text-xs font-semibold pb-1">
+          {action}
+        </Link>
+      ) : action && onAction ? (
         <button onClick={onAction} className="text-teal text-xs font-semibold pb-1">
           {action}
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

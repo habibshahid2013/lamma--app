@@ -25,7 +25,7 @@ export default function WomenScholarsRow() {
         subtitle="Inspiring female scholarship & leadership"
         emoji="👩‍🎓"
         action="See All"
-        onAction={() => router.push("/collection/women-scholars")}
+        href="/collection/women-scholars"
       />
       <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x px-4">
         {womenCreators.map((creator) => (
