@@ -2,6 +2,8 @@
 
 Lamma+ is a mobile-first content creator discovery platform designed for the faith community. It connects users with scholars, educators, and content creators in a warm, welcoming environment.
 
+**🚀 Live Demo:** [https://lamma-app.vercel.app](https://lamma-app.vercel.app)
+
 ## 📱 Features
 
 - **Onboarding Flow**:
