@@ -1,72 +1,41 @@
 "use client";
 
+import { useState } from "react";
 import { Search, User, TreeDeciduous } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import CreatorCard from "../ui/CreatorCard";
-
-// Mock Data
-const FEATURED_CREATORS = [
-  {
-    id: "1",
-    name: "Dr. Omar Suleiman",
-    category: "Scholar",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=omar",
-  },
-  {
-    id: "2",
-    name: "Yasmin Mogahed",
-    category: "Educator",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=yasmin",
-  },
-  {
-    id: "3",
-    name: "Mufti Menk",
-    category: "Scholar",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=menk",
-  },
-  {
-    id: "4",
-    name: "Nouman Ali Khan",
-    category: "Educator",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=nouman",
-  },
-  {
-    id: "5",
-    name: "Imam Suhaib Webb",
-    category: "Imam",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=suhaib",
-  }
-];
-
-const TOPICS = [
-  "📖 Quran",
-  "📚 Hadith",
-  "🌱 Spirituality",
-  "👨‍👩‍👧 Family",
-  "👥 Youth",
-  "🏛️ History",
-];
+import LanguageRow from "./LanguageRow";
+import WomenScholarsRow from "./WomenScholarsRow";
+import HistoricalSection from "./HistoricalSection";
+import RegionSection from "./RegionSection";
+import TopicSection from "./TopicSection";
+import SurpriseMeButton from "../ui/SurpriseMeButton";
+import Link from "next/link";
+import { CREATORS } from "@/lib/data/creators";
 
 export default function HomeScreen() {
+  // Filters
+  const [showHistorical, setShowHistorical] = useState(false);
+
+  // Derived filtered lists
+  const featuredCreators = CREATORS.filter(c => c.featured && !c.isHistorical && c.category !== 'public_figure');
+  const historicalCreators = CREATORS.filter(c => c.isHistorical);
+  const publicFigures = CREATORS.filter(c => c.category === 'public_figure');
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-2">
           <TreeDeciduous className="w-6 h-6 text-teal" />
-          <span className="font-bold text-teal text-lg">LAMMA+</span>
+          <span className="font-bold text-lg text-teal-deep tracking-tight">LAMMA+</span>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="p-2 text-gray-600 hover:text-teal transition-colors">
-            <Search className="w-5 h-5" />
-          </button>
-          <div className="w-8 h-8 rounded-full bg-teal-light flex items-center justify-center text-teal font-bold text-xs ring-2 ring-white shadow-sm">
-            UA
+            <Link href="/search">
+             <Search className="w-6 h-6 text-gray-dark" />
+            </Link>
+          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
+            <User className="w-5 h-5 text-gray-500" />
           </div>
         </div>
       </header>
@@ -86,61 +55,84 @@ export default function HomeScreen() {
             </p>
           </div>
         </section>
-
-        {/* For You Section */}
-        <section className="mb-8">
-          <div className="px-4 mb-3 flex items-center justify-between">
-            <h3 className="font-bold text-lg text-gray-dark">For You</h3>
-            <button className="text-teal text-xs font-semibold">See All</button>
-          </div>
-          <div className="flex overflow-x-auto px-4 gap-3 pb-2 scrollbar-hide snap-x">
-            {FEATURED_CREATORS.map((creator) => (
-              <CreatorCard
-                key={creator.id}
-                {...creator}
-                onFollow={() => console.log("Follow", creator.id)}
-              />
-            ))}
-          </div>
-        </section>
         
-        {/* Browse Topics */}
-        <section className="mb-8">
-          <div className="px-4 mb-3">
-            <h3 className="font-bold text-lg text-gray-dark">Browse Topics</h3>
-          </div>
-          <div className="flex overflow-x-auto px-4 gap-2 pb-2 scrollbar-hide">
-            {TOPICS.map((topic) => (
-               <button
-                key={topic}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-600 whitespace-nowrap shadow-sm"
-               >
-                 {topic}
-               </button>
-            ))}
-          </div>
+        {/* Filter Toggles */}
+        <section className="px-4 mb-6 flex justify-end">
+            <button 
+                onClick={() => setShowHistorical(!showHistorical)}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${showHistorical ? 'bg-teal-deep text-white border-teal-deep' : 'bg-white text-gray-500 border-gray-200'}`}
+            >
+                {showHistorical ? "Hide History" : "Show History 📜"}
+            </button>
         </section>
 
-        {/* From Your Region (Mock) */}
-        <section className="mb-4">
-          <div className="px-4 mb-3 flex items-center justify-between">
-            <h3 className="font-bold text-lg text-gray-dark">From East Africa</h3>
-             <button className="text-teal text-xs font-semibold">See All</button>
-          </div>
-           <div className="flex overflow-x-auto px-4 gap-3 pb-2 scrollbar-hide snap-x">
-            {/* Reusing creators for demo */}
-            {[...FEATURED_CREATORS].reverse().map((creator) => (
-              <CreatorCard
-                key={`region-${creator.id}`}
-                {...creator}
-                onFollow={() => console.log("Follow", creator.id)}
-              />
-            ))}
-          </div>
-        </section>
+        {/* Sections */}
+        <div className="space-y-8">
+            {/* For You */}
+            <section>
+            <div className="flex items-center justify-between px-4 mb-3">
+                <h3 className="font-bold text-gray-dark text-lg">For You</h3>
+            </div>
+            <div className="flex overflow-x-auto gap-4 px-4 pb-4 scrollbar-hide snap-x">
+                {featuredCreators.map(creator => (
+                <CreatorCard key={creator.id} {...creator} />
+                ))}
+            </div>
+            </section>
+
+             {/* Muslim Voices (Public Figures) */}
+             <section className="bg-gradient-to-r from-teal-light/30 to-transparent py-6">
+                <div className="flex items-center justify-between px-4 mb-3">
+                    <h3 className="font-bold text-teal-deep text-lg flex items-center">
+                         Muslim Voices <Star className="w-4 h-4 ml-2 fill-gold text-gold" />
+                    </h3>
+                </div>
+                <div className="flex overflow-x-auto gap-4 px-4 pb-2 scrollbar-hide snap-x">
+                    {publicFigures.map(creator => (
+                    <CreatorCard key={creator.id} {...creator} />
+                    ))}
+                </div>
+            </section>
+
+            {/* "Speaks Somali" for Minneapolis Launch */}
+            <LanguageRow language="Somali" defaultTitle="Speaks Somali" />
+
+            {/* Women Scholars */}
+            <WomenScholarsRow />
+
+            {/* Historical / Classical Scholars */}
+            <HistoricalSection />
+          
+            {/* Regional Collections */}
+            <RegionSection />
+
+            {/* Topics */}
+            <TopicSection />
+        </div>
       </main>
-
+      
+      <SurpriseMeButton />
       <BottomNav />
     </div>
   );
+}
+
+// Helper icon component for this file
+function Star(props: any) {
+    return (
+        <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        >
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+    )
 }

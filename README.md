@@ -8,11 +8,16 @@ Lamma+ is a mobile-first content creator discovery platform designed for the fai
   - Personalized region and interest selection (2-step filter)
   - Beautiful splash and welcome screens with gold/teal branding
   - Suggested creators based on choices
+- **Discovery**:
+  - **Smart Search**: Advanced filtering by category, region, language, and tier
+  - **Topics**: Deep dives into Quran, Spirituality, Youth, and more
+  - **Surprise Me**: Fun random creator discovery
 - **Main Application**:
-  - **Home**: Featured content and vertical browsing
-  - **Search**: Discovery with tags and region filters
-  - **Profile**: Detailed creator profiles with content tabs (Videos, Audio, Books)
-  - **Following**: Manage connections (limited in free tier)
+  - **Home**: Curated rows for Women Scholars, Historical Figures, and Regional Voices
+  - **Profile**: Detailed creator profiles with content tabs and sharing capabilities
+  - **Compare**: Side-by-side scholar comparison tool
+  - **Collections**: Dedicated spaces for Women Scholars and Giants of History
+  - **Following**: Manage connections
   - **Premium**: Upgrade flow for unlimited access
 
 ## 🛠 Tech Stack

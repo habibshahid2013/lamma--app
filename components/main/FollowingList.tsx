@@ -6,46 +6,10 @@ import CreatorCard from "../ui/CreatorCard";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const FOLLOWING = [
-  {
-    id: "1",
-    name: "Dr. Omar Suleiman",
-    category: "Scholar",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=omar",
-  },
-  {
-    id: "2",
-    name: "Yasmin Mogahed",
-    category: "Educator",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=yasmin",
-  },
-  {
-    id: "3",
-    name: "Mufti Menk",
-    category: "Scholar",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=menk",
-  },
-];
+import { CREATORS } from "@/lib/data/creators";
 
-const SUGGESTED = [
-   {
-    id: "4",
-    name: "Nouman Ali Khan",
-    category: "Educator",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=nouman",
-  },
-  {
-    id: "5",
-    name: "Imam Suhaib Webb",
-    category: "Imam",
-    verified: true,
-    avatar: "https://i.pravatar.cc/150?u=suhaib",
-  }
-];
+const FOLLOWING = CREATORS.slice(0, 3);
+const SUGGESTED = CREATORS.slice(3, 5);
 
 export default function FollowingList() {
   const router = useRouter();
@@ -84,7 +48,7 @@ export default function FollowingList() {
             <CreatorCard
               id="locked"
               name="Exclusive Scholar"
-              category="Premium"
+              category="scholar"
               avatar="https://i.pravatar.cc/150?u=locked"
               showUnlock={true}
             />
