@@ -40,7 +40,6 @@ export default function CreatorCard(props: CreatorCardProps) {
     countryFlag,
     topics,
     languages,
-    followers,
     trending,
   } = props;
 

@@ -40,7 +40,7 @@ export default function ShareModal({ creator, isOpen, onClose }: ShareModalProps
                      </div>
                      <h4 className="font-bold text-gray-900">{creator.name}</h4>
                      <p className="text-xs text-teal font-medium mb-2 uppercase tracking-wide">{creator.category}</p>
-                     <p className="text-[10px] text-gray-500 line-clamp-2">{creator.bio}</p>
+                     <p className="text-[10px] text-gray-500 line-clamp-2">{creator.note}</p>
                      <div className="mt-3 pt-3 border-t border-gray-100 flex justify-center gap-2">
                         {creator.topics.slice(0, 2).map(t => (
                             <span key={t} className="text-[9px] bg-gray-100 text-gray-500 px-2 py-1 rounded-full">{t}</span>
