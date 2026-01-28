@@ -16,6 +16,7 @@ interface Creator extends BaseCreator {
   stats?: {
     followerCount: number;
   };
+  uid?: string; // Owner User ID if claimed
 }
 
 export function useCreators(filters?: {

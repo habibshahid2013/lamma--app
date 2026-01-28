@@ -8,6 +8,7 @@ import { useState } from "react";
 import ShareModal from "@/components/ui/ShareModal";
 
 import { useCreatorBySlug } from "@/src/hooks/useCreators";
+import ClaimProfileButton from "@/components/claim/ClaimProfileButton";
 // ... imports
 
 export default function CreatorProfilePage() {
@@ -138,6 +139,15 @@ export default function CreatorProfilePage() {
                     ))}
                 </div>
             </div>
+          </div>
+          
+          {/* Claim Profile Section */}
+          <div className="w-full max-w-md mt-6 mb-4">
+              <ClaimProfileButton 
+                  creatorId={creator.creatorId} 
+                  creatorName={creator.name} 
+                  isOwned={!!creator.uid} 
+              />
           </div>
         </div>
       </div>
