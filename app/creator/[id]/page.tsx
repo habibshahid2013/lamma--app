@@ -2,18 +2,31 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Share2, MapPin, Globe, BookOpen, Star, Check } from "lucide-react";
-import { CREATORS } from "@/lib/data/creators";
 import { CATEGORIES } from "@/lib/data/creators"; // Assuming this is where CATEGORIES is exported, or I'll define a map if not
 import Button from "@/components/ui/Button";
 import { useState } from "react";
 import ShareModal from "@/components/ui/ShareModal";
+
+import { useCreatorBySlug } from "@/src/hooks/useCreators";
+// ... imports
 
 export default function CreatorProfilePage() {
   const params = useParams();
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   
-  const creator = CREATORS.find(c => c.id === params.id);
+  // Unwrap params.id safely if it's an array
+  const slug = Array.isArray(params.id) ? params.id[0] : params.id;
+  
+  const { creator, loading } = useCreatorBySlug(slug as string);
+
+  if (loading) {
+     return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-teal animate-pulse font-medium">Loading gathering...</div>
+        </div>
+     );
+  }
 
   if (!creator) {
     return (

@@ -11,16 +11,22 @@ import RegionSection from "./RegionSection";
 import TopicSection from "./TopicSection";
 import SurpriseMeButton from "../ui/SurpriseMeButton";
 import Link from "next/link";
-import { CREATORS } from "@/lib/data/creators";
+import { useCreators, useFeaturedCreators } from "@/src/hooks/useCreators";
 
 export default function HomeScreen() {
   // Filters
   const [showHistorical, setShowHistorical] = useState(false);
 
+  // Data Hooks
+  const { creators: featuredData, loading: loadingFeatured } = useFeaturedCreators(20);
+  const { creators: publicFiguresData, loading: loadingPublic } = useCreators({ category: 'public_figure', limitCount: 10 });
+
   // Derived filtered lists
-  const featuredCreators = CREATORS.filter(c => c.featured && !c.isHistorical && c.category !== 'public_figure');
-  const historicalCreators = CREATORS.filter(c => c.isHistorical);
-  const publicFigures = CREATORS.filter(c => c.category === 'public_figure');
+  const featuredCreators = featuredData
+      .filter(c => !c.isHistorical && c.category !== 'public_figure')
+      .slice(0, 10);
+      
+  const publicFigures = publicFiguresData;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
@@ -73,10 +79,17 @@ export default function HomeScreen() {
             <div className="flex items-center justify-between px-4 mb-3">
                 <h3 className="font-bold text-gray-dark text-lg">For You</h3>
             </div>
-            <div className="flex overflow-x-auto gap-4 px-4 pb-4 scrollbar-hide snap-x">
-                {featuredCreators.map(creator => (
-                <CreatorCard key={creator.id} {...creator} />
-                ))}
+            <div className="flex overflow-x-auto gap-4 px-4 pb-4 scrollbar-hide snap-x intro-x">
+                {loadingFeatured ? (
+                    // Loading skeleton
+                    [1, 2, 3].map(i => (
+                        <div key={i} className="w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
+                    ))
+                ) : (
+                    featuredCreators.map(creator => (
+                    <CreatorCard key={creator.id} {...creator} />
+                    ))
+                )}
             </div>
             </section>
 
@@ -88,9 +101,15 @@ export default function HomeScreen() {
                     </h3>
                 </div>
                 <div className="flex overflow-x-auto gap-4 px-4 pb-2 scrollbar-hide snap-x">
-                    {publicFigures.map(creator => (
-                    <CreatorCard key={creator.id} {...creator} />
-                    ))}
+                    {loadingPublic ? (
+                        [1, 2, 3].map(i => (
+                            <div key={i} className="w-44 h-56 bg-white/50 rounded-2xl animate-pulse flex-shrink-0" />
+                        ))
+                    ) : (
+                        publicFigures.map(creator => (
+                        <CreatorCard key={creator.id} {...creator} />
+                        ))
+                    )}
                 </div>
             </section>
 
@@ -101,7 +120,8 @@ export default function HomeScreen() {
             <WomenScholarsRow />
 
             {/* Historical / Classical Scholars */}
-            <HistoricalSection />
+            {showHistorical && <HistoricalSection />}
+            {!showHistorical && <div className="px-4 text-center text-xs text-gray-400 italic">Toggle "Show History" to see classical scholars</div>}
           
             {/* Regional Collections */}
             <RegionSection />

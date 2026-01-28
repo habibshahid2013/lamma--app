@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CREATORS } from "@/lib/data/creators";
+import { useWomenScholars } from "@/src/hooks/useCreators";
 import CreatorCard from "@/components/ui/CreatorCard";
 import BottomNav from "@/components/ui/BottomNav";
 
@@ -11,8 +11,10 @@ export default function WomenScholarsPage() {
   const router = useRouter();
   const [filterRegion, setFilterRegion] = useState("All");
 
-  const womenCreators = CREATORS.filter(
-    (c) => c.gender === "female" && !c.isHistorical && c.category !== "public_figure"
+  const { creators, loading } = useWomenScholars(100);
+
+  const womenCreators = creators.filter(
+    (c) => !c.isHistorical && c.category !== "public_figure"
   );
 
   const filteredCreators = filterRegion === "All" 
@@ -74,11 +76,19 @@ export default function WomenScholarsPage() {
         {/* Grid */}
         <section className="px-4">
             <div className="grid grid-cols-2 gap-4 pb-8">
-                {filteredCreators.map(creator => (
-                     <div key={creator.id} className="flex justify-center">
-                        <CreatorCard {...creator} />
-                     </div>
-                ))}
+                {loading ? (
+                    [1, 2, 3, 4].map(i => (
+                         <div key={i} className="flex justify-center">
+                             <div className="w-44 h-64 bg-gray-100 rounded-2xl animate-pulse" />
+                         </div>
+                    ))
+                ) : (
+                    filteredCreators.map(creator => (
+                         <div key={creator.id} className="flex justify-center">
+                            <CreatorCard {...creator} />
+                         </div>
+                    ))
+                )}
             </div>
         </section>
       </main>

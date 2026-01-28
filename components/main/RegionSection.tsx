@@ -1,29 +1,25 @@
 "use client";
 
-import CreatorCard from "../ui/CreatorCard";
-import { CREATORS } from "@/lib/data/creators";
+import { useCreators } from "@/src/hooks/useCreators";
 import SectionHeader from "../ui/SectionHeader";
-import { REGIONS } from "@/lib/data/regions";
 import { useRouter } from "next/navigation";
+import CreatorCard from "../ui/CreatorCard";
 
 export default function RegionSection() {
   const router = useRouter();
 
-  // For the home screen, maybe show a featured region? 
-  // Or a horizontal list of regions?
-  // Plan says "Top Regions" or "Explore by Region".
-  // Let's show a "Western Scholars" section for now as an example, 
-  // or a row of Region Cards?
-  // Implementation Plan Feature 5 says: "New component: RegionSection.tsx".
-  // "Display creators from a specific region (e.g. 'Western Scholars', 'Middle Eastern Voices')."
+  // Fetching both regions separately for now
+  const { creators: americasData, loading: loadingAmericas } = useCreators({ region: 'americas', limitCount: 10 });
+  const { creators: europeData, loading: loadingEurope } = useCreators({ region: 'europe', limitCount: 10 });
 
-  // Let's do "Western Scholars" (Americas + Europe) as it's a popular category for the target audience.
-  
-  const westernCreators = CREATORS.filter(
-    (c) => (c.region === "americas" || c.region === "europe") && !c.isHistorical
-  ).slice(0, 6);
+  const westernCreators = [...americasData, ...europeData]
+    .filter(c => !c.isHistorical)
+    .sort((a, b) => (b.stats?.followerCount || 0) - (a.stats?.followerCount || 0)) // Simple sort
+    .slice(0, 8);
 
-  if (westernCreators.length === 0) return null;
+  const loading = loadingAmericas || loadingEurope;
+
+  if (!loading && westernCreators.length === 0) return null;
 
   return (
     <section className="mb-8">
@@ -35,9 +31,16 @@ export default function RegionSection() {
         href="/search?region=americas,europe"
       />
       <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x px-4">
-        {westernCreators.map((creator) => (
-          <CreatorCard key={creator.id} {...creator} />
-        ))}
+        {loading ? (
+             // Simple loading skeleton
+             [1, 2, 3].map(i => (
+               <div key={i} className="w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
+             ))
+          ) : (
+          westernCreators.map((creator) => (
+            <CreatorCard key={creator.id} {...creator} />
+          ))
+        )}
       </div>
     </section>
   );

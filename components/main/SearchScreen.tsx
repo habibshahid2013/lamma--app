@@ -6,7 +6,7 @@ import BottomNav from "../ui/BottomNav";
 import { REGIONS } from "@/lib/data/regions";
 import CreatorCard from "../ui/CreatorCard";
 import { useRouter } from "next/navigation";
-import { CREATORS } from "@/lib/data/creators";
+import Link from "next/link";
 import FilterPanel from "./FilterPanel";
 
 // Mock Data
@@ -15,11 +15,17 @@ const POPULAR_TOPICS = [
   "⚖️ Fiqh", "🏛️ History", "✨ Youth"
 ];
 
+import { useCreators } from "@/src/hooks/useCreators";
+// ... other imports
+
 export default function SearchScreen() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
+  // Fetch all creators for client-side filtering (efficient for small datasets < 500)
+  const { creators: allCreators, loading } = useCreators({ limitCount: 150 });
+
   // Consolidated Filter State
   const [filters, setFilters] = useState({
     categories: [] as string[],
@@ -68,14 +74,21 @@ export default function SearchScreen() {
   };
 
   const filteredCreators = useMemo(() => {
-    return CREATORS.filter(c => {
+    if (loading) return [];
+    
+    return allCreators.filter(c => {
       const matchesSearch = searchTerm === "" || 
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.topics.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
       
       // Region Filter
+      // Note: region in Firestore is a string key (e.g. "americas"), need to map if filter uses names.
+      // The filter logic uses REGIONS[c.region].name. 
+      // c.region from Firestore should be "americas", "europe" etc.
+      // Type safe check:
+      const regionKey = c.region as keyof typeof REGIONS;
       const matchesRegion = filters.regions.length === 0 || 
-        (REGIONS[c.region as keyof typeof REGIONS] && filters.regions.includes(REGIONS[c.region as keyof typeof REGIONS].name));
+        (REGIONS[regionKey] && filters.regions.includes(REGIONS[regionKey].name));
 
       // Language Filter
       const matchesLanguage = filters.languages.length === 0 || 
@@ -95,12 +108,10 @@ export default function SearchScreen() {
       // Historical Filter
       // Default behavior: Exclude historical unless 'includeHistorical' is true OR specifically filtering for them
       const isHistoricalMatch = filters.includeHistorical ? true : !c.isHistorical;
-      // If user specifically filters for historical via category/search, we might want to show them regardless?
-      // adhering to plan: Toggle switch "Include Historical Figures".
       
       return matchesSearch && matchesRegion && matchesLanguage && matchesCategory && matchesTier && matchesGender && isHistoricalMatch;
     });
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, allCreators, loading]);
 
   const activeFilterCount = 
     filters.categories.length + 
@@ -261,9 +272,15 @@ export default function SearchScreen() {
                 <section>
                 <h3 className="font-bold text-gray-dark mb-3">Trending Creators</h3>
                 <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
-                    {CREATORS.filter(c => c.trending).slice(0, 5).map(creator => (
-                    <CreatorCard key={creator.id} {...creator} />
-                    ))}
+                    {loading ? (
+                         [1, 2, 3].map(i => (
+                             <div key={i} className="w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
+                         ))
+                    ) : (
+                        allCreators.filter(c => c.trending).slice(0, 5).map(creator => (
+                        <CreatorCard key={creator.id} {...creator} />
+                        ))
+                    )}
                 </div>
                 </section>
             </>

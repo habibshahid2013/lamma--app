@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { ArrowLeft, BookOpen, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CREATORS } from "@/lib/data/creators";
+import { useHistoricalScholars } from "@/src/hooks/useCreators";
 import HistoricalScholarCard from "@/components/ui/HistoricalScholarCard";
 import BottomNav from "@/components/ui/BottomNav";
 
 export default function HistoricalCollectionPage() {
   const router = useRouter();
   
-  const historicalCreators = CREATORS.filter((c) => c.isHistorical);
+  const { creators: historicalCreators, loading } = useHistoricalScholars(100);
 
   // We could add century/era filters here later
   
@@ -44,11 +44,19 @@ export default function HistoricalCollectionPage() {
         {/* Timeline/Grid */}
         <section className="px-4">
             <div className="grid grid-cols-2 gap-4 pb-8">
-                {historicalCreators.map(creator => (
-                     <div key={creator.id} className="flex justify-center">
-                        <HistoricalScholarCard {...creator} />
-                     </div>
-                ))}
+                {loading ? (
+                    [1, 2, 3, 4].map(i => (
+                         <div key={i} className="flex justify-center">
+                             <div className="w-44 h-64 bg-amber-50/50 rounded-2xl animate-pulse border border-amber-100" />
+                         </div>
+                    ))
+                ) : (
+                    historicalCreators.map(creator => (
+                         <div key={creator.id} className="flex justify-center">
+                            <HistoricalScholarCard {...creator} />
+                         </div>
+                    ))
+                )}
             </div>
         </section>
       </main>
