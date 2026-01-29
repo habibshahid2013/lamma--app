@@ -40,6 +40,13 @@ export default function PipelineDashboard() {
   const [loadingFlagged, setLoadingFlagged] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Load flagged on tab switch - must be before conditionals!
+  useEffect(() => {
+    if (activeTab === 'flagged' && userData?.role === 'admin') {
+      loadFlaggedProfiles();
+    }
+  }, [activeTab, userData?.role]);
+
   // Auth check
   if (authLoading) {
     return (
@@ -142,13 +149,6 @@ export default function PipelineDashboard() {
       setLoadingFlagged(false);
     }
   };
-
-  // Load flagged on tab switch
-  useEffect(() => {
-    if (activeTab === 'flagged') {
-      loadFlaggedProfiles();
-    }
-  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">

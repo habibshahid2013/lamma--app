@@ -27,6 +27,13 @@ export default function SyncDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Load all profiles on mount - must be before conditionals!
+  useEffect(() => {
+    if (userData?.role === 'admin') {
+      loadProfiles();
+    }
+  }, [userData?.role]);
+
   // Auth check
   if (authLoading) {
     return (
@@ -48,11 +55,6 @@ export default function SyncDashboard() {
       </div>
     );
   }
-
-  // Load all profiles
-  useEffect(() => {
-    loadProfiles();
-  }, []);
 
   const loadProfiles = async () => {
     setLoading(true);
