@@ -62,8 +62,22 @@ export default function AdminDashboard() {
         })) as ClaimRequest[];
 
         setClaims(claimsData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching claims:', error);
+        if (error.code === 'failed-precondition') {
+             // Extract URL from error message if available, otherwise just show generic message
+             // The error message usually looks like: "The query requires an index. You can create it here: https://console.firebase.google.com/..."
+             const errorMessage = error.message || '';
+             const match = errorMessage.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
+             const link = match ? match[0] : null;
+             
+             if (link) {
+                 alert(`Missing Firestore Index! \n\nPlease create the index by clicking OK to open the console, or check the console logs for the link.\n\nLink: ${link}`);
+                 window.open(link, '_blank');
+             } else {
+                 alert('Error: Missing Firestore Index. Check console for creation link.');
+             }
+        }
       } finally {
         setLoading(false);
       }

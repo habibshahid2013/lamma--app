@@ -3,17 +3,45 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 2, 26);
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the user has an 'admin' role
+    // Requires looking up the user's role from the 'users' collection
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Creators collection rules
+    match /creators/{creatorId} {
+      allow read: if true; // Publicly readable
+      allow update: if isAuthenticated() && (isAdmin() || request.auth.uid == resource.data.ownership.ownerId);
+      // Deny create and delete directly from the creators collection unless by admin,
+      // as creators are primarily created through claim requests or admin actions.
+      allow create, delete: if isAdmin();
+    }
+
+    // ClaimRequests collection rules
+    match /claimRequests/{claimRequestId} {
+      allow create: if isAuthenticated(); // Only authenticated users can create claim requests
+      allow read: if isAuthenticated() && (isAdmin() || request.auth.uid == resource.data.claimantUserId);
+      allow update: if isAuthenticated() && isAdmin(); // Only admins can update claim request status
+      // Specific rule to only allow 'status' field update by admin
+      // You might need more granular checks here if other fields are updatable by admins
+      // allow update: if isAuthenticated() && isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+    }
+
+    // Slugs collection rules
+    match /slugs/{slugId} {
+      allow read: if true; // Publicly readable
+      allow write: if isAuthenticated() && isAdmin(); // Only admins can write
     }
   }
 }
