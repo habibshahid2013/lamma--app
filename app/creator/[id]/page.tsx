@@ -167,32 +167,16 @@ export default function CreatorProfilePage() {
                 </div>
             </div>
 
-            {/* Stats / Socials Placeholder if missing */}
-            {(creator.stats || creator.socialLinks) && (
-               <div className="col-span-2 bg-gray-50 p-4 rounded-xl flex justify-between items-center text-sm">
-                  {creator.stats?.followerCount && (
-                     <div className="text-center">
-                        <span className="block font-bold text-lg text-gray-900">{creator.stats.followerCount.toLocaleString()}</span>
-                        <span className="text-gray-500 text-xs uppercase">Followers</span>
-                     </div>
-                  )}
-                  {creator.socialLinks && (
-                     <div className="flex gap-4">
-                        {/* Icons would go here, currently handled by ShareModal but good to visualize presence */}
-                     </div>
-                  )}
-               </div>
-            )}
+
           </div>
           
-          {/* Claim Profile Section */}
-          <div className="w-full max-w-md mt-6 mb-4">
-              <ClaimProfileButton 
-                  creatorId={creator.creatorId} 
-                  creatorName={creator.name} 
-                  isOwned={!!creator.uid} 
-              />
-          </div>
+          {/* Follower Count - Centered */}
+          {creator.stats?.followerCount && (
+            <div className="w-full max-w-md text-center py-4">
+              <span className="text-3xl font-bold text-gray-900">{creator.stats.followerCount.toLocaleString()}</span>
+              <span className="block text-gray-500 text-sm uppercase tracking-wide mt-1">Followers</span>
+            </div>
+          )}
 
           {/* Content Tabs */}
           <div className="w-full max-w-md mt-6 border-b border-gray-100 mb-4">
@@ -315,6 +299,15 @@ export default function CreatorProfilePage() {
                 </div>
             ) : null}
           </div>
+
+            {/* Claim Profile Section - Under Content */}
+            <div className="w-full max-w-md mt-8 mb-4">
+              <ClaimProfileButton 
+                  creatorId={creator.creatorId} 
+                  creatorName={creator.name} 
+                  isOwned={!!creator.uid} 
+              />
+            </div>
         </div>
       </div>
       
