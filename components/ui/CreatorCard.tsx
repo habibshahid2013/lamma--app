@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Check, Lock, Plus, Star, BadgeCheck, Share2 } from "lucide-react";
-import Button from "./LegacyButton";
+import { Button } from "./button";
 import { Creator } from "@/lib/types/creator";
 import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";
@@ -39,7 +39,7 @@ export default function CreatorCard(props: CreatorCardProps) {
     tier,
     countryFlag,
     topics,
-    languages,
+    languages = [], // Default to empty array
     trending,
   } = props;
 
@@ -48,6 +48,10 @@ export default function CreatorCard(props: CreatorCardProps) {
       e.stopPropagation();
       setIsShareOpen(true);
   };
+
+  const displayName = name || "Unknown Creator";
+  const displayCategory = category ? category.replace("_", " ") : "Creator";
+  const displayAvatar = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D7377&color=fff`;
 
   const isPublicFigure = category === "public_figure";
 
@@ -60,9 +64,13 @@ export default function CreatorCard(props: CreatorCardProps) {
       >
         <div className="relative mb-3 bg-teal-light/50 p-1 rounded-full">
           <img
-            src={avatar || `https://i.pravatar.cc/150?u=${name}`}
-            alt={name}
+            src={displayAvatar}
+            alt={displayName}
             className={`w-16 h-16 rounded-full object-cover bg-gray-200 ${isHistorical ? 'sepia-[.3]' : ''}`}
+            onError={(e) => {
+              // Fallback if image fails
+              (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`;
+            }}
           />
           {verified && !isHistorical && (
             <div className="absolute bottom-0 right-0 bg-teal text-white p-1 rounded-full border-2 border-white">
@@ -77,14 +85,14 @@ export default function CreatorCard(props: CreatorCardProps) {
         </div>
 
         <h3 className="font-bold text-gray-dark text-sm text-center line-clamp-1 w-full mb-0.5">
-          {name}
+          {displayName}
         </h3>
         
         {isHistorical && lifespan ? (
           <p className="text-[10px] text-gray-400 mb-1 font-mono">{lifespan}</p>
         ) : (
           <p className="text-xs text-gray-500 mb-2 text-center capitalize">
-              {category?.replace("_", " ")}
+              {displayCategory}
           </p>
         )}
         
@@ -113,15 +121,15 @@ export default function CreatorCard(props: CreatorCardProps) {
 
       <div className="w-full mt-auto relative z-10">
         {showUnlock ? (
-          <Button variant="secondary" size="sm" className="w-full text-xs rounded-full">
+          <Button variant="secondary" size="sm" className="w-full text-xs rounded-full h-8">
             <Lock className="w-3 h-3 mr-1" /> Unlock
           </Button>
         ) : (
           <Button
-            variant={isFollowing ? "primary" : "outline"}
+            variant={isFollowing ? "default" : "outline"} // shadcn uses 'default' for primary
             size="sm"
-            className={`w-full text-xs rounded-full ${
-              isFollowing ? "bg-teal text-white" : "border-teal text-teal hover:bg-teal-light"
+            className={`w-full text-xs rounded-full h-8 ${
+              isFollowing ? "bg-teal hover:bg-teal-dark text-white" : "border-teal text-teal hover:bg-teal-light"
             }`}
             onClick={(e) => {
               e.stopPropagation();
