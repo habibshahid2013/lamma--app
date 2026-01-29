@@ -237,24 +237,34 @@ export default function CreatorProfilePage() {
                 <div className="space-y-6">
                     {/* Physical Books */}
                     {creator.content?.books && creator.content.books.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="grid gap-4">
                             {creator.content.books.map((book, i) => (
-                                <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-bold text-gray-900">{book.title}</h3>
-                                        {book.year && <p className="text-sm text-gray-500">Published {book.year}</p>}
-                                        {book.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{book.description}</p>}
+                                <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                                    <h3 className="font-semibold text-lg text-gray-dark">{book.title}</h3>
+                                    <div className="flex items-center text-sm text-gray-500 mt-1 space-x-3">
+                                        {book.year && <span>{book.year}</span>}
+                                        {book.year && book.isbn && <span>•</span>}
+                                        {book.isbn && <span>ISBN: {book.isbn}</span>}
                                     </div>
+                                    {book.description && <p className="text-gray-600 mt-3 text-sm leading-relaxed">{book.description}</p>}
                                     {book.amazonUrl && (
-                                        <a href={book.amazonUrl} target="_blank" rel="noopener noreferrer" className="text-teal hover:underline text-sm font-medium whitespace-nowrap ml-4">
-                                            Buy
-                                        </a>
+                                        <div className="mt-4">
+                                            <a 
+                                                href={book.amazonUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center text-teal font-medium text-sm hover:underline"
+                                            >
+                                                View on Amazon 
+                                                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                            </a>
+                                        </div>
                                     )}
                                 </div>
                             ))}
                         </div>
                     ) : (
-                         <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-gray-100">
+                         <div className="text-center py-10 text-gray-500 bg-white rounded-xl border border-gray-100">
                             <BookOpen className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                             <p>No books listed yet.</p>
                         </div>

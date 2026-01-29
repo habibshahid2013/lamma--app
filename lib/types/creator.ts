@@ -74,6 +74,7 @@ export interface Creator {
   // AI Generation Metadata
   aiGenerated?: {
     generatedAt: string;
+    model?: string;
     confidence: "high" | "medium" | "low";
     notes?: string[];
     sources?: string[];

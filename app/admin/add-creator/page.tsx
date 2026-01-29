@@ -378,44 +378,141 @@ export default function AddCreatorPage() {
             </div>
 
             {/* Books */}
-            {editedData.content?.books?.length > 0 && (
-              <>
-                <h3 className="font-semibold mb-3 mt-6">📚 Books</h3>
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  {editedData.content.books.map((book: any, i: number) => (
-                    <div key={i} className="mb-2 last:mb-0">
-                      <span className="font-medium">{book.title}</span>
-                      {book.year && <span className="text-gray-500 ml-2">({book.year})</span>}
-                      {book.amazonUrl && (
-                        <a href={book.amazonUrl} target="_blank" rel="noopener noreferrer" className="text-teal-600 ml-2 text-sm">
-                          Amazon →
-                        </a>
-                      )}
+            {/* Books (Editable) */}
+            <div className="mt-6">
+               <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold">📚 Books</h3>
+                  <button 
+                    onClick={() => {
+                        const newBooks = [...(editedData.content?.books || [])];
+                        newBooks.push({ title: "", year: new Date().getFullYear() });
+                        updateField("content.books", newBooks);
+                    }}
+                    className="text-xs bg-teal-50 text-teal-700 px-2 py-1 rounded hover:bg-teal-100"
+                  >
+                    + Add Book
+                  </button>
+               </div>
+               
+               <div className="space-y-3">
+                  {(editedData.content?.books || []).map((book: any, i: number) => (
+                    <div key={i} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                       <div className="flex gap-2 mb-2">
+                          <input 
+                            type="text" 
+                            value={book.title || ""} 
+                            onChange={(e) => {
+                                const newBooks = [...editedData.content.books];
+                                newBooks[i].title = e.target.value;
+                                updateField("content.books", newBooks);
+                            }}
+                            placeholder="Book Title"
+                            className="flex-1 border rounded px-2 py-1 text-sm font-medium"
+                          />
+                          <input 
+                            type="number" 
+                            value={book.year || ""} 
+                            onChange={(e) => {
+                                const newBooks = [...editedData.content.books];
+                                newBooks[i].year = parseInt(e.target.value) || undefined;
+                                updateField("content.books", newBooks);
+                            }}
+                            placeholder="Year"
+                            className="w-20 border rounded px-2 py-1 text-sm"
+                          />
+                           <button 
+                            onClick={() => {
+                                const newBooks = editedData.content.books.filter((_: any, idx: number) => idx !== i);
+                                updateField("content.books", newBooks);
+                            }}
+                            className="text-red-400 hover:text-red-600 px-1"
+                          >
+                            ×
+                          </button>
+                       </div>
+                       <input 
+                            type="url" 
+                            value={book.amazonUrl || ""} 
+                            onChange={(e) => {
+                                const newBooks = [...editedData.content.books];
+                                newBooks[i].amazonUrl = e.target.value;
+                                updateField("content.books", newBooks);
+                            }}
+                            placeholder="Amazon URL"
+                            className="w-full border rounded px-2 py-1 text-xs text-gray-600 bg-white"
+                          />
                     </div>
                   ))}
-                </div>
-              </>
-            )}
+               </div>
+            </div>
 
-            {/* Courses */}
-            {editedData.content?.courses?.length > 0 && (
-              <>
-                <h3 className="font-semibold mb-3 mt-6">🎓 Courses</h3>
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  {editedData.content.courses.map((course: any, i: number) => (
-                    <div key={i} className="mb-2 last:mb-0">
-                      <span className="font-medium">{course.title}</span>
-                      <span className="text-gray-500 ml-2">({course.platform})</span>
-                      {course.url && (
-                        <a href={course.url} target="_blank" rel="noopener noreferrer" className="text-teal-600 ml-2 text-sm">
-                          View →
-                        </a>
-                      )}
+            {/* Courses (Editable) */}
+            <div className="mt-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold">🎓 Courses</h3>
+                  <button 
+                    onClick={() => {
+                        const newCourses = [...(editedData.content?.courses || [])];
+                        newCourses.push({ title: "", platform: "Bayyinah" });
+                        updateField("content.courses", newCourses);
+                    }}
+                    className="text-xs bg-teal-50 text-teal-700 px-2 py-1 rounded hover:bg-teal-100"
+                  >
+                    + Add Course
+                  </button>
+               </div>
+
+                <div className="space-y-3">
+                  {(editedData.content?.courses || []).map((course: any, i: number) => (
+                    <div key={i} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                       <div className="flex gap-2 mb-2">
+                          <input 
+                            type="text" 
+                            value={course.title || ""} 
+                            onChange={(e) => {
+                                const newCourses = [...editedData.content.courses];
+                                newCourses[i].title = e.target.value;
+                                updateField("content.courses", newCourses);
+                            }}
+                            placeholder="Course Title"
+                            className="flex-1 border rounded px-2 py-1 text-sm font-medium"
+                          />
+                          <input 
+                            type="text" 
+                            value={course.platform || ""} 
+                            onChange={(e) => {
+                                const newCourses = [...editedData.content.courses];
+                                newCourses[i].platform = e.target.value;
+                                updateField("content.courses", newCourses);
+                            }}
+                            placeholder="Platform"
+                            className="w-32 border rounded px-2 py-1 text-sm"
+                          />
+                           <button 
+                            onClick={() => {
+                                const newCourses = editedData.content.courses.filter((_: any, idx: number) => idx !== i);
+                                updateField("content.courses", newCourses);
+                            }}
+                            className="text-red-400 hover:text-red-600 px-1"
+                          >
+                            ×
+                          </button>
+                       </div>
+                       <input 
+                            type="url" 
+                            value={course.url || ""} 
+                            onChange={(e) => {
+                                const newCourses = [...editedData.content.courses];
+                                newCourses[i].url = e.target.value;
+                                updateField("content.courses", newCourses);
+                            }}
+                            placeholder="Course URL"
+                            className="w-full border rounded px-2 py-1 text-xs text-gray-600 bg-white"
+                          />
                     </div>
                   ))}
-                </div>
-              </>
-            )}
+               </div>
+            </div>
 
             {/* Profile Image */}
             <h3 className="font-semibold mb-3 mt-6">🖼️ Profile Image</h3>
