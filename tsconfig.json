@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "lamma-plus", "scripts"]
+  "exclude": ["node_modules", "lamma-plus", "scripts", "functions"]
 }

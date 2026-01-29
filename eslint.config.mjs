@@ -13,7 +13,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "scripts/**",
-    "lamma-plus/**"
+    "lamma-plus/**",
+    "functions/**"
   ]),
   {
     rules: {
