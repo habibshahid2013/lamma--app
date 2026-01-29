@@ -13,9 +13,6 @@ import { Creator as BaseCreator } from '@/lib/types/creator';
 
 interface Creator extends BaseCreator {
   creatorId: string;
-  stats?: {
-    followerCount: number;
-  };
   uid?: string; // Owner User ID if claimed
 }
 
@@ -84,9 +81,12 @@ export function useCreators(filters?: {
             avatar: data.avatar || data.profile?.avatar || null,
             bio: data.bio || data.profile?.bio || '',
           };
-        }) as Creator[];
+        }) as unknown as Creator[];
         
-        setCreators(creatorsData);
+        // Filter out bad data
+        const validCreators = creatorsData.filter(c => c.name !== 'Unknown Creator' && c.name.trim() !== '');
+        
+        setCreators(validCreators);
       } catch (err) {
         setError(err as Error);
       } finally {
@@ -126,7 +126,7 @@ export function useCreatorBySlug(slug: string) {
             name: data.name || data.profile?.name || 'Unknown Creator',
             avatar: data.avatar || data.profile?.avatar || null,
             bio: data.bio || data.profile?.bio || '',
-          } as Creator);
+          } as unknown as Creator);
         }
       } catch (err) {
         console.error(err);
