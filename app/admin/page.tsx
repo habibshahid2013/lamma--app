@@ -217,27 +217,70 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex gap-2 mb-6">
-          {(['pending', 'approved', 'rejected', 'all'] as const).map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filter === status
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-              {status === 'pending' && claims.length > 0 && filter === 'pending' && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  {claims.length}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* Admin Navigation Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <button
+            onClick={() => router.push('/admin/pipeline')}
+            className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+          >
+            <div className="text-2xl mb-2">🚀</div>
+            <div className="font-semibold">Profile Pipeline</div>
+            <div className="text-xs opacity-80">Generate new profiles</div>
+          </button>
+
+          <button
+            onClick={() => router.push('/admin/sync')}
+            className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+          >
+            <div className="text-2xl mb-2">🔄</div>
+            <div className="font-semibold">Sync Profiles</div>
+            <div className="text-xs opacity-80">Enrich existing profiles</div>
+          </button>
+
+          <button
+            onClick={() => router.push('/admin/add-creator')}
+            className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+          >
+            <div className="text-2xl mb-2">➕</div>
+            <div className="font-semibold">Add Creator</div>
+            <div className="text-xs opacity-80">Manual profile entry</div>
+          </button>
+
+          <button
+            onClick={() => router.push('/')}
+            className="bg-gradient-to-br from-gray-500 to-gray-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+          >
+            <div className="text-2xl mb-2">🏠</div>
+            <div className="font-semibold">Back to App</div>
+            <div className="text-xs opacity-80">Return to main site</div>
+          </button>
         </div>
+
+        {/* Claim Requests Section */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">📋 Claim Requests</h2>
+
+          {/* Filter Tabs */}
+          <div className="flex gap-2 mb-6">
+            {(['pending', 'approved', 'rejected', 'all'] as const).map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  filter === status
+                    ? 'bg-teal-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+                {status === 'pending' && claims.length > 0 && filter === 'pending' && (
+                  <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {claims.length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
 
         {/* Claims List */}
         {claims.length === 0 ? (
@@ -322,6 +365,7 @@ export default function AdminDashboard() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
