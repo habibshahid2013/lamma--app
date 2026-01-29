@@ -136,7 +136,7 @@ export async function enrichProfile(verified: VerifiedProfile): Promise<Enriched
   // If we have Claude API, use it to polish the bio and fill gaps
   let enrichedBio = verified.fullBio || '';
   let enrichedShortBio = verified.shortBio || '';
-  let enrichmentNotes: string[] = [...(verified.discoveryNotes || [])];
+  const enrichmentNotes: string[] = [...(verified.discoveryNotes || [])];
   
   if (ANTHROPIC_API_KEY && (confidence === 'low' || !verified.fullBio || verified.fullBio.length < 100)) {
     try {

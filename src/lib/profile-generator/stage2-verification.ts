@@ -341,7 +341,7 @@ async function searchYouTubeChannel(name: string): Promise<{
 
     // Find the best match (check if name is similar)
     const normalizedName = name.toLowerCase().replace(/[^a-z]/g, '');
-    let bestMatch = searchData.items[0];
+    const bestMatch = searchData.items[0];
     
     // Simple heuristic: default to first result, but refine if needed
     // In a real app we might verify channel name more strictly
