@@ -5,15 +5,16 @@ import { useAuth } from "@/src/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import { TreeDeciduous, Mail, Lock, AlertCircle } from "lucide-react";
+import { TreeDeciduous, Mail, Lock, User, AlertCircle } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
-  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
+  const { signUp, signInWithGoogle, user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -28,11 +29,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      await signUp(email, password, name);
       router.push("/home");
     } catch (err: any) {
       console.error(err);
-      setError("Failed to sign in. Please check your credentials.");
+      setError("Failed to create account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -63,8 +64,8 @@ export default function LoginPage() {
               <TreeDeciduous className="w-8 h-8 text-teal" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-dark">Welcome Back</h1>
-          <p className="text-gray-500 mt-2">Sign in to continue to Lamma+</p>
+          <h1 className="text-2xl font-bold text-gray-dark">Join Lamma+</h1>
+          <p className="text-gray-500 mt-2">Create your gathering place</p>
         </div>
 
         {/* Error Message */}
@@ -77,6 +78,21 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 ml-1">Full Name</label>
+            <div className="relative">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all"
+                placeholder="John Doe"
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 ml-1">Email</label>
             <div className="relative">
@@ -103,18 +119,13 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all"
                 placeholder="••••••••"
+                minLength={6}
               />
             </div>
           </div>
 
-          <div className="flex justify-end">
-            <button type="button" className="text-sm text-teal font-medium hover:underline">
-              Forgot password?
-            </button>
-          </div>
-
-          <Button type="submit" loading={loading} className="w-full">
-            Sign In
+          <Button type="submit" loading={loading} className="w-full mt-2">
+            Create Account
           </Button>
 
           <div className="relative my-6">
@@ -155,9 +166,9 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-500">
-          Don't have an account?{" "}
-          <Link href="/auth/signup" className="text-teal font-semibold hover:underline">
-            Sign up
+          Already have an account?{" "}
+          <Link href="/auth/login" className="text-teal font-semibold hover:underline">
+            Sign in
           </Link>
         </p>
       </div>
