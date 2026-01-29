@@ -3,6 +3,7 @@
 // Generates complete profiles from just a name using Claude + Web Search
 
 import Anthropic from "@anthropic-ai/sdk";
+import { searchChannel } from "@/src/lib/youtube";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -203,7 +204,7 @@ Return ONLY the JSON object, nothing else.`;
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-3-haiku-20240307",
       max_tokens: 4000,
       messages: [
         {
@@ -230,6 +231,41 @@ Return ONLY the JSON object, nothing else.`;
     }
 
     const profile: GeneratedProfile = JSON.parse(jsonStr);
+    
+    // ============================================
+    // VERIFY WITH YOUTUBE API
+    // ============================================
+    try {
+      console.log(`🔍 Searching YouTube for verified channel: ${name}`);
+      const youtubeData = await searchChannel(name);
+      
+      if (youtubeData) {
+        console.log(`✅ Found verified YouTube channel: ${youtubeData.title}`);
+        
+        // Overwrite AI guesses with real data
+        profile.contentLinks.youtube = {
+          channelId: youtubeData.id,
+          channelUrl: `https://www.youtube.com/channel/${youtubeData.id}`,
+          subscriberCount: youtubeData.subscriberCount,
+          videoCount: youtubeData.videoCount,
+        };
+        
+        // Update social link
+        profile.socialLinks.youtube = `https://www.youtube.com/channel/${youtubeData.id}`;
+        
+        // If image is missing, use YouTube thumbnail
+        if (!profile.images.profilePhoto) {
+          profile.images.profilePhoto = youtubeData.thumbnail;
+        }
+
+        profile.confidence.notes.push(`Verified YouTube stats via API: ${youtubeData.subscriberCount} subscribers`);
+      } else {
+        console.log(`⚠️ No verified YouTube channel found for: ${name}`);
+      }
+    } catch (ytError) {
+      console.error("Error fetching YouTube verification:", ytError);
+      // Don't fail the whole generation if YouTube fails, just skip verification
+    }
     
     console.log(`✅ Profile generated for: ${profile.name}`);
     return profile;

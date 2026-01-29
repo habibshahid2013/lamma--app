@@ -97,12 +97,47 @@ export async function getChannelInfo(youtubeUrl: string): Promise<YouTubeChannel
       id: channel.id,
       title: channel.snippet.title,
       description: channel.snippet.description,
-      thumbnail: channel.snippet.thumbnails.medium?.url || channel.snippet.thumbnails.default?.url,
+      thumbnail: channel.snippet.thumbnails.high?.url || channel.snippet.thumbnails.medium?.url,
       subscriberCount: formatCount(channel.statistics.subscriberCount),
       videoCount: channel.statistics.videoCount,
     };
   } catch (error) {
     console.error('Error fetching channel info:', error);
+    return null;
+  }
+}
+
+// Search for a channel by name
+export async function searchChannel(query: string): Promise<YouTubeChannel | null> {
+  if (!YOUTUBE_API_KEY) return null;
+
+  try {
+    const searchUrl = `${YOUTUBE_API_BASE}/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&maxResults=1&key=${YOUTUBE_API_KEY}`;
+    const searchResponse = await fetch(searchUrl);
+    const searchData = await searchResponse.json();
+
+    if (!searchData.items?.[0]) return null;
+
+    const channelId = searchData.items[0].snippet.channelId;
+    
+    // Fetch full details including statistics
+    const url = `${YOUTUBE_API_BASE}/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (!data.items?.[0]) return null;
+    
+    const channel = data.items[0];
+    return {
+      id: channel.id,
+      title: channel.snippet.title,
+      description: channel.snippet.description,
+      thumbnail: channel.snippet.thumbnails.high?.url || channel.snippet.thumbnails.medium?.url,
+      subscriberCount: formatCount(channel.statistics.subscriberCount),
+      videoCount: channel.statistics.videoCount,
+    };
+  } catch (error) {
+    console.error('Error searching channel:', error);
     return null;
   }
 }
