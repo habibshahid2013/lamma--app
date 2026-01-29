@@ -3,18 +3,20 @@
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Share2, MapPin, Globe, BookOpen, Star, Check } from "lucide-react";
 import { CATEGORIES } from "@/lib/data/creators"; // Assuming this is where CATEGORIES is exported, or I'll define a map if not
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/LegacyButton";
 import { useState } from "react";
 import ShareModal from "@/components/ui/ShareModal";
 
 import { useCreatorBySlug } from "@/src/hooks/useCreators";
 import ClaimProfileButton from "@/components/claim/ClaimProfileButton";
-// ... imports
+import { VideoList } from "@/components/content/VideoList";
+import { PodcastList } from "@/components/content/PodcastList";
 
 export default function CreatorProfilePage() {
   const params = useParams();
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"videos" | "podcasts" | "books">("videos");
   
   // Unwrap params.id safely if it's an array
   const slug = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -128,6 +130,7 @@ export default function CreatorProfilePage() {
                 </p>
             </div>
             
+          
             <div className="col-span-2 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                  <div className="flex items-center gap-2 mb-2 text-purple-600">
                     <BookOpen className="w-4 h-4" />
@@ -139,6 +142,23 @@ export default function CreatorProfilePage() {
                     ))}
                 </div>
             </div>
+
+            {/* Stats / Socials Placeholder if missing */}
+            {(creator.stats || creator.socialLinks) && (
+               <div className="col-span-2 bg-gray-50 p-4 rounded-xl flex justify-between items-center text-sm">
+                  {creator.stats?.followerCount && (
+                     <div className="text-center">
+                        <span className="block font-bold text-lg text-gray-900">{creator.stats.followerCount.toLocaleString()}</span>
+                        <span className="text-gray-500 text-xs uppercase">Followers</span>
+                     </div>
+                  )}
+                  {creator.socialLinks && (
+                     <div className="flex gap-4">
+                        {/* Icons would go here, currently handled by ShareModal but good to visualize presence */}
+                     </div>
+                  )}
+               </div>
+            )}
           </div>
           
           {/* Claim Profile Section */}
@@ -148,6 +168,46 @@ export default function CreatorProfilePage() {
                   creatorName={creator.name} 
                   isOwned={!!creator.uid} 
               />
+          </div>
+
+          {/* Content Tabs */}
+          <div className="w-full max-w-md mt-6 border-b border-gray-100 mb-4">
+              <div className="flex space-x-6 justify-center">
+                {(["videos", "podcasts", "books"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-3 text-sm font-bold capitalize transition-colors relative ${
+                      activeTab === tab ? "text-teal" : "text-gray-400"
+                    }`}
+                  >
+                    {tab}
+                    {activeTab === tab && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+          </div>
+
+          {/* Content List */}
+          <div className="w-full max-w-md pb-8">
+            {activeTab === "videos" ? (
+               <VideoList 
+                  youtubeUrl={creator.socialLinks?.youtube} 
+                  creatorName={creator.name} 
+                  maxResults={10} 
+               />
+            ) : activeTab === "podcasts" ? (
+               <PodcastList 
+                  podcastUrl={creator.socialLinks?.podcast} 
+                  creatorName={creator.name} 
+               />
+            ) : (
+                <div className="text-center py-10 bg-white rounded-xl border border-gray-100">
+                    <p className="text-gray-500">Coming soon</p>
+                </div>
+            )}
           </div>
         </div>
       </div>

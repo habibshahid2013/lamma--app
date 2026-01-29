@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, Check, TreeDeciduous } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Button from "../ui/Button";
+import Button from "../ui/LegacyButton";
 
 export default function PremiumUpgrade() {
   const router = useRouter();

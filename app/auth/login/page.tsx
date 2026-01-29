@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/LegacyButton";
 import { TreeDeciduous, Mail, Lock, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
@@ -86,7 +86,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all text-gray-900"
                 placeholder="name@example.com"
               />
             </div>
@@ -101,7 +101,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal transition-all text-gray-900"
                 placeholder="••••••••"
               />
             </div>

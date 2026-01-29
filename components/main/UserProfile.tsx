@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/src/contexts/AuthContext";
 import { LogOut, User as UserIcon, Settings, Calendar, Shield } from "lucide-react";
-import Button from "../ui/Button";
+import Button from "../ui/LegacyButton";
 import BottomNav from "../ui/BottomNav";
 
 export default function UserProfile() {

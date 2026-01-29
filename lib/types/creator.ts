@@ -18,4 +18,11 @@ export interface Creator {
   lifespan?: string;
   note?: string;
   avatar?: string; // Optional for now, assuming external or placeholder
+  socialLinks?: {
+    website?: string;
+    youtube?: string;
+    twitter?: string;
+    instagram?: string;
+    podcast?: string;
+  };
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Check, Lock, Plus, Star, BadgeCheck, Share2 } from "lucide-react";
-import Button from "./Button";
+import Button from "./LegacyButton";
 import { Creator } from "@/lib/types/creator";
 import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";

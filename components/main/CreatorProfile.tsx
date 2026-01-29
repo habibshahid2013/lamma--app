@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Share2, MapPin, Globe, PlayCircle, BookOpen, Mic } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import { useRouter } from "next/navigation";
-import Button from "../ui/Button";
+import Button from "../ui/LegacyButton";
 
 // Mock Data
 const CREATOR = {
