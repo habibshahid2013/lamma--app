@@ -125,7 +125,7 @@ export default function CreatorCard(props: CreatorCardProps) {
             }`}
             onClick={(e) => {
               e.stopPropagation();
-              onFollow && onFollow();
+              if (onFollow) onFollow();
             }}
           >
             {isFollowing ? (

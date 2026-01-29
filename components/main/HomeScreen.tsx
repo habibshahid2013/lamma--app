@@ -121,7 +121,7 @@ export default function HomeScreen() {
 
             {/* Historical / Classical Scholars */}
             {showHistorical && <HistoricalSection />}
-            {!showHistorical && <div className="px-4 text-center text-xs text-gray-400 italic">Toggle "Show History" to see classical scholars</div>}
+            {!showHistorical && <div className="px-4 text-center text-xs text-gray-400 italic">Toggle &quot;Show History&quot; to see classical scholars</div>}
           
             {/* Regional Collections */}
             <RegionSection />

@@ -12,8 +12,8 @@ interface ShareModalProps {
 }
 
 export default function ShareModal({ creator, isOpen, onClose }: ShareModalProps) {
-  if (!isOpen) return null;
   const [copied, setCopied] = useState(false);
+  if (!isOpen) return null;
 
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/creator/${creator.id}` : '';
 
