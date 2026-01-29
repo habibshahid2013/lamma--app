@@ -33,6 +33,7 @@ export interface Creator {
     tiktok?: string;
     linkedin?: string;
     podcast?: string;
+    spotify?: string; // Added Spotify
   };
   
   // Extended Content
@@ -60,9 +61,15 @@ export interface Creator {
     }>;
     ebooks?: Array<{
       title: string;
-      url: string;
-      platform?: string;
-      free?: boolean;
+      url?: string;
+      platform?: string; // Kindle, Apple Books, etc.
+      year?: number;
+    }>;
+    audioBooks?: Array<{ // Added Audiobooks
+      title: string;
+      url?: string;
+      platform?: string; // Audible, Spotify, etc.
+      year?: number;
     }>;
     courses?: Array<{
       title: string;

@@ -281,7 +281,7 @@ export default function CreatorProfilePage() {
                                     <div key={i} className="bg-purple-50 p-4 rounded-xl border border-purple-100 flex justify-between items-center">
                                         <div>
                                             <h4 className="font-bold text-purple-900">{ebook.title}</h4>
-                                            {ebook.free && <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Free</span>}
+                                            {ebook.platform && <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">{ebook.platform}</span>}
                                         </div>
                                         <a href={ebook.url} target="_blank" rel="noopener noreferrer" className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-700">
                                             Read

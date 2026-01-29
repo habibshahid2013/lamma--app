@@ -18,7 +18,7 @@ export default function AddCreatorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedProfile, setGeneratedProfile] = useState<any>(null);
-  const [firestoreData, setFirestoreData] = useState<any>(null); // This holds the 'initial' generated state for diffing if needed
+  const [stageResults, setStageResults] = useState<any>(null);
   
   // Editable fields - we bind the UI to this state
   const [editedData, setEditedData] = useState<any>(null);
@@ -55,6 +55,7 @@ export default function AddCreatorPage() {
     setError(null);
     setGeneratedProfile(null);
     setEditedData(null);
+    setStageResults(null);
 
     try {
       const response = await fetch('/api/generate-profile', {
@@ -70,8 +71,8 @@ export default function AddCreatorPage() {
       }
 
       setGeneratedProfile(data.profile);
-      setFirestoreData(data.firestoreData);
       setEditedData(data.firestoreData);
+      setStageResults(data.stages);
     } catch (err) {
       setError(String(err));
     } finally {
@@ -124,7 +125,7 @@ export default function AddCreatorPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">🤖 AI Profile Generator</h1>
+          <h1 className="text-2xl font-bold">🤖 Multi-Stage Profile Generator</h1>
           <button
             onClick={() => router.push('/admin')}
             className="text-gray-600 hover:text-gray-800"
@@ -154,7 +155,7 @@ export default function AddCreatorPage() {
             </button>
           </div>
           <p className="text-sm text-gray-500 mt-2">
-            AI will search the web and generate a complete profile with social links, books, podcasts, and more.
+            AI will search the web, verify links with YouTube API, and enrich data with Claude.
           </p>
         </div>
 
@@ -162,6 +163,50 @@ export default function AddCreatorPage() {
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-800">
             {error}
           </div>
+        )}
+
+        {/* Pipeline Progress / Results */}
+        {stageResults && (
+           <div className="grid grid-cols-3 gap-4 mb-6">
+              {/* Stage 1: Discovery */}
+              <div className={`p-4 rounded-lg border ${stageResults.discovery.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-2 h-2 rounded-full ${stageResults.discovery.success ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <h3 className="font-semibold text-sm">Stage 1: Discovery</h3>
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p>{stageResults.discovery.foundYouTube ? '✅' : '❌'} YouTube Channel</p>
+                  <p>{stageResults.discovery.foundPodcast ? '✅' : '❌'} Podcast</p>
+                  <p>📚 {stageResults.discovery.booksFound} Books Found</p>
+                </div>
+              </div>
+
+              {/* Stage 2: Verification */}
+              <div className={`p-4 rounded-lg border ${stageResults.verification.success ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-2 h-2 rounded-full ${stageResults.verification.success ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                  <h3 className="font-semibold text-sm">Stage 2: Verification</h3>
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p>🔗 {stageResults.verification.linksValid}/{stageResults.verification.linksChecked} Links Valid</p>
+                  <p>{stageResults.verification.youtubeVerified ? '✅' : '⚠️'} YouTube API Verified</p>
+                  <p>{stageResults.verification.podcastVerified ? '✅' : '⚠️'} Podcast RSS Verified</p>
+                </div>
+              </div>
+
+              {/* Stage 3: Enrichment */}
+              <div className={`p-4 rounded-lg border ${stageResults.enrichment.success ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                 <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-2 h-2 rounded-full ${stageResults.enrichment.success ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                  <h3 className="font-semibold text-sm">Stage 3: Enrichment</h3>
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p>✨ Confidence: {stageResults.enrichment.confidence?.toUpperCase()}</p>
+                  <p>📊 Score: {stageResults.enrichment.confidenceScore}/100</p>
+                  {stageResults.enrichment.confidenceimproved && <p>🚀 Quality Improved</p>}
+                </div>
+              </div>
+           </div>
         )}
 
         {/* Step 2: Review & Edit Generated Profile */}
@@ -172,18 +217,16 @@ export default function AddCreatorPage() {
             {/* Confidence Badge */}
             <div className="mb-4">
               <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                generatedProfile?.confidence?.overall === 'high' ? 'bg-green-100 text-green-800' :
-                generatedProfile?.confidence?.overall === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                generatedProfile?.confidence === 'high' ? 'bg-green-100 text-green-800' :
+                generatedProfile?.confidence === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                 'bg-red-100 text-red-800'
               }`}>
-                Confidence: {generatedProfile?.confidence?.overall || 'unknown'}
+                Confidence: {generatedProfile?.confidence?.toUpperCase() || 'UNKNOWN'}
               </span>
-              {generatedProfile?.confidence?.notes?.length > 0 && (
-                <ul className="mt-2 text-sm text-gray-600">
-                  {generatedProfile.confidence.notes.map((note: string, i: number) => (
-                    <li key={i}>• {note}</li>
-                  ))}
-                </ul>
+              {generatedProfile?.confidenceScore !== undefined && (
+                <span className="ml-2 text-sm text-gray-500">
+                  ({generatedProfile.confidenceScore}/100)
+                </span>
               )}
             </div>
 
@@ -375,6 +418,16 @@ export default function AddCreatorPage() {
                   className="w-full border rounded-lg px-3 py-2"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">🎧 Spotify</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.spotify || ''}
+                  onChange={(e) => updateField('socialLinks.spotify', e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
             </div>
 
             {/* Books */}
@@ -549,11 +602,11 @@ export default function AddCreatorPage() {
             </div>
 
             {/* Sources */}
-            {generatedProfile?.sources?.length > 0 && (
+            {editedData?.aiGenerated?.sources?.length > 0 && (
               <div className="mt-6 text-sm text-gray-500">
                 <p className="font-medium">Sources used:</p>
                 <ul className="list-disc list-inside">
-                  {generatedProfile.sources.map((source: string, i: number) => (
+                  {editedData.aiGenerated.sources.map((source: string, i: number) => (
                     <li key={i}>{source}</li>
                   ))}
                 </ul>
@@ -577,7 +630,7 @@ export default function AddCreatorPage() {
               <button
                 onClick={() => {
                   setGeneratedProfile(null);
-                  setFirestoreData(null);
+                  setStageResults(null); 
                   setEditedData(null);
                   setName('');
                 }}
