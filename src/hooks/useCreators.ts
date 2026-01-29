@@ -73,11 +73,18 @@ export function useCreators(filters?: {
         }
 
         const snapshot = await getDocs(q);
-        const creatorsData = snapshot.docs.map(doc => ({
-          ...doc.data(),
-          id: doc.id,
-          creatorId: doc.id,
-        })) as Creator[];
+        const creatorsData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            ...data,
+            id: doc.id,
+            creatorId: doc.id,
+            // Handle schema migration (profile.name vs root name)
+            name: data.name || data.profile?.name || 'Unknown Creator',
+            avatar: data.avatar || data.profile?.avatar || null,
+            bio: data.bio || data.profile?.bio || '',
+          };
+        }) as Creator[];
         
         setCreators(creatorsData);
       } catch (err) {
@@ -112,7 +119,14 @@ export function useCreatorBySlug(slug: string) {
         const creatorDoc = await getDoc(doc(db, 'creators', creatorId));
         
         if (creatorDoc.exists()) {
-          setCreator({ ...creatorDoc.data(), creatorId: creatorDoc.id } as Creator);
+          const data = creatorDoc.data();
+          setCreator({ 
+            ...data, 
+            creatorId: creatorDoc.id,
+            name: data.name || data.profile?.name || 'Unknown Creator',
+            avatar: data.avatar || data.profile?.avatar || null,
+            bio: data.bio || data.profile?.bio || '',
+          } as Creator);
         }
       } catch (err) {
         console.error(err);
