@@ -1,12 +1,14 @@
 "use client";
 
 import { useAuth } from "@/src/contexts/AuthContext";
-import { LogOut, User as UserIcon, Settings, Calendar, Shield } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOut, User as UserIcon, Settings, Calendar, Shield, Crown } from "lucide-react";
 import Button from "../ui/LegacyButton";
 import BottomNav from "../ui/BottomNav";
 
 export default function UserProfile() {
   const { userData, logout } = useAuth();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
@@ -15,6 +17,8 @@ export default function UserProfile() {
       console.error("Failed to logout", error);
     }
   };
+
+  const isAdmin = userData?.role === 'admin';
 
   if (!userData) {
     return (
@@ -77,6 +81,18 @@ export default function UserProfile() {
                 </div>
              </div>
           </div>
+
+          {/* Admin Dashboard Button - Only for admins */}
+          {isAdmin && (
+            <Button 
+              variant="primary" 
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+              onClick={() => router.push('/admin')}
+              icon={<Crown className="w-4 h-4" />}
+            >
+              Admin Dashboard
+            </Button>
+          )}
 
           <Button 
             variant="outline" 
