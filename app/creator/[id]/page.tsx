@@ -17,7 +17,7 @@ export default function CreatorProfilePage() {
   const params = useParams();
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"videos" | "podcasts" | "books">("videos");
+  const [activeTab, setActiveTab] = useState<"videos" | "podcasts" | "books" | "courses">("videos");
   const { isFollowing, toggleFollow } = useFollow();
   const [followLoading, setFollowLoading] = useState(false);
 
@@ -196,21 +196,26 @@ export default function CreatorProfilePage() {
 
           {/* Content Tabs */}
           <div className="w-full max-w-md mt-6 border-b border-gray-100 mb-4">
-              <div className="flex space-x-6 justify-center">
-                {(["videos", "podcasts", "books"] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`pb-3 text-sm font-bold capitalize transition-colors relative ${
-                      activeTab === tab ? "text-teal" : "text-gray-400"
-                    }`}
-                  >
-                    {tab}
-                    {activeTab === tab && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
-                    )}
-                  </button>
-                ))}
+              <div className="flex space-x-6 justify-center overflow-x-auto pb-1">
+                {(["videos", "podcasts", "books", "courses"] as const).map((tab) => {
+                  // Hide tabs if no content (optional, but good UX)
+                  if (tab === "courses" && (!creator.content?.courses || creator.content.courses.length === 0)) return null;
+                  
+                  return (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`pb-3 text-sm font-bold capitalize transition-colors relative whitespace-nowrap ${
+                        activeTab === tab ? "text-teal" : "text-gray-400"
+                        }`}
+                    >
+                        {tab}
+                        {activeTab === tab && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal rounded-t-full" />
+                        )}
+                    </button>
+                  );
+                })}
               </div>
           </div>
 
@@ -221,17 +226,84 @@ export default function CreatorProfilePage() {
                   youtubeUrl={creator.socialLinks?.youtube} 
                   creatorName={creator.name} 
                   maxResults={10} 
+                  subscriberCount={creator.stats?.youtubeSubscribers || creator.content?.youtube?.subscriberCount}
                />
             ) : activeTab === "podcasts" ? (
                <PodcastList 
-                  podcastUrl={creator.socialLinks?.podcast} 
+                  podcastUrl={creator.socialLinks?.podcast || creator.content?.podcast?.rssUrl} 
                   creatorName={creator.name} 
                />
-            ) : (
-                <div className="text-center py-10 bg-white rounded-xl border border-gray-100">
-                    <p className="text-gray-500">Coming soon</p>
+            ) : activeTab === "books" ? (
+                <div className="space-y-6">
+                    {/* Physical Books */}
+                    {creator.content?.books && creator.content.books.length > 0 ? (
+                        <div className="space-y-3">
+                            {creator.content.books.map((book, i) => (
+                                <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-bold text-gray-900">{book.title}</h3>
+                                        {book.year && <p className="text-sm text-gray-500">Published {book.year}</p>}
+                                        {book.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{book.description}</p>}
+                                    </div>
+                                    {book.amazonUrl && (
+                                        <a href={book.amazonUrl} target="_blank" rel="noopener noreferrer" className="text-teal hover:underline text-sm font-medium whitespace-nowrap ml-4">
+                                            Buy
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                         <div className="text-center py-8 text-gray-500 bg-white rounded-xl border border-gray-100">
+                            <BookOpen className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                            <p>No books listed yet.</p>
+                        </div>
+                    )}
+                    
+                    {/* eBooks */}
+                    {creator.content?.ebooks && creator.content.ebooks.length > 0 && (
+                        <div>
+                            <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                <span className="bg-purple-100 text-purple-700 p-1 rounded">📱</span> eBooks
+                            </h3>
+                            <div className="space-y-3">
+                                {creator.content.ebooks.map((ebook, i) => (
+                                    <div key={i} className="bg-purple-50 p-4 rounded-xl border border-purple-100 flex justify-between items-center">
+                                        <div>
+                                            <h4 className="font-bold text-purple-900">{ebook.title}</h4>
+                                            {ebook.free && <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">Free</span>}
+                                        </div>
+                                        <a href={ebook.url} target="_blank" rel="noopener noreferrer" className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-700">
+                                            Read
+                                        </a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
+            ) : activeTab === "courses" ? (
+                <div className="space-y-4">
+                     {creator.content?.courses?.map((course, i) => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm group hover:border-teal/30 transition-all">
+                             <div className="flex justify-between items-start">
+                                 <div>
+                                     <span className="text-xs font-bold text-teal bg-teal/10 px-2 py-1 rounded mb-2 inline-block">
+                                         {course.platform}
+                                     </span>
+                                     <h3 className="font-bold text-gray-900 text-lg">{course.title}</h3>
+                                 </div>
+                                 <div className="bg-gray-50 p-2 rounded-full group-hover:bg-teal group-hover:text-white transition-colors">
+                                     <ArrowLeft className="w-4 h-4 rotate-180" />
+                                 </div>
+                             </div>
+                             {course.url && (
+                                 <a href={course.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0" aria-label={`View course ${course.title}`} />
+                             )}
+                        </div>
+                     ))}
+                </div>
+            ) : null}
           </div>
         </div>
       </div>
