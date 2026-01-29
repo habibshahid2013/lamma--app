@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/src/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 import SplashScreen from "@/components/onboarding/SplashScreen";
 import WelcomeScreen from "@/components/onboarding/WelcomeScreen";
 import PersonalizeChoice from "@/components/onboarding/PersonalizeChoice";
@@ -8,7 +10,6 @@ import RegionSelection from "@/components/onboarding/RegionSelection";
 import CountryDrilldown from "@/components/onboarding/CountryDrilldown";
 import InterestsSelection from "@/components/onboarding/InterestsSelection";
 import SuggestedCreators from "@/components/onboarding/SuggestedCreators";
-import { useRouter } from "next/navigation";
 
 type Screen =
   | "splash"
@@ -22,6 +23,7 @@ type Screen =
 
 export default function Home() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>("splash");
   const [userPreferences, setUserPreferences] = useState({
     personalize: false,
@@ -29,6 +31,12 @@ export default function Home() {
     countries: [] as string[],
     interests: [] as string[],
   });
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/home");
+    }
+  }, [user, loading, router]);
 
   // Flow Handlers
   const goNext = (screen: Screen) => setCurrentScreen(screen);
@@ -45,8 +53,6 @@ export default function Home() {
 
   const handleRegionsNext = (regions: string[]) => {
     setUserPreferences((prev) => ({ ...prev, regions }));
-    // Logic: If regions selected, show countries optional? Or just go to interests?
-    // Spec says: "Screen 5: Country Drill-down (Optional) - Only shows if user selected a region"
     if (regions.length > 0) {
       goNext("countries");
     } else {
@@ -82,7 +88,7 @@ export default function Home() {
         <RegionSelection
           onBack={() => goNext("personalize")}
           onNext={handleRegionsNext}
-          onSkip={() => goNext("suggested")} // Skip to everything
+          onSkip={() => goNext("suggested")} 
         />
       );
     case "countries":
@@ -105,11 +111,11 @@ export default function Home() {
       );
     case "suggested":
       return <SuggestedCreators onFinish={() => {
-        // In a real app, save preferences here
         router.push("/home");
       }} />;
     case "home":
-      return null; // Should redirect
+       // This case might not be reached due to useEffect redirect, but good safely
+       return null;
     default:
       return null;
   }
