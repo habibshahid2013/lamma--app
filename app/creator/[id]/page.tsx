@@ -8,6 +8,7 @@ import { useState } from "react";
 import ShareModal from "@/components/ui/ShareModal";
 
 import { useCreatorBySlug } from "@/src/hooks/useCreators";
+import { useFollow } from "@/src/hooks/useFollow";
 import ClaimProfileButton from "@/components/claim/ClaimProfileButton";
 import { VideoList } from "@/components/content/VideoList";
 import { PodcastList } from "@/components/content/PodcastList";
@@ -17,6 +18,21 @@ export default function CreatorProfilePage() {
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"videos" | "podcasts" | "books">("videos");
+  const { isFollowing, toggleFollow } = useFollow();
+  const [followLoading, setFollowLoading] = useState(false);
+
+  const handleFollow = async () => {
+    if (!creator) return;
+    setFollowLoading(true);
+    try {
+      await toggleFollow(creator.creatorId);
+    } catch (error) {
+      console.error("Failed to toggle follow:", error);
+      alert("Please sign in to follow creators.");
+    } finally {
+      setFollowLoading(false);
+    }
+  };
   
   // Unwrap params.id safely if it's an array
   const slug = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -98,8 +114,16 @@ export default function CreatorProfilePage() {
           )}
 
           <div className="flex gap-3 w-full max-w-xs mb-6">
-             <Button className="flex-1 bg-teal text-white hover:bg-teal-dark rounded-full py-2.5">
-               Follow
+             <Button 
+                onClick={handleFollow}
+                disabled={followLoading}
+                className={`flex-1 rounded-full py-2.5 ${
+                  isFollowing(creator.creatorId) 
+                    ? "bg-white text-teal border border-teal hover:bg-gray-50" 
+                    : "bg-teal text-white hover:bg-teal-dark"
+                }`}
+             >
+               {followLoading ? "..." : isFollowing(creator.creatorId) ? "Following" : "Follow"}
              </Button>
              <Button variant="outline" className="flex-1 border-teal text-teal hover:bg-teal-light rounded-full py-2.5">
                Message
