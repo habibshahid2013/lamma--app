@@ -3,11 +3,14 @@
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CREATORS } from "@/lib/data/creators";
+import { useEngagementContext } from "@/src/hooks/useEngagement";
 
 export default function SurpriseMeButton() {
   const router = useRouter();
+  const { trackInteraction } = useEngagementContext();
 
   const handleSurprise = () => {
+    trackInteraction('surprise_me_click');
     const random = CREATORS[Math.floor(Math.random() * CREATORS.length)];
     router.push(`/creator/${random.id}`);
   };

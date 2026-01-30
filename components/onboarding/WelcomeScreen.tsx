@@ -37,6 +37,13 @@ export default function WelcomeScreen({ onNext }: WelcomeScreenProps) {
             Get Started
           </button>
           
+          <Link 
+            href="/home" 
+            className="w-full py-3 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold text-base hover:bg-gray-50 transition-colors text-center block"
+          >
+            Skip to Browse →
+          </Link>
+          
           <p className="text-gray-500 text-sm">
             Already have an account?{" "}
             <Link href="/auth/login" className="text-teal font-semibold hover:underline">

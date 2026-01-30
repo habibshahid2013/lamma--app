@@ -12,6 +12,7 @@ import { useFollow } from "@/src/hooks/useFollow";
 import ClaimProfileButton from "@/components/claim/ClaimProfileButton";
 import { VideoList } from "@/components/content/VideoList";
 import { PodcastList } from "@/components/content/PodcastList";
+import { useEngagementContext } from "@/src/hooks/useEngagement";
 
 export default function CreatorProfilePage() {
   const params = useParams();
@@ -20,9 +21,16 @@ export default function CreatorProfilePage() {
   const [activeTab, setActiveTab] = useState<"videos" | "podcasts" | "books" | "courses">("videos");
   const { isFollowing, toggleFollow } = useFollow();
   const [followLoading, setFollowLoading] = useState(false);
+  const { trackAction, trackInteraction } = useEngagementContext();
 
   const handleFollow = async () => {
     if (!creator) return;
+    
+    // Track interaction and gate action
+    trackInteraction('follow_button_profile');
+    const canProceed = trackAction('follow');
+    if (!canProceed) return; // Email capture modal will show
+    
     setFollowLoading(true);
     try {
       await toggleFollow(creator.creatorId);

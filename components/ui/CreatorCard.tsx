@@ -5,6 +5,7 @@ import { Button } from "./button";
 import { Creator } from "@/lib/types/creator";
 import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";
+import { useEngagementContext } from "@/src/hooks/useEngagement";
 
 interface CreatorCardProps extends Partial<Creator> {
   onFollow?: () => void;
@@ -15,6 +16,7 @@ interface CreatorCardProps extends Partial<Creator> {
 export default function CreatorCard(props: CreatorCardProps) {
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const { trackAction, trackInteraction } = useEngagementContext();
 
   const {
     id,
@@ -133,7 +135,10 @@ export default function CreatorCard(props: CreatorCardProps) {
             }`}
             onClick={(e) => {
               e.stopPropagation();
-              if (onFollow) onFollow();
+              trackInteraction('follow_button_click');
+              // Gate follow action - if not subscribed/logged in, show email capture
+              const canProceed = trackAction('follow');
+              if (canProceed && onFollow) onFollow();
             }}
           >
             {isFollowing ? (

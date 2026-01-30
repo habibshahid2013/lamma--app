@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/src/contexts/AuthContext";
+import EngagementWrapper from "@/src/components/EngagementWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,9 +23,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased font-sans`} suppressHydrationWarning>
         <AuthProvider>
-          {children}
+          <EngagementWrapper>
+            {children}
+          </EngagementWrapper>
         </AuthProvider>
       </body>
     </html>
   );
 }
+
