@@ -86,7 +86,8 @@ async function updateAllMissingImages() {
     const data = docSnap.data();
     const hasAvatar = data.profile?.avatar && 
                       !data.profile.avatar.includes('ui-avatars.com') &&
-                      !data.profile.avatar.includes('placeholder');
+                      !data.profile.avatar.includes('placeholder') &&
+                      !data.profile.avatar.startsWith('/creators/');
     
     if (!hasAvatar) {
       creatorsNeedingImages.push({
