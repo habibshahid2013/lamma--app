@@ -237,7 +237,7 @@ export default function CreatorProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3 mt-4 md:mt-0">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4 md:mt-0">
                 <button
                   onClick={handleFollow}
                   className={`px-6 py-2.5 rounded-full font-semibold transition ${
@@ -325,7 +325,7 @@ export default function CreatorProfilePage() {
 
       {/* Tab Navigation */}
       <div className="max-w-6xl mx-auto px-4 mt-4">
-        <div className="flex gap-1 border-b border-slate-700">
+        <div className="flex gap-1 border-b border-slate-700 overflow-x-auto scrollbar-hide">
           <TabButton active={activeTab === 'about'} onClick={() => setActiveTab('about')}>
             About
           </TabButton>
@@ -400,7 +400,7 @@ export default function CreatorProfilePage() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-white">
                         {content.youtube.subscriberCount}
@@ -641,7 +641,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-3 font-medium transition relative ${
+      className={`px-4 py-3 font-medium transition relative whitespace-nowrap ${
         active 
           ? 'text-amber-400' 
           : 'text-slate-400 hover:text-white'

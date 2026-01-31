@@ -60,9 +60,9 @@ export default function CreatorCard(props: CreatorCardProps) {
   const isPublicFigure = category === "public_figure";
 
   return (
-    <div className={`group relative flex flex-col items-center p-4 rounded-2xl border w-44 flex-shrink-0 snap-center transition-all ${
+    <div className={`group relative flex flex-col items-center p-4 rounded-xl border w-44 flex-shrink-0 snap-center transition-all ${
         isDark 
-          ? 'bg-slate-900 border-amber-500/30 shadow-lg shadow-black/20 hover:border-amber-500/50' 
+          ? 'bg-slate-800 border-amber-500/30 shadow-lg shadow-black/20 hover:border-amber-500/50' 
           : `bg-white border-gray-100 shadow-sm hover:border-teal/30 ${isHistorical ? 'bg-amber-50/30' : ''}`
     }`}>
       {/* Clickable Area */}
