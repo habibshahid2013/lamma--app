@@ -65,6 +65,20 @@ const config: Config = {
           dark: "#333333", // Body text
           offwhite: "#FAFAFA", // Card backgrounds
         },
+        // NEW: Lamma+ Brand Palette
+        lamma: {
+          gold: '#f59e0b',    // The + symbol and accents
+          yellow: '#eab308',  // Secondary gold
+          teal: '#14b8a6',    // The Palm Tree
+          navy: '#0f172a',    // Main dark background
+          card: '#1e293b',    // Card backgrounds
+          border: '#334155',  // Borders
+          white: '#ffffff',
+          silver: '#cbd5e1',  // Body text
+          muted: '#94a3b8',   // Secondary text
+          cream: '#fdfaf3',   // Light background
+          brown: '#8b5a3c',   // Light mode palm
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, User, TreeDeciduous } from "lucide-react";
+import { Search, User } from "lucide-react";
+import Logo from "@/components/Logo";
 import BottomNav from "../ui/BottomNav";
 import CreatorCard from "../ui/CreatorCard";
 import LanguageRow from "./LanguageRow";
@@ -35,9 +36,7 @@ export default function HomeScreen() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-2">
-          {/* <TreeDeciduous className="w-6 h-6 text-teal" /> */}
-          <img src="/lamma-tree.png" alt="Lamma" className="w-8 h-8 object-contain" />
-          <span className="font-bold text-lg text-teal-deep tracking-tight">LAMMA+</span>
+          <Logo size="sm" linkToHome={false} />
         </div>
         <div className="flex items-center space-x-3">
             <Link href="/search">
@@ -53,8 +52,8 @@ export default function HomeScreen() {
         {/* Featured Banner */}
         <section className="px-4 py-6 mb-2">
           <div className="bg-gold rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute right-[-20px] top-[-20px] opacity-10">
-              <TreeDeciduous className="w-40 h-40 text-teal-deep" />
+            <div className="absolute right-[-20px] top-[-20px] opacity-20">
+              <img src="/icon.svg" alt="" className="w-40 h-40" />
             </div>
             <h2 className="text-2xl font-bold mb-1 relative z-10 text-teal-deep">
               Welcome to the gathering 🌳

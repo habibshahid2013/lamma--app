@@ -87,4 +87,51 @@
 
   --color-gray-dark: #333333;
   --color-gray-offwhite: #fafafa;
+
+  /* Lamma+ Brand Variables */
+  --color-lamma-navy: #0f172a;
+  --color-lamma-gold: #f59e0b;
+  --color-lamma-teal: #14b8a6;
+  --color-lamma-cream: #fdfaf3;
+  --color-lamma-card: #1e293b;
+  --color-lamma-border: #334155;
+}
+
+@layer components {
+  /* Primary Button (Gold) */
+  .btn-primary {
+    @apply bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-2 px-4 rounded-lg transition-all;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded-lg border border-slate-600 transition-all;
+  }
+
+  /* Teal Button */
+  .btn-teal {
+    @apply bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-all;
+  }
+
+  /* Card Component */
+  .card-lamma {
+    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl;
+  }
+
+  /* Card with hover effect */
+  .card-lamma-hover {
+    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl 
+           hover:border-amber-500/50 hover:shadow-amber-500/10 transition-all duration-300;
+  }
+
+  /* Topic/Tag pill */
+  .tag-pill {
+    @apply px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-sm 
+           border border-slate-700 hover:border-teal-500 hover:text-teal-400 transition-all;
+  }
+
+  /* Category badge */
+  .category-badge {
+    @apply px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-sm font-medium;
+  }
 }

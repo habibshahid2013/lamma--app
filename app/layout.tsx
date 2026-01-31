@@ -10,8 +10,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Lamma+ | Gather in Faith",
-  description: "Faith-based content creator discovery platform",
+  title: 'Lamma+ | Discover Islamic Scholars',
+  description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/icon.svg',
+  },
+  openGraph: {
+    title: 'Lamma+ | Discover Islamic Scholars',
+    description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.',
+    siteName: 'Lamma+',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
