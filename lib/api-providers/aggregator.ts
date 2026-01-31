@@ -7,6 +7,11 @@ import { DeezerProvider, DeezerPodcastData, DeezerEpisodeData, tryMuslimCentralP
 import { GoogleBooksProvider, BookData } from './google-books';
 import { KnowledgeGraphProvider, KnowledgeGraphData } from './knowledge-graph';
 import { WikipediaProvider, WikipediaData } from './wikipedia';
+import { withTimeout, TimeoutError } from '@/lib/utils/fetch-with-timeout';
+
+// Timeout constants
+const API_TIMEOUT_MS = 15000; // 15 seconds per API call
+const AGGREGATION_TIMEOUT_MS = 45000; // 45 seconds total for aggregation
 
 // ============================================
 // AGGREGATED PROFILE TYPE
@@ -134,22 +139,62 @@ export class ProfileAggregator {
     const dataSources: string[] = [];
     const notes: string[] = [];
 
-    // Run all API calls in parallel for speed
-    console.log('📡 Fetching from all APIs in parallel...');
-    
+    // Run all API calls in parallel with individual timeouts
+    console.log('📡 Fetching from all APIs in parallel (with timeouts)...');
+
+    // Wrap entire aggregation in a timeout
+    const fetchAllApis = async () => {
+      return Promise.all([
+        withTimeout(this.fetchYouTube(name), API_TIMEOUT_MS, 'YouTube API')
+          .catch(err => {
+            const msg = err instanceof TimeoutError ? 'timeout' : err.message;
+            notes.push(`YouTube: ${msg}`);
+            console.log(`     ⏱️ YouTube: ${msg}`);
+            return null;
+          }),
+        withTimeout(this.fetchPodcast(name), API_TIMEOUT_MS, 'Podcast API')
+          .catch(err => {
+            const msg = err instanceof TimeoutError ? 'timeout' : err.message;
+            notes.push(`Podcast: ${msg}`);
+            console.log(`     ⏱️ Podcast: ${msg}`);
+            return null;
+          }),
+        withTimeout(this.fetchBooks(name), API_TIMEOUT_MS, 'Google Books API')
+          .catch(err => {
+            const msg = err instanceof TimeoutError ? 'timeout' : err.message;
+            notes.push(`Google Books: ${msg}`);
+            console.log(`     ⏱️ Google Books: ${msg}`);
+            return null;
+          }),
+        withTimeout(this.fetchKnowledgeGraph(name), API_TIMEOUT_MS, 'Knowledge Graph API')
+          .catch(err => {
+            const msg = err instanceof TimeoutError ? 'timeout' : err.message;
+            notes.push(`Knowledge Graph: ${msg}`);
+            console.log(`     ⏱️ Knowledge Graph: ${msg}`);
+            return null;
+          }),
+        withTimeout(this.fetchWikipedia(name), API_TIMEOUT_MS, 'Wikipedia API')
+          .catch(err => {
+            const msg = err instanceof TimeoutError ? 'timeout' : err.message;
+            notes.push(`Wikipedia: ${msg}`);
+            console.log(`     ⏱️ Wikipedia: ${msg}`);
+            return null;
+          }),
+      ]);
+    };
+
     const [
       youtubeData,
       podcastData,
       booksData,
       kgData,
       wikiData,
-    ] = await Promise.all([
-      this.fetchYouTube(name).catch(err => { notes.push(`YouTube error: ${err.message}`); return null; }),
-      this.fetchPodcast(name).catch(err => { notes.push(`Podcast error: ${err.message}`); return null; }),
-      this.fetchBooks(name).catch(err => { notes.push(`Google Books error: ${err.message}`); return null; }),
-      this.fetchKnowledgeGraph(name).catch(err => { notes.push(`Knowledge Graph error: ${err.message}`); return null; }),
-      this.fetchWikipedia(name).catch(err => { notes.push(`Wikipedia error: ${err.message}`); return null; }),
-    ]);
+    ] = await withTimeout(fetchAllApis(), AGGREGATION_TIMEOUT_MS, 'Profile aggregation')
+      .catch(err => {
+        console.error('❌ Aggregation timeout:', err.message);
+        notes.push(`Aggregation timeout: ${err.message}`);
+        return [null, null, null, null, null];
+      });
 
     // Track data sources
     if (youtubeData?.found) dataSources.push('youtube');
