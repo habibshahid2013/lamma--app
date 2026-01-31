@@ -149,6 +149,25 @@ export default function CreatorDashboard() {
           </div>
         )}
 
+        {/* Stats Overview */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Followers</p>
+              <p className="text-2xl font-bold text-gray-900">{creator?.stats?.followerCount?.toLocaleString() || '0'}</p>
+              <span className="text-[10px] text-green-600 font-medium">+12 this week</span>
+           </div>
+           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Profile Views</p>
+              <p className="text-2xl font-bold text-gray-900">1,204</p>
+              <span className="text-[10px] text-green-600 font-medium">+5% vs last mo</span>
+           </div>
+           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Total Views</p>
+              <p className="text-2xl font-bold text-gray-900">8,532</p>
+              <span className="text-[10px] text-gray-400 font-medium">--</span>
+           </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
           <h2 className="text-lg font-semibold border-b pb-2">Profile Information</h2>
 

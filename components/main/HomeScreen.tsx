@@ -87,7 +87,7 @@ export default function HomeScreen() {
                     ))
                 ) : (
                     featuredCreators.map(creator => (
-                    <CreatorCard key={creator.id} {...creator} />
+                    <CreatorCard key={creator.id} {...creator} theme="dark" />
                     ))
                 )}
             </div>

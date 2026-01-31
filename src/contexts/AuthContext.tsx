@@ -28,6 +28,9 @@ interface UserData {
   };
   following: string[];
   followingCount: number;
+  saved?: string[]; // Made optional to prevent errors with old data, but initialized as []
+  createdAt?: any;
+  updatedAt?: any;
 }
 
 interface AuthContextType {
@@ -71,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       following: [],
       followingCount: 0,
+      saved: [],
       preferences: {
         languages: ['English'],
         regions: [],

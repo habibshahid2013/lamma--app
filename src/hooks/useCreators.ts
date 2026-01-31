@@ -153,3 +153,52 @@ export const useHistoricalScholars = (limitCount = 10) =>
 
 export const useCreatorsByLanguage = (language: string, limitCount = 10) => 
   useCreators({ language, limitCount });
+
+export function useCreatorsByIds(ids: string[]) {
+  const [creators, setCreators] = useState<Creator[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCreators = async () => {
+      if (!ids || ids.length === 0) {
+        setCreators([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // Firestore 'in' query is limited to 10 items. 
+        // For larger lists, we need to batch or just fetch individual docs in parallel.
+        // Parallel fetching is often simpler for IDs.
+        
+        const fetchPromises = ids.slice(0, 20).map(id => getDoc(doc(db, 'creators', id)));
+        const snapshots = await Promise.all(fetchPromises);
+        
+        const creatorsData = snapshots
+          .filter(doc => doc.exists())
+          .map(doc => {
+            const data = doc.data();
+            return {
+              ...data,
+              id: doc.id,
+              creatorId: doc.id,
+              name: data.name || data.profile?.name || 'Unknown Creator',
+              avatar: data.avatar || data.profile?.avatar || null,
+              bio: data.bio || data.profile?.bio || '',
+            };
+          }) as unknown as Creator[];
+
+        setCreators(creatorsData);
+      } catch (err) {
+        console.error("Error fetching creators by IDs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreators();
+  }, [JSON.stringify(ids)]);
+
+  return { creators, loading };
+}
