@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Search, User } from "lucide-react";
-import Logo from "@/components/Logo";
+import LammaLogo from "@/components/LammaLogo";
 import BottomNav from "../ui/BottomNav";
 import CreatorCard from "../ui/CreatorCard";
 import LanguageRow from "./LanguageRow";
@@ -36,7 +36,7 @@ export default function HomeScreen() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-2">
-          <Logo size="sm" linkToHome={false} />
+          <LammaLogo variant="light" size="sm" />
         </div>
         <div className="flex items-center space-x-3">
             <Link href="/search">

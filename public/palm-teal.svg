@@ -1,0 +1,15 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Palm Tree Silhouette - Teal version -->
+  <!-- Trunk -->
+  <path d="M50 95 L50 50 Q50 45 52 42" stroke="#14b8a6" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Left fronds -->
+  <path d="M50 50 Q30 35 15 40" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 48 Q35 28 20 25" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 46 Q40 20 30 12" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Right fronds -->
+  <path d="M50 50 Q70 35 85 40" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 48 Q65 28 80 25" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 46 Q60 20 70 12" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Center frond -->
+  <path d="M50 45 Q50 20 50 8" stroke="#14b8a6" stroke-width="4" stroke-linecap="round" fill="none"/>
+</svg>
