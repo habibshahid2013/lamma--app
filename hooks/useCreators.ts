@@ -77,9 +77,10 @@ export function useCreators(filters?: {
             id: doc.id,
             creatorId: doc.id,
             // Handle schema migration (profile.name vs root name)
-            name: data.name || data.profile?.name || 'Unknown Creator',
-            avatar: data.avatar || data.profile?.avatar || null,
-            bio: data.bio || data.profile?.bio || '',
+            // Prioritize profile.* as it is the new standard
+            name: data.profile?.name || data.profile?.displayName || data.name || 'Unknown Creator',
+            avatar: data.profile?.avatar || data.avatar || null,
+            bio: data.profile?.bio || data.bio || '',
           };
         }) as unknown as Creator[];
         
@@ -123,9 +124,9 @@ export function useCreatorBySlug(slug: string) {
           setCreator({ 
             ...data, 
             creatorId: creatorDoc.id,
-            name: data.name || data.profile?.name || 'Unknown Creator',
-            avatar: data.avatar || data.profile?.avatar || null,
-            bio: data.bio || data.profile?.bio || '',
+            name: data.profile?.name || data.profile?.displayName || data.name || 'Unknown Creator',
+            avatar: data.profile?.avatar || data.avatar || null,
+            bio: data.profile?.bio || data.bio || '',
           } as unknown as Creator);
         }
       } catch (err) {
@@ -183,9 +184,9 @@ export function useCreatorsByIds(ids: string[]) {
               ...data,
               id: doc.id,
               creatorId: doc.id,
-              name: data.name || data.profile?.name || 'Unknown Creator',
-              avatar: data.avatar || data.profile?.avatar || null,
-              bio: data.bio || data.profile?.bio || '',
+            name: data.profile?.name || data.profile?.displayName || data.name || 'Unknown Creator',
+            avatar: data.profile?.avatar || data.avatar || null,
+            bio: data.profile?.bio || data.bio || '',
             };
           }) as unknown as Creator[];
 
