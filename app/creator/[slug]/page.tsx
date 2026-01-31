@@ -184,6 +184,7 @@ export default function CreatorProfilePage() {
   const { profile, content, socialLinks, topics, category, region, country, countryFlag, languages, stats } = creator;
 
   // Get avatar - fallback to YouTube thumbnail or initials
+  const [imageError, setImageError] = useState(false);
   const avatarUrl = profile.avatar || content?.youtube?.thumbnailUrl || null;
 
   return (
@@ -230,15 +231,12 @@ export default function CreatorProfilePage() {
               {/* Avatar */}
               <div className="relative">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden ring-4 ring-slate-900 bg-slate-800">
-                  {avatarUrl ? (
+                  {avatarUrl && !imageError ? (
                     <img 
                       src={avatarUrl} 
                       alt={profile.name}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback to initials if image fails
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
+                      onError={() => setImageError(true)}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
