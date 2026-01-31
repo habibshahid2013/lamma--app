@@ -432,6 +432,66 @@ export default function AddCreatorPage() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">👔 LinkedIn</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.linkedin || ''}
+                  onChange={(e) => updateField('socialLinks.linkedin', e.target.value)}
+                  placeholder="https://linkedin.com/in/..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">📘 Facebook</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.facebook || ''}
+                  onChange={(e) => updateField('socialLinks.facebook', e.target.value)}
+                  placeholder="https://facebook.com/..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">🎮 TikTok</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.tiktok || ''}
+                  onChange={(e) => updateField('socialLinks.tiktok', e.target.value)}
+                  placeholder="https://tiktok.com/@..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">🟣 Twitch</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.twitch || ''}
+                  onChange={(e) => updateField('socialLinks.twitch', e.target.value)}
+                  placeholder="https://twitch.tv/..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">🧵 Threads</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.threads || ''}
+                  onChange={(e) => updateField('socialLinks.threads', e.target.value)}
+                  placeholder="https://threads.net/@..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">🎁 Patreon</label>
+                <input
+                  type="url"
+                  value={editedData.socialLinks?.patreon || ''}
+                  onChange={(e) => updateField('socialLinks.patreon', e.target.value)}
+                  placeholder="https://patreon.com/..."
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">🎙️ Podcast RSS</label>
                 <input
                   type="url"
@@ -449,7 +509,6 @@ export default function AddCreatorPage() {
                   className="w-full border rounded-lg px-3 py-2"
                 />
               </div>
-
             </div>
 
             {/* Books */}
