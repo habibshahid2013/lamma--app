@@ -34,8 +34,12 @@ export interface EnrichedProfile {
     instagram: string | null;
     facebook: string | null;
     tiktok: string | null;
+    linkedin: string | null;
+    twitch: string | null;
+    threads: string | null;
+    patreon: string | null;
     podcast: string | null;
-    spotify: string | null; // Added Spotify
+    spotify: string | null;
   };
   
   // Rich content data
@@ -231,8 +235,12 @@ Return JSON only:
       instagram: verified.verifiedLinks.instagram?.status === 'valid' ? verified.verifiedLinks.instagram.url : null,
       facebook: verified.verifiedLinks.facebook?.status === 'valid' ? verified.verifiedLinks.facebook.url : null,
       tiktok: verified.verifiedLinks.tiktok?.status === 'valid' ? verified.verifiedLinks.tiktok.url : null,
+      linkedin: verified.verifiedLinks.linkedin?.status === 'valid' ? verified.verifiedLinks.linkedin.url : null,
+      twitch: verified.verifiedLinks.twitch?.status === 'valid' ? verified.verifiedLinks.twitch.url : null,
+      threads: verified.verifiedLinks.threads?.status === 'valid' ? verified.verifiedLinks.threads.url : null,
+      patreon: verified.verifiedLinks.patreon?.status === 'valid' ? verified.verifiedLinks.patreon.url : null,
       podcast: verified.verifiedLinks.podcast?.status === 'valid' ? verified.verifiedLinks.podcast.rssUrl || verified.verifiedLinks.podcast.url : null,
-      spotify: verified.verifiedLinks.spotify?.status === 'valid' ? verified.verifiedLinks.spotify.url : null, // Added Spotify
+      spotify: verified.verifiedLinks.spotify?.status === 'valid' ? verified.verifiedLinks.spotify.url : null,
     },
     
     youtube: verified.verifiedLinks.youtube?.status === 'valid' ? {

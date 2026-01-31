@@ -8,8 +8,8 @@ export interface VerifiedProfile extends DiscoveredProfile {
   // Verified links (null if broken/not found)
   verifiedLinks: {
     website: { url: string; status: 'valid' | 'invalid'; title?: string } | null;
-    youtube: { 
-      url: string; 
+    youtube: {
+      url: string;
       status: 'valid' | 'invalid';
       channelId?: string;
       channelName?: string;
@@ -22,8 +22,12 @@ export interface VerifiedProfile extends DiscoveredProfile {
     instagram: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
     facebook: { url: string; status: 'valid' | 'invalid' } | null;
     tiktok: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
-    podcast: { 
-      url: string; 
+    linkedin: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
+    twitch: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
+    threads: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
+    patreon: { url: string; status: 'valid' | 'invalid'; handle?: string } | null;
+    podcast: {
+      url: string;
       status: 'valid' | 'invalid';
       rssUrl?: string;
       podcastName?: string;
@@ -32,9 +36,9 @@ export interface VerifiedProfile extends DiscoveredProfile {
     spotify: {
       url: string;
       status: 'valid' | 'invalid';
-    } | null; // Added Spotify
+    } | null;
   };
-  
+
   // Verification metadata
   verificationResults: {
     linksChecked: number;
@@ -42,7 +46,7 @@ export interface VerifiedProfile extends DiscoveredProfile {
     linksInvalid: number;
     youtubeVerified: boolean;
     podcastVerified: boolean;
-    spotifyVerified: boolean; // Added Spotify flag
+    spotifyVerified: boolean;
   };
 }
 
@@ -58,8 +62,12 @@ export async function verifyProfile(discovered: DiscoveredProfile): Promise<Veri
     instagram: null,
     facebook: null,
     tiktok: null,
+    linkedin: null,
+    twitch: null,
+    threads: null,
+    patreon: null,
     podcast: null,
-    spotify: null, // Added Spotify
+    spotify: null,
   };
   
   let linksChecked = 0;
@@ -151,6 +159,58 @@ export async function verifyProfile(discovered: DiscoveredProfile): Promise<Veri
       linksValid++;
       const handle = extractTikTokHandle(discovered.possibleLinks.tiktok);
       verifiedLinks.tiktok = { url: discovered.possibleLinks.tiktok, status: 'valid', handle: handle || undefined };
+    } else {
+      linksInvalid++;
+    }
+  }
+
+  // Verify LinkedIn
+  if (discovered.possibleLinks?.linkedin) {
+    linksChecked++;
+    const result = await verifyUrl(discovered.possibleLinks.linkedin);
+    if (result.valid) {
+      linksValid++;
+      const handle = extractLinkedInHandle(discovered.possibleLinks.linkedin);
+      verifiedLinks.linkedin = { url: discovered.possibleLinks.linkedin, status: 'valid', handle: handle || undefined };
+    } else {
+      linksInvalid++;
+    }
+  }
+
+  // Verify Twitch
+  if (discovered.possibleLinks?.twitch) {
+    linksChecked++;
+    const result = await verifyUrl(discovered.possibleLinks.twitch);
+    if (result.valid) {
+      linksValid++;
+      const handle = extractTwitchHandle(discovered.possibleLinks.twitch);
+      verifiedLinks.twitch = { url: discovered.possibleLinks.twitch, status: 'valid', handle: handle || undefined };
+    } else {
+      linksInvalid++;
+    }
+  }
+
+  // Verify Threads
+  if (discovered.possibleLinks?.threads) {
+    linksChecked++;
+    const result = await verifyUrl(discovered.possibleLinks.threads);
+    if (result.valid) {
+      linksValid++;
+      const handle = extractThreadsHandle(discovered.possibleLinks.threads);
+      verifiedLinks.threads = { url: discovered.possibleLinks.threads, status: 'valid', handle: handle || undefined };
+    } else {
+      linksInvalid++;
+    }
+  }
+
+  // Verify Patreon
+  if (discovered.possibleLinks?.patreon) {
+    linksChecked++;
+    const result = await verifyUrl(discovered.possibleLinks.patreon);
+    if (result.valid) {
+      linksValid++;
+      const handle = extractPatreonHandle(discovered.possibleLinks.patreon);
+      verifiedLinks.patreon = { url: discovered.possibleLinks.patreon, status: 'valid', handle: handle || undefined };
     } else {
       linksInvalid++;
     }
@@ -462,6 +522,26 @@ function extractInstagramHandle(url: string): string | null {
 function extractTikTokHandle(url: string): string | null {
   const match = url.match(/tiktok\.com\/@?([^\/\?]+)/);
   return match ? '@' + match[1] : null;
+}
+
+function extractLinkedInHandle(url: string): string | null {
+  const match = url.match(/linkedin\.com\/in\/([^\/\?]+)/);
+  return match ? match[1] : null;
+}
+
+function extractTwitchHandle(url: string): string | null {
+  const match = url.match(/twitch\.tv\/([^\/\?]+)/);
+  return match ? match[1] : null;
+}
+
+function extractThreadsHandle(url: string): string | null {
+  const match = url.match(/threads\.net\/@?([^\/\?]+)/);
+  return match ? '@' + match[1] : null;
+}
+
+function extractPatreonHandle(url: string): string | null {
+  const match = url.match(/patreon\.com\/([^\/\?]+)/);
+  return match ? match[1] : null;
 }
 
 function formatCount(count: string): string {

@@ -43,6 +43,10 @@ export interface DiscoveredProfile {
     instagram: string | null;
     facebook: string | null;
     tiktok: string | null;
+    linkedin: string | null;
+    twitch: string | null;
+    threads: string | null;
+    patreon: string | null;
     podcast: string | null;
     podcastRss: string | null;
     spotify: string | null;
@@ -138,7 +142,8 @@ export async function discoverProfile(name: string): Promise<DiscoveredProfile> 
     // UNVERIFIED data from Perplexity
     possibleLinks: perplexityData.possibleLinks ?? {
       website: null, youtube: null, twitter: null, instagram: null,
-      facebook: null, tiktok: null, podcast: null, podcastRss: null, spotify: null,
+      facebook: null, tiktok: null, linkedin: null, twitch: null,
+      threads: null, patreon: null, podcast: null, podcastRss: null, spotify: null,
     },
     possibleBooks: perplexityData.possibleBooks || [],
     possibleAudioBooks: perplexityData.possibleAudioBooks || [],
@@ -262,10 +267,14 @@ Return ONLY valid JSON (no markdown):
   
   "possibleLinks": {
     "website": "URL or null",
-    "twitter": "URL or null",
+    "twitter": "URL or null (x.com or twitter.com)",
     "instagram": "URL or null",
     "facebook": "URL or null",
     "tiktok": "URL or null",
+    "linkedin": "URL or null (linkedin.com/in/...)",
+    "twitch": "URL or null (twitch.tv/...)",
+    "threads": "URL or null (threads.net/@...)",
+    "patreon": "URL or null (patreon.com/...)",
     "podcast": "URL or null",
     "podcastRss": "muslimcentral.com/audio/[name] format or null",
     "spotify": "URL or null"

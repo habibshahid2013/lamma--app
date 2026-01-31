@@ -348,7 +348,12 @@ export class ProfileStore {
         instagram: null,
         facebook: null,
         tiktok: null,
+        linkedin: null,
+        twitch: null,
+        threads: null,
+        patreon: null,
         podcast: profile.podcast.podcastUrl,
+        spotify: null,
       },
 
       content: {
