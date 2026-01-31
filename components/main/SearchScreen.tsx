@@ -15,7 +15,7 @@ const POPULAR_TOPICS = [
   "⚖️ Fiqh", "🏛️ History", "✨ Youth"
 ];
 
-import { useCreators } from "@/src/hooks/useCreators";
+import { useCreators } from "@/hooks/useCreators";
 // ... other imports
 
 export default function SearchScreen() {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function useSaved() {
   const { user, userData, refreshUserData } = useAuth();

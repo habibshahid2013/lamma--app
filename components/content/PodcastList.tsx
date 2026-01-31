@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getPodcastEpisodes, PodcastEpisode } from '@/src/lib/podcast';
+import { getPodcastEpisodes, PodcastEpisode } from '@/lib/podcast';
 import { Button } from '@/components/ui/button';
 import { PlayCircle, ExternalLink, Calendar, Clock } from 'lucide-react';
-import { formatRelativeTime } from '@/src/lib/youtube'; // Reuse existing helper
+import { formatRelativeTime } from '@/lib/youtube'; // Reuse existing helper
 
 interface PodcastListProps {
   podcastUrl?: string | null;

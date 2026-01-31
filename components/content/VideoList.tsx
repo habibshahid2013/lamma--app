@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getChannelVideos, searchVideos, formatRelativeTime, YouTubeVideo } from '@/src/lib/youtube';
+import { getChannelVideos, searchVideos, formatRelativeTime, YouTubeVideo } from '@/lib/youtube';
 
 interface VideoListProps {
   youtubeUrl?: string | null;

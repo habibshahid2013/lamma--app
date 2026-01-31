@@ -1,7 +1,7 @@
 "use client";
 
 import HistoricalScholarCard from "../ui/HistoricalScholarCard";
-import { useHistoricalScholars } from "@/src/hooks/useCreators";
+import { useHistoricalScholars } from "@/hooks/useCreators";
 import SectionHeader from "../ui/SectionHeader";
 import { useRouter } from "next/navigation";
 

@@ -3,7 +3,7 @@
 // Run daily via Vercel Cron: 0 2 * * * (2 AM UTC)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { AutoPipeline } from '@/src/lib/profile-pipeline';
+import { AutoPipeline } from '@/lib/profile-pipeline';
 
 // Vercel cron authorization
 const CRON_SECRET = process.env.CRON_SECRET;

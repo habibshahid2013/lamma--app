@@ -11,7 +11,7 @@ import RegionSection from "./RegionSection";
 import TopicSection from "./TopicSection";
 import SurpriseMeButton from "../ui/SurpriseMeButton";
 import Link from "next/link";
-import { useCreators, useFeaturedCreators } from "@/src/hooks/useCreators";
+import { useCreators, useFeaturedCreators } from "@/hooks/useCreators";
 
 export default function HomeScreen() {
   // Filters

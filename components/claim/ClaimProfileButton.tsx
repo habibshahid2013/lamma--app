@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
+import { db } from '@/lib/firebase';
 
 interface ClaimProfileButtonProps {
   creatorId: string;

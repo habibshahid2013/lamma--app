@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useWomenScholars } from "@/src/hooks/useCreators";
+import { useWomenScholars } from "@/hooks/useCreators";
 import CreatorCard from "@/components/ui/CreatorCard";
 import BottomNav from "@/components/ui/BottomNav";
 

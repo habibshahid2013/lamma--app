@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   collection, 
   query, 
@@ -12,7 +12,7 @@ import {
   serverTimestamp,
   orderBy 
 } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
+import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 interface ClaimRequest {

@@ -3,7 +3,7 @@
 // Generates complete profiles from just a name using Claude + Web Search
 
 import Anthropic from "@anthropic-ai/sdk";
-import { searchChannel } from "@/src/lib/youtube";
+import { searchChannel } from "@/lib/youtube";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,

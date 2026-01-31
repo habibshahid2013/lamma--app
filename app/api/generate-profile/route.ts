@@ -4,12 +4,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
+import { db } from '@/lib/firebase';
 
 // Import pipeline stages
-import { discoverProfile } from '@/src/lib/profile-generator/stage1-discovery';
-import { verifyProfile } from '@/src/lib/profile-generator/stage2-verification';
-import { enrichProfile, EnrichedProfile } from '@/src/lib/profile-generator/stage3-enrichment';
+import { discoverProfile } from '@/lib/profile-generator/stage1-discovery';
+import { verifyProfile } from '@/lib/profile-generator/stage2-verification';
+import { enrichProfile, EnrichedProfile } from '@/lib/profile-generator/stage3-enrichment';
 
 export async function POST(request: NextRequest) {
   try {

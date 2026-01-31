@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/src/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import SplashScreen from "@/components/onboarding/SplashScreen";
 import WelcomeScreen from "@/components/onboarding/WelcomeScreen";

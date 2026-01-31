@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getChannelVideos, getChannelInfo, YouTubeVideo, YouTubeChannel } from '@/src/lib/youtube';
+import { getChannelVideos, getChannelInfo, YouTubeVideo, YouTubeChannel } from '@/lib/youtube';
 
 export function useYouTubeChannel(youtubeUrl: string | null | undefined) {
   const [channel, setChannel] = useState<YouTubeChannel | null>(null);

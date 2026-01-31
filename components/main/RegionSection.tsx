@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreators } from "@/src/hooks/useCreators";
+import { useCreators } from "@/hooks/useCreators";
 import SectionHeader from "../ui/SectionHeader";
 import { useRouter } from "next/navigation";
 import CreatorCard from "../ui/CreatorCard";

@@ -1,7 +1,7 @@
 "use client";
 
 import CreatorCard from "../ui/CreatorCard";
-import { useWomenScholars } from "@/src/hooks/useCreators";
+import { useWomenScholars } from "@/hooks/useCreators";
 import SectionHeader from "../ui/SectionHeader";
 import { useRouter } from "next/navigation";
 

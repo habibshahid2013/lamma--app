@@ -5,7 +5,7 @@ import { Button } from "./button";
 import { Creator } from "@/lib/types/creator";
 import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";
-import { useEngagementContext } from "@/src/hooks/useEngagement";
+import { useEngagementContext } from "@/hooks/useEngagement";
 
 interface CreatorCardProps extends Partial<Creator> {
   onFollow?: () => void;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreatorsByLanguage } from "@/src/hooks/useCreators";
+import { useCreatorsByLanguage } from "@/hooks/useCreators";
 import Link from "next/link";
 import CreatorCard from "../ui/CreatorCard";
 

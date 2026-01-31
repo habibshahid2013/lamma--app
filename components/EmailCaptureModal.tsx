@@ -4,7 +4,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useEngagementContext } from '@/src/hooks/useEngagement';
+import { useEngagementContext } from '@/hooks/useEngagement';
 
 interface EmailCaptureModalProps {
   onClose?: () => void;

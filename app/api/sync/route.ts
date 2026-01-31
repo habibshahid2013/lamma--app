@@ -2,7 +2,7 @@
 // Sync API - Enriches existing profiles with API data
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ProfileSyncService } from '@/src/lib/profile-pipeline/sync-service';
+import { ProfileSyncService } from '@/lib/profile-pipeline/sync-service';
 
 export async function POST(request: NextRequest) {
   try {

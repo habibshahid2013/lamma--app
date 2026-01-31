@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/src/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { LogOut, User as UserIcon, Settings, Calendar, Shield, Crown, ChevronRight, Bookmark, Heart, Grid } from "lucide-react";
 import Button from "../ui/LegacyButton"; // Using LegacyButton as Button for consistency with previous file
 import BottomNav from "../ui/BottomNav";
 import CreatorCard from "../ui/CreatorCard";
-import { useCreatorsByIds } from "@/src/hooks/useCreators";
-import { useFollow } from "@/src/hooks/useFollow";
+import { useCreatorsByIds } from "@/hooks/useCreators";
+import { useFollow } from "@/hooks/useFollow";
 
 export default function UserProfile() {
   const { userData, logout } = useAuth();

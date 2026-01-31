@@ -5,8 +5,8 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { EngagementProvider, useEngagementContext } from '@/src/hooks/useEngagement';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { EngagementProvider, useEngagementContext } from '@/hooks/useEngagement';
+import { useAuth } from '@/contexts/AuthContext';
 import EmailCaptureModal from './EmailCaptureModal';
 
 // Inner component that uses the context

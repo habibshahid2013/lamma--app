@@ -8,7 +8,7 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
+import { db } from '@/lib/firebase';
 import { Creator as BaseCreator } from '@/lib/types/creator';
 
 interface Creator extends BaseCreator {

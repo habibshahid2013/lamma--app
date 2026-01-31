@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/src/lib/firebase';
+import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 export default function CreatorDashboard() {

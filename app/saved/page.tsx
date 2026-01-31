@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Bookmark, Heart, Plus } from "lucide-react";
 import Link from "next/link";
 import BottomNav from "@/components/ui/BottomNav";
-import { useAuth } from "@/src/contexts/AuthContext";
-import { useEngagementContext } from "@/src/hooks/useEngagement";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEngagementContext } from "@/hooks/useEngagement";
 
 export default function SavedPage() {
   const { user } = useAuth();

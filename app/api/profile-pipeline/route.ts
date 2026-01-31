@@ -3,7 +3,7 @@
 // POST: Generate profile(s), GET: Get flagged profiles
 
 import { NextRequest, NextResponse } from 'next/server';
-import { AutoPipeline } from '@/src/lib/profile-pipeline';
+import { AutoPipeline } from '@/lib/profile-pipeline';
 
 export async function POST(request: NextRequest) {
   try {

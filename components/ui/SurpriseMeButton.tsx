@@ -3,7 +3,7 @@
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CREATORS } from "@/lib/data/creators";
-import { useEngagementContext } from "@/src/hooks/useEngagement";
+import { useEngagementContext } from "@/hooks/useEngagement";
 
 export default function SurpriseMeButton() {
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, BookOpen, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useHistoricalScholars } from "@/src/hooks/useCreators";
+import { useHistoricalScholars } from "@/hooks/useCreators";
 import HistoricalScholarCard from "@/components/ui/HistoricalScholarCard";
 import BottomNav from "@/components/ui/BottomNav";
 
