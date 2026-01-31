@@ -1,5 +1,6 @@
 export interface Creator {
   id: string;
+  slug: string;
   name: string;
   category: "scholar" | "educator" | "speaker" | "reciter" | "author" | "activist" | "influencer" | "public_figure";
   tier: "verified" | "rising" | "new";
@@ -17,7 +18,21 @@ export interface Creator {
   isHistorical: boolean;
   lifespan?: string;
   note?: string;
-  avatar?: string; // Optional for now, assuming external or placeholder
+  avatar?: string; 
+  
+  // Profile Object (New Schema)
+  profile?: {
+    name: string;
+    displayName: string;
+    avatar: string | null;
+    coverImage: string | null;
+    shortBio: string;
+    bio: string;
+    birthDate?: string;
+    birthPlace?: string;
+    nationality?: string;
+  };
+
   stats?: {
     followerCount: number;
     contentCount?: number;
@@ -41,23 +56,44 @@ export interface Creator {
     youtube?: {
       channelId?: string;
       channelUrl?: string;
+      channelTitle?: string;
+      description?: string;
       subscriberCount?: string;
       videoCount?: string;
+      viewCount?: string;
+      thumbnailUrl?: string;
+      recentVideos?: Array<{
+        videoId: string;
+        title: string;
+        thumbnail: string;
+        publishedAt: string;
+        viewCount?: number;
+      }>;
     };
     podcast?: {
       name?: string;
       url?: string;
       rssUrl?: string;
       platform?: string;
+      episodeCount?: number;
+      imageUrl?: string;
+      description?: string;
+      publisher?: string;
     };
     books?: Array<{
+      bookId?: string;
       title: string;
-      url?: string;
+      authors?: string[];
+      description?: string;
+      thumbnail?: string;
+      publishedDate?: string;
+      publisher?: string;
+      pageCount?: number;
       amazonUrl?: string;
-      publisherUrl?: string;
+      previewLink?: string;
       isbn?: string;
       year?: number;
-      description?: string;
+      categories?: string[];
     }>;
     ebooks?: Array<{
       title: string;

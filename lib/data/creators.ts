@@ -46,6 +46,7 @@ export const CATEGORIES: Record<string, { label: string; emoji: string }> = {
 export const CREATORS: Creator[] = [
   {
     "id": "omar-suleiman",
+    "slug": "omar-suleiman",
     "name": "Omar Suleiman",
     "category": "scholar",
     "tier": "verified",
@@ -75,6 +76,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "nouman-ali-khan",
+    "slug": "nouman-ali-khan",
     "name": "Nouman Ali Khan",
     "category": "educator",
     "tier": "verified",
@@ -104,6 +106,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "yasir-qadhi",
+    "slug": "yasir-qadhi",
     "name": "Yasir Qadhi",
     "category": "scholar",
     "tier": "verified",
@@ -132,6 +135,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "hamza-yusuf",
+    "slug": "hamza-yusuf",
     "name": "Hamza Yusuf",
     "category": "scholar",
     "tier": "verified",
@@ -159,6 +163,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "zaid-shakir",
+    "slug": "zaid-shakir",
     "name": "Zaid Shakir",
     "category": "scholar",
     "tier": "verified",
@@ -186,6 +191,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "suhaib-webb",
+    "slug": "suhaib-webb",
     "name": "Suhaib Webb",
     "category": "scholar",
     "tier": "verified",
@@ -213,6 +219,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "siraj-wahhaj",
+    "slug": "siraj-wahhaj",
     "name": "Siraj Wahhaj",
     "category": "speaker",
     "tier": "verified",
@@ -239,6 +246,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abdul-nasir-jangda",
+    "slug": "abdul-nasir-jangda",
     "name": "Abdul Nasir Jangda",
     "category": "educator",
     "tier": "verified",
@@ -267,6 +275,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abdelrahman-murphy",
+    "slug": "abdelrahman-murphy",
     "name": "AbdelRahman Murphy",
     "category": "speaker",
     "tier": "verified",
@@ -293,6 +302,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "saad-tasleem",
+    "slug": "saad-tasleem",
     "name": "Saad Tasleem",
     "category": "speaker",
     "tier": "verified",
@@ -319,6 +329,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "wisam-sharieff",
+    "slug": "wisam-sharieff",
     "name": "Wisam Sharieff",
     "category": "reciter",
     "tier": "verified",
@@ -346,6 +357,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "jonathan-brown",
+    "slug": "jonathan-brown",
     "name": "Jonathan A.C. Brown",
     "category": "author",
     "tier": "verified",
@@ -373,6 +385,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "sherman-jackson",
+    "slug": "sherman-jackson",
     "name": "Sherman Jackson",
     "category": "scholar",
     "tier": "verified",
@@ -400,6 +413,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "yasmin-mogahed",
+    "slug": "yasmin-mogahed",
     "name": "Yasmin Mogahed",
     "category": "speaker",
     "tier": "verified",
@@ -426,6 +440,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "dalia-mogahed",
+    "slug": "dalia-mogahed",
     "name": "Dalia Mogahed",
     "category": "speaker",
     "tier": "verified",
@@ -453,6 +468,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ingrid-mattson",
+    "slug": "ingrid-mattson",
     "name": "Ingrid Mattson",
     "category": "scholar",
     "tier": "verified",
@@ -480,6 +496,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ieasha-prime",
+    "slug": "ieasha-prime",
     "name": "Ieasha Prime",
     "category": "speaker",
     "tier": "verified",
@@ -506,6 +523,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "haleh-banani",
+    "slug": "haleh-banani",
     "name": "Haleh Banani",
     "category": "speaker",
     "tier": "verified",
@@ -532,6 +550,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "tamara-gray",
+    "slug": "tamara-gray",
     "name": "Tamara Gray",
     "category": "educator",
     "tier": "verified",
@@ -559,6 +578,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "maryam-amir",
+    "slug": "maryam-amir",
     "name": "Maryam Amir",
     "category": "speaker",
     "tier": "verified",
@@ -585,6 +605,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "dave-chappelle",
+    "slug": "dave-chappelle",
     "name": "Dave Chappelle",
     "category": "public_figure",
     "tier": "rising",
@@ -612,6 +633,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mahershala-ali",
+    "slug": "mahershala-ali",
     "name": "Mahershala Ali",
     "category": "public_figure",
     "tier": "rising",
@@ -639,6 +661,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "hasan-minhaj",
+    "slug": "hasan-minhaj",
     "name": "Hasan Minhaj",
     "category": "public_figure",
     "tier": "rising",
@@ -666,6 +689,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ramy-youssef",
+    "slug": "ramy-youssef",
     "name": "Ramy Youssef",
     "category": "public_figure",
     "tier": "rising",
@@ -694,6 +718,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "linda-sarsour",
+    "slug": "linda-sarsour",
     "name": "Linda Sarsour",
     "category": "activist",
     "tier": "rising",
@@ -721,6 +746,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ilhan-omar",
+    "slug": "ilhan-omar",
     "name": "Ilhan Omar",
     "category": "activist",
     "tier": "rising",
@@ -748,6 +774,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "keith-ellison",
+    "slug": "keith-ellison",
     "name": "Keith Ellison",
     "category": "activist",
     "tier": "rising",
@@ -774,6 +801,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ibtihaj-muhammad",
+    "slug": "ibtihaj-muhammad",
     "name": "Ibtihaj Muhammad",
     "category": "public_figure",
     "tier": "rising",
@@ -801,6 +829,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "noor-tagouri",
+    "slug": "noor-tagouri",
     "name": "Noor Tagouri",
     "category": "influencer",
     "tier": "rising",
@@ -827,6 +856,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "imran-khan",
+    "slug": "imran-khan",
     "name": "Imran Khan",
     "category": "activist",
     "tier": "rising",
@@ -855,6 +885,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mufti-menk",
+    "slug": "mufti-menk",
     "name": "Mufti Menk",
     "category": "scholar",
     "tier": "verified",
@@ -883,6 +914,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "said-rageah",
+    "slug": "said-rageah",
     "name": "Said Rageah",
     "category": "speaker",
     "tier": "verified",
@@ -911,6 +943,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "sheikh-umal",
+    "slug": "sheikh-umal",
     "name": "Sheikh Umal",
     "category": "scholar",
     "tier": "verified",
@@ -939,6 +972,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "sheikh-hassan-jaamici",
+    "slug": "sheikh-hassan-jaamici",
     "name": "Sheikh Hassan Jaamici",
     "category": "scholar",
     "tier": "verified",
@@ -968,6 +1002,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mohamed-idris",
+    "slug": "mohamed-idris",
     "name": "Mohamed Idris",
     "category": "scholar",
     "tier": "verified",
@@ -997,6 +1032,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "nuradin-jama",
+    "slug": "nuradin-jama",
     "name": "Nuradin Jama",
     "category": "speaker",
     "tier": "verified",
@@ -1025,6 +1061,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "boonaa-mohammed",
+    "slug": "boonaa-mohammed",
     "name": "Boonaa Mohammed",
     "category": "speaker",
     "tier": "rising",
@@ -1052,6 +1089,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ahmed-deedat",
+    "slug": "ahmed-deedat",
     "name": "Ahmed Deedat",
     "category": "scholar",
     "tier": "verified",
@@ -1081,6 +1119,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mishary-alafasy",
+    "slug": "mishary-alafasy",
     "name": "Mishary Rashid Alafasy",
     "category": "reciter",
     "tier": "verified",
@@ -1106,6 +1145,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abdul-rahman-al-sudais",
+    "slug": "abdul-rahman-al-sudais",
     "name": "Abdul Rahman Al-Sudais",
     "category": "reciter",
     "tier": "verified",
@@ -1131,6 +1171,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "assim-al-hakeem",
+    "slug": "assim-al-hakeem",
     "name": "Assim Al-Hakeem",
     "category": "scholar",
     "tier": "verified",
@@ -1158,6 +1199,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "amr-khaled",
+    "slug": "amr-khaled",
     "name": "Amr Khaled",
     "category": "speaker",
     "tier": "verified",
@@ -1185,6 +1227,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "muhammad-nasiruddin-al-albani",
+    "slug": "muhammad-nasiruddin-al-albani",
     "name": "Muhammad Nasiruddin al-Albani",
     "category": "scholar",
     "tier": "verified",
@@ -1213,6 +1256,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abd-al-aziz-ibn-baz",
+    "slug": "abd-al-aziz-ibn-baz",
     "name": "Abd al-Aziz ibn Baz",
     "category": "scholar",
     "tier": "verified",
@@ -1241,6 +1285,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "muhammad-ibn-al-uthaymeen",
+    "slug": "muhammad-ibn-al-uthaymeen",
     "name": "Muhammad ibn al-Uthaymeen",
     "category": "scholar",
     "tier": "verified",
@@ -1269,6 +1314,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mohamed-metwally-al-shaarawy",
+    "slug": "mohamed-metwally-al-shaarawy",
     "name": "Mohamed Metwally Al Shaarawy",
     "category": "scholar",
     "tier": "verified",
@@ -1297,6 +1343,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "yusuf-al-qaradawi",
+    "slug": "yusuf-al-qaradawi",
     "name": "Yusuf al-Qaradawi",
     "category": "scholar",
     "tier": "verified",
@@ -1325,6 +1372,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "tariq-jameel",
+    "slug": "tariq-jameel",
     "name": "Tariq Jameel",
     "category": "scholar",
     "tier": "verified",
@@ -1353,6 +1401,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "zakir-naik",
+    "slug": "zakir-naik",
     "name": "Zakir Naik",
     "category": "speaker",
     "tier": "verified",
@@ -1380,6 +1429,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "farhat-hashmi",
+    "slug": "farhat-hashmi",
     "name": "Farhat Hashmi",
     "category": "educator",
     "tier": "verified",
@@ -1408,6 +1458,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "javed-ghamidi",
+    "slug": "javed-ghamidi",
     "name": "Javed Ahmad Ghamidi",
     "category": "scholar",
     "tier": "verified",
@@ -1436,6 +1487,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "allama-iqbal",
+    "slug": "allama-iqbal",
     "name": "Allama Iqbal",
     "category": "author",
     "tier": "verified",
@@ -1466,6 +1518,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "sultan-bahu",
+    "slug": "sultan-bahu",
     "name": "Sultan Bahu",
     "category": "author",
     "tier": "verified",
@@ -1496,6 +1549,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "bulleh-shah",
+    "slug": "bulleh-shah",
     "name": "Bulleh Shah",
     "category": "author",
     "tier": "verified",
@@ -1525,6 +1579,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ahmed-raza-khan-barelvi",
+    "slug": "ahmed-raza-khan-barelvi",
     "name": "Ahmed Raza Khan Barelvi",
     "category": "scholar",
     "tier": "verified",
@@ -1555,6 +1610,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ashraf-ali-thanwi",
+    "slug": "ashraf-ali-thanwi",
     "name": "Ashraf Ali Thanwi",
     "category": "scholar",
     "tier": "verified",
@@ -1585,6 +1641,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abul-ala-maududi",
+    "slug": "abul-ala-maududi",
     "name": "Abul A'la Maududi",
     "category": "author",
     "tier": "verified",
@@ -1615,6 +1672,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "sayyid-qutb",
+    "slug": "sayyid-qutb",
     "name": "Sayyid Qutb",
     "category": "author",
     "tier": "verified",
@@ -1643,6 +1701,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abdal-hakim-murad",
+    "slug": "abdal-hakim-murad",
     "name": "Abdal Hakim Murad",
     "category": "scholar",
     "tier": "verified",
@@ -1670,6 +1729,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "hamza-tzortzis",
+    "slug": "hamza-tzortzis",
     "name": "Hamza Tzortzis",
     "category": "speaker",
     "tier": "verified",
@@ -1697,6 +1757,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "mohammed-hijab",
+    "slug": "mohammed-hijab",
     "name": "Mohammed Hijab",
     "category": "speaker",
     "tier": "verified",
@@ -1724,6 +1785,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "ali-dawah",
+    "slug": "ali-dawah",
     "name": "Ali Dawah",
     "category": "speaker",
     "tier": "rising",
@@ -1750,6 +1812,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "fatima-barkatulla",
+    "slug": "fatima-barkatulla",
     "name": "Fatima Barkatulla",
     "category": "author",
     "tier": "verified",
@@ -1777,6 +1840,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "zara-mohammed",
+    "slug": "zara-mohammed",
     "name": "Zara Mohammed",
     "category": "activist",
     "tier": "rising",
@@ -1803,6 +1867,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "yahya-ibrahim",
+    "slug": "yahya-ibrahim",
     "name": "Yahya Ibrahim",
     "category": "scholar",
     "tier": "verified",
@@ -1830,6 +1895,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "tawfique-chowdhury",
+    "slug": "tawfique-chowdhury",
     "name": "Tawfique Chowdhury",
     "category": "scholar",
     "tier": "verified",
@@ -1858,6 +1924,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "abdul-somad",
+    "slug": "abdul-somad",
     "name": "Abdul Somad",
     "category": "speaker",
     "tier": "verified",
@@ -1885,6 +1952,7 @@ export const CREATORS: Creator[] = [
   },
   {
     "id": "felix-siauw",
+    "slug": "felix-siauw",
     "name": "Felix Siauw",
     "category": "speaker",
     "tier": "rising",

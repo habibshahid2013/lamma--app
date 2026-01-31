@@ -11,154 +11,29 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCreatorBySlug } from '@/hooks/useCreators';
 
-// Types for creator data
-interface Creator {
-  creatorId: string;
-  slug: string;
-  
-  profile: {
-    name: string;
-    displayName: string;
-    avatar: string | null;
-    coverImage: string | null;
-    shortBio: string;
-    bio: string;
-    birthDate?: string;
-    birthPlace?: string;
-    nationality?: string;
-  };
-  
-  category: string;
-  region: string;
-  country: string;
-  countryFlag: string;
-  languages: string[];
-  topics: string[];
-  
-  // Social Links
-  socialLinks: {
-    website?: string;
-    youtube?: string;
-    twitter?: string;
-    instagram?: string;
-    facebook?: string;
-    tiktok?: string;
-    linkedin?: string;
-    podcast?: string;
-    spotify?: string;
-    appleMusic?: string;
-    soundcloud?: string;
-  };
-  
-  // YouTube Content
-  content?: {
-    youtube?: {
-      channelId: string;
-      channelUrl: string;
-      channelTitle: string;
-      description: string;
-      subscriberCount: number;
-      subscriberCountFormatted: string;
-      videoCount: number;
-      viewCount: number;
-      thumbnailUrl: string;
-      recentVideos?: {
-        videoId: string;
-        title: string;
-        thumbnail: string;
-        publishedAt: string;
-        viewCount?: number;
-      }[];
-    };
-    
-    // Podcast Content
-    podcast?: {
-      name: string;
-      description: string;
-      publisher: string;
-      episodeCount: number;
-      platform: string;
-      url: string;
-      imageUrl?: string;
-    };
-    
-    // Books
-    books?: {
-      bookId: string;
-      title: string;
-      authors: string[];
-      description: string;
-      thumbnail: string;
-      publishedDate: string;
-      publisher: string;
-      pageCount?: number;
-      amazonUrl?: string;
-      previewLink?: string;
-      categories?: string[];
-    }[];
-  };
-  
-  // Stats
-  stats: {
-    followerCount: number;
-    followingCount: number;
-    viewCount: number;
-  };
-  
-  // Metadata
-  isVerified: boolean;
-  isClaimed: boolean;
-  createdAt: any;
-  updatedAt: any;
-}
+
 
 export default function CreatorProfilePage() {
   const params = useParams();
   const slug = params?.slug as string;
   const { user } = useAuth();
   
-  const [creator, setCreator] = useState<Creator | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Custom hook handles data fetching logic correctly (including slug lookup)
+  const { creator, loading: creatorLoading } = useCreatorBySlug(slug);
+  const loading = creatorLoading;
+  
   const [activeTab, setActiveTab] = useState<'about' | 'videos' | 'podcasts' | 'books'>('about');
   const [isFollowing, setIsFollowing] = useState(false);
-
-  useEffect(() => {
-    if (slug) {
-      loadCreator();
-    }
-  }, [slug]);
-
-  const loadCreator = async () => {
-    try {
-      setLoading(true);
-      
-      // Try to find by slug first
-      const creatorDoc = await getDoc(doc(db, 'creators', slug));
-      
-      if (creatorDoc.exists()) {
-        setCreator({ creatorId: creatorDoc.id, ...creatorDoc.data() } as Creator);
-      } else {
-        setError('Creator not found');
-      }
-    } catch (err) {
-      console.error('Error loading creator:', err);
-      setError('Failed to load creator');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [imageError, setImageError] = useState(false); // MOVED TO TOP to fix Error #310
 
   const handleFollow = () => {
     if (!user) {
-      // Show action gate modal
-      // For now, alert
       alert('Please sign in to follow this creator');
       return;
     }
     setIsFollowing(!isFollowing);
-    // TODO: Save to Firestore
   };
 
   if (loading) {
@@ -169,22 +44,38 @@ export default function CreatorProfilePage() {
     );
   }
 
-  if (error || !creator) {
+  if (!creator) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-2">Creator Not Found</h1>
-          <p className="text-slate-400 mb-4">{error}</p>
+          <p className="text-slate-400 mb-4">The creator you are looking for does not exist.</p>
           <Link href="/" className="text-amber-500 hover:underline">← Back to Home</Link>
         </div>
       </div>
     );
   }
 
-  const { profile, content, socialLinks, topics, category, region, country, countryFlag, languages, stats } = creator;
+  // Safe to access since we returned if !creator
+  const { content, socialLinks, topics, category, region, country, countryFlag, languages, stats } = creator;
+  
+  // Ensure profile exists or use fallbacks from top-level creator props
+  const profile = creator.profile || {
+    name: creator.name || 'Unknown',
+    displayName: creator.name || 'Unknown',
+    avatar: creator.avatar || null,
+    coverImage: null,
+    shortBio: creator.note || '',
+    bio: '',
+  };
+  
+  const formattedStats = stats || {
+    followerCount: 0,
+    followingCount: 0,
+    viewCount: 0,
+  };
 
   // Get avatar - fallback to YouTube thumbnail or initials
-  const [imageError, setImageError] = useState(false);
   const avatarUrl = profile.avatar || content?.youtube?.thumbnailUrl || null;
 
   return (
@@ -248,7 +139,7 @@ export default function CreatorProfilePage() {
                 </div>
                 
                 {/* Verified Badge */}
-                {creator.isVerified && (
+                {creator.verified && (
                   <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center ring-2 ring-slate-900">
                     <svg className="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
@@ -300,7 +191,7 @@ export default function CreatorProfilePage() {
                         <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#fff"/>
                       </svg>
                       <span className="text-sm font-medium text-red-400">
-                        {content.youtube.subscriberCountFormatted || `${(content.youtube.subscriberCount / 1000).toFixed(0)}K`} subscribers
+                        {content.youtube.subscriberCount} subscribers
                       </span>
                     </div>
                   )}
@@ -327,9 +218,9 @@ export default function CreatorProfilePage() {
                     </div>
                   )}
 
-                  {stats?.followerCount > 0 && (
+                  {formattedStats.followerCount > 0 && (
                     <span className="text-slate-400 text-sm">
-                      {stats.followerCount.toLocaleString()} followers
+                      {formattedStats.followerCount.toLocaleString()} followers
                     </span>
                   )}
                 </div>
@@ -354,7 +245,7 @@ export default function CreatorProfilePage() {
                   </svg>
                 </button>
 
-                {!creator.isClaimed && (
+                {!creator.uid && (
                   <Link
                     href={`/claim/${creator.slug}`}
                     className="px-4 py-2.5 bg-slate-700 text-amber-400 rounded-full font-medium hover:bg-slate-600 transition text-sm"
@@ -502,7 +393,7 @@ export default function CreatorProfilePage() {
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-white">
-                        {content.youtube.subscriberCountFormatted || content.youtube.subscriberCount?.toLocaleString()}
+                        {content.youtube.subscriberCount}
                       </div>
                       <div className="text-sm text-slate-400">Subscribers</div>
                     </div>
@@ -514,7 +405,7 @@ export default function CreatorProfilePage() {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-white">
-                        {content.youtube.viewCount ? `${(content.youtube.viewCount / 1000000).toFixed(1)}M` : '-'}
+                        {content.youtube.viewCount ? `${(Number(content.youtube.viewCount) / 1000000).toFixed(1)}M` : '-'}
                       </div>
                       <div className="text-sm text-slate-400">Total Views</div>
                     </div>
