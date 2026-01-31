@@ -1,6 +1,10 @@
 // src/lib/profile-generator/stage1-discovery.ts
-// STAGE 1: DISCOVERY
-// Uses Perplexity to find initial information about a person
+// STAGE 1: DISCOVERY (API-First Approach)
+// Uses direct APIs for data, Perplexity for bio/context
+
+import { searchChannel, getRecentVideos, YouTubeChannel, YouTubeVideo } from '@/lib/api-clients/youtube';
+import { searchBooksByAuthor, BookResult } from '@/lib/api-clients/google-books';
+import { getOrFetch } from '@/lib/cache';
 
 export interface DiscoveredProfile {
   // Basic info (may be incomplete)
@@ -25,7 +29,13 @@ export interface DiscoveredProfile {
   topics: string[];
   affiliations: string[];
   
-  // Links (UNVERIFIED - may be broken)
+  // Links (from APIs - VERIFIED)
+  apiData: {
+    youtube: YouTubeChannel | null;
+    recentVideos: YouTubeVideo[];
+  };
+
+  // Links (from Perplexity - UNVERIFIED)
   possibleLinks: {
     website: string | null;
     youtube: string | null;
@@ -38,7 +48,10 @@ export interface DiscoveredProfile {
     spotify: string | null;
   };
   
-  // Content (UNVERIFIED)
+  // Content - VERIFIED from Google Books API
+  verifiedBooks: BookResult[];
+
+  // Content - UNVERIFIED from Perplexity
   possibleBooks: Array<{
     title: string;
     year?: number;
@@ -73,34 +86,167 @@ export interface DiscoveredProfile {
   note: string | null;
   
   // Meta
-  discoverySource: 'perplexity';
+  discoverySource: 'api-first' | 'perplexity';
   rawConfidence: string;
   discoveryNotes: string[];
 }
 
+/**
+ * API-First Discovery Pipeline
+ * 1. Query YouTube API directly for channel
+ * 2. Query Google Books API directly for books
+ * 3. Use Perplexity for bio/context/social links
+ * 4. Merge all data
+ */
 export async function discoverProfile(name: string): Promise<DiscoveredProfile> {
+  console.log(`🔍 Stage 1: Discovering profile for "${name}" (API-First)...`);
+  
+  const notes: string[] = [];
+
+  // STEP 1: Direct API calls (parallel for speed)
+  const [youtubeData, booksData, perplexityData] = await Promise.all([
+    discoverYouTube(name, notes),
+    discoverBooks(name, notes),
+    discoverFromPerplexity(name),
+  ]);
+
+  // STEP 2: Merge data (APIs take priority)
+  const merged: DiscoveredProfile = {
+    // Bio/context from Perplexity
+    name: perplexityData.name ?? null,
+    displayName: perplexityData.displayName ?? null,
+    title: perplexityData.title ?? null,
+    shortBio: perplexityData.shortBio ?? null,
+    fullBio: perplexityData.fullBio ?? null,
+    category: perplexityData.category ?? null,
+    gender: perplexityData.gender ?? null,
+    region: perplexityData.region ?? null,
+    country: perplexityData.country ?? null,
+    countryFlag: perplexityData.countryFlag ?? null,
+    location: perplexityData.location ?? null,
+    languages: perplexityData.languages || [],
+    topics: perplexityData.topics || [],
+    affiliations: perplexityData.affiliations || [],
+
+    // VERIFIED data from APIs
+    apiData: {
+      youtube: youtubeData.channel,
+      recentVideos: youtubeData.videos,
+    },
+    verifiedBooks: booksData,
+
+    // UNVERIFIED data from Perplexity
+    possibleLinks: perplexityData.possibleLinks ?? {
+      website: null, youtube: null, twitter: null, instagram: null,
+      facebook: null, tiktok: null, podcast: null, podcastRss: null, spotify: null,
+    },
+    possibleBooks: perplexityData.possibleBooks || [],
+    possibleAudioBooks: perplexityData.possibleAudioBooks || [],
+    possibleEbooks: perplexityData.possibleEbooks || [],
+    possibleCourses: perplexityData.possibleCourses || [],
+
+    // Image
+    possibleImageUrl: youtubeData.channel?.thumbnailUrl ?? perplexityData.possibleImageUrl ?? null,
+    imageSearchQuery: perplexityData.imageSearchQuery ?? null,
+
+    // Historical
+    isHistorical: perplexityData.isHistorical || false,
+    lifespan: perplexityData.lifespan ?? null,
+    note: perplexityData.note ?? null,
+
+    // Meta
+    discoverySource: 'api-first',
+    rawConfidence: youtubeData.channel ? 'high' : perplexityData.rawConfidence || 'medium',
+    discoveryNotes: [
+      ...notes,
+      ...(perplexityData.discoveryNotes || []),
+    ],
+  };
+
+  console.log(`✅ Stage 1 complete: YouTube ${youtubeData.channel ? '✓' : '✗'}, Books: ${booksData.length}, Videos: ${youtubeData.videos.length}`);
+
+  return merged;
+}
+
+/**
+ * Direct YouTube API search with caching
+ */
+async function discoverYouTube(
+  name: string, 
+  notes: string[]
+): Promise<{ channel: YouTubeChannel | null; videos: YouTubeVideo[] }> {
+  try {
+    // Try cached first
+    const cacheKey = `youtube:search:${name.toLowerCase().replace(/\s+/g, '-')}`;
+    const channel = await getOrFetch(cacheKey, async () => {
+      return await searchChannel(`${name} islamic`);
+    }, 7 * 24 * 60 * 60 * 1000); // 7 day cache
+
+    if (!channel) {
+      notes.push('YouTube: No channel found via API');
+      return { channel: null, videos: [] };
+    }
+
+    // Get recent videos
+    const videos = await getRecentVideos(channel.channelId, 5);
+    notes.push(`YouTube: Found "${channel.title}" (${channel.subscriberCount} subscribers)`);
+
+    return { channel, videos };
+  } catch (error) {
+    notes.push(`YouTube: API error - ${error}`);
+    return { channel: null, videos: [] };
+  }
+}
+
+/**
+ * Direct Google Books API search with caching
+ */
+async function discoverBooks(name: string, notes: string[]): Promise<BookResult[]> {
+  try {
+    const cacheKey = `books:author:${name.toLowerCase().replace(/\s+/g, '-')}`;
+    const books = await getOrFetch(cacheKey, async () => {
+      return await searchBooksByAuthor(name, 10);
+    }, 30 * 24 * 60 * 60 * 1000); // 30 day cache
+
+    if (!books || books.length === 0) {
+      notes.push('Books: No books found via Google Books API');
+      return [];
+    }
+
+    notes.push(`Books: Found ${books.length} books via Google Books API`);
+    return books;
+  } catch (error) {
+    notes.push(`Books: API error - ${error}`);
+    return [];
+  }
+}
+
+/**
+ * Perplexity for bio/context/social links (things APIs can't provide)
+ */
+async function discoverFromPerplexity(name: string): Promise<Partial<DiscoveredProfile>> {
   const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
   
   if (!PERPLEXITY_API_KEY) {
-    throw new Error('PERPLEXITY_API_KEY not configured');
+    console.warn('⚠️ PERPLEXITY_API_KEY not configured, using minimal data');
+    return {
+      name,
+      displayName: name,
+      discoveryNotes: ['Perplexity unavailable - using name only'],
+    };
   }
 
-  console.log(`🔍 Stage 1: Discovering profile for "${name}"...`);
-
-  const prompt = `Research this person thoroughly: "${name}"
-
-This person is likely an Islamic scholar, speaker, educator, or Muslim public figure.
-
-Search the web and return a JSON object with ALL information you can find. Include URLs even if you're not 100% sure - we will verify them separately.
+  // Streamlined prompt - focus on bio/context, NOT YouTube/Books (we have APIs for those)
+  const prompt = `Research this Islamic scholar/speaker: "${name}"
 
 Return ONLY valid JSON (no markdown):
 
 {
-  "name": "Full name with any titles (Dr., Sheikh, etc.)",
+  "name": "Full name with titles (Dr., Sheikh, etc.)",
   "displayName": "How they're commonly known",
-  "title": "Title like Dr., Sheikh, Imam, Ustadh, Ustadha, or null",
+  "title": "Title like Dr., Sheikh, Imam, Ustadh, or null",
   "shortBio": "One sentence, max 140 chars",
-  "fullBio": "2-3 paragraphs about them",
+  "fullBio": "2-3 paragraphs about their background and work",
   
   "category": "scholar|speaker|educator|reciter|author|activist|public_figure",
   "gender": "male|female",
@@ -110,56 +256,35 @@ Return ONLY valid JSON (no markdown):
   "countryFlag": "flag emoji",
   "location": "City, Country or null",
   
-  "languages": ["languages they speak"],
+  "languages": ["languages"],
   "topics": ["topics they cover"],
   "affiliations": ["organizations"],
   
   "possibleLinks": {
     "website": "URL or null",
-    "youtube": "YouTube channel URL or null",
-    "twitter": "Twitter URL or null",
-    "instagram": "Instagram URL or null",
-    "facebook": "Facebook URL or null",
-    "tiktok": "TikTok URL or null",
-    "podcast": "Podcast page URL or null",
-    "podcastRss": "RSS feed URL or null - check muslimcentral.com/audio/[name]",
-    "spotify": "Spotify Artist or Show URL"
+    "twitter": "URL or null",
+    "instagram": "URL or null",
+    "facebook": "URL or null",
+    "tiktok": "URL or null",
+    "podcast": "URL or null",
+    "podcastRss": "muslimcentral.com/audio/[name] format or null",
+    "spotify": "URL or null"
   },
   
-  "possibleBooks": [
-    {"title": "Book name", "year": 2020, "amazonUrl": "URL or null"}
-  ],
-
-  "possibleAudioBooks": [
-    {"title": "Audiobook Title", "platform": "Audible|Spotify|etc", "url": "URL or null"}
-  ],
-
-  "possibleEbooks": [
-    {"title": "E-book Title", "platform": "Kindle|Apple Books|etc", "url": "URL or null"}
-  ],
+  "possibleAudioBooks": [{"title": "Title", "platform": "Audible", "url": "URL"}],
+  "possibleEbooks": [{"title": "Title", "platform": "Kindle", "url": "URL"}],
+  "possibleCourses": [{"title": "Course", "platform": "Platform", "url": "URL"}],
   
-  "possibleCourses": [
-    {"title": "Course name", "platform": "Platform", "url": "URL or null"}
-  ],
-  
-  "possibleImageUrl": "Direct image URL if found, or null",
-  "imageSearchQuery": "Best Google search to find their photo",
-  
+  "imageSearchQuery": "Best search to find their photo",
   "isHistorical": false,
   "lifespan": "YYYY-YYYY if deceased, else null",
   "note": "Special note if public figure, else null",
   
   "rawConfidence": "high|medium|low",
-  "discoveryNotes": ["notes about what you found or couldn't find"]
+  "discoveryNotes": ["notes about findings"]
 }
 
-IMPORTANT:
-- Include any YouTube channel you find - we'll verify it
-- For podcasts, check Muslim Central (muslimcentral.com) - format: muslimcentral.com/audio/firstname-lastname
-- Check for Spotify profiles (Artist or Podcast)
-- Look for Audiobooks on Audible/Spotify and E-books on Kindle/Apple Books
-- Include book titles even without Amazon links
-- Be thorough - include everything you find`;
+NOTE: Skip YouTube and books - we get those from APIs. Focus on bio/social/courses.`;
 
   try {
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
@@ -171,17 +296,11 @@ IMPORTANT:
       body: JSON.stringify({
         model: 'sonar-pro',
         messages: [
-          {
-            role: 'system',
-            content: 'You are a research assistant. Return only valid JSON, no markdown or explanation.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
+          { role: 'system', content: 'Return only valid JSON, no markdown.' },
+          { role: 'user', content: prompt }
         ],
         temperature: 0.1,
-        max_tokens: 4000,
+        max_tokens: 3000,
       }),
     });
 
@@ -199,17 +318,13 @@ IMPORTANT:
       content = content.replace(/^```\n?/, '').replace(/\n?```$/, '');
     }
 
-    const discovered = JSON.parse(content);
-    
-    console.log(`✅ Stage 1 complete: Found ${discovered.possibleLinks?.youtube ? 'YouTube' : 'no YouTube'}, ${discovered.possibleBooks?.length || 0} books`);
-    
-    return {
-      ...discovered,
-      discoverySource: 'perplexity',
-    };
-
+    return JSON.parse(content);
   } catch (error) {
-    console.error('Stage 1 Discovery error:', error);
-    throw error;
+    console.error('Perplexity error:', error);
+    return {
+      name,
+      displayName: name,
+      discoveryNotes: [`Perplexity error: ${error}`],
+    };
   }
 }

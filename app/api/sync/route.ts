@@ -44,6 +44,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Refresh YouTube stats for a profile
+    if (action === 'refresh-youtube' && creatorId) {
+      console.log(`\n📺 API: Refreshing YouTube stats for "${creatorId}"`);
+      const result = await syncService.refreshYouTubeStats(creatorId);
+      return NextResponse.json(result);
+    }
+
     return NextResponse.json({
       message: 'Sync API',
       endpoints: {

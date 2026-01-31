@@ -249,4 +249,56 @@ export class ProfileSyncService {
     const snapshot = await getDocs(collection(db, 'creators'));
     return snapshot.docs.map(doc => doc.id);
   }
+
+  /**
+   * Refresh YouTube stats for a profile using direct API (cached)
+   */
+  async refreshYouTubeStats(creatorId: string): Promise<{
+    success: boolean;
+    updated: boolean;
+    newStats?: { subscriberCount: string; videoCount: string };
+    error?: string;
+  }> {
+    try {
+      const creatorDoc = await getDoc(doc(db, 'creators', creatorId));
+      if (!creatorDoc.exists()) {
+        return { success: false, updated: false, error: 'Profile not found' };
+      }
+
+      const existing = creatorDoc.data();
+      const channelId = existing.content?.youtube?.channelId;
+
+      if (!channelId) {
+        return { success: false, updated: false, error: 'No YouTube channel' };
+      }
+
+      // Import dynamically to avoid circular deps
+      const { getChannelById } = await import('@/lib/api-clients/youtube');
+      const freshData = await getChannelById(channelId);
+
+      if (!freshData) {
+        return { success: false, updated: false, error: 'Failed to fetch YouTube data' };
+      }
+
+      // Update stats
+      await updateDoc(doc(db, 'creators', creatorId), {
+        'content.youtube.subscriberCount': freshData.subscriberCount,
+        'content.youtube.videoCount': freshData.videoCount,
+        'content.youtube.thumbnailUrl': freshData.thumbnailUrl,
+        'stats.youtubeSubscribers': parseInt(freshData.viewCount) || 0,
+        'updatedAt': new Date(),
+      });
+
+      return {
+        success: true,
+        updated: true,
+        newStats: {
+          subscriberCount: freshData.subscriberCount,
+          videoCount: freshData.videoCount,
+        },
+      };
+    } catch (error) {
+      return { success: false, updated: false, error: String(error) };
+    }
+  }
 }
