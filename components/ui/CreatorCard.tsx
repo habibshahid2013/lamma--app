@@ -61,16 +61,16 @@ export default function CreatorCard(props: CreatorCardProps) {
 
   return (
     <div className={`group relative flex flex-col items-center p-4 rounded-xl border w-44 flex-shrink-0 snap-center transition-all ${
-        isDark 
-          ? 'bg-slate-800 border-amber-500/30 shadow-lg shadow-black/20 hover:border-amber-500/50' 
-          : `bg-white border-gray-100 shadow-sm hover:border-teal/30 ${isHistorical ? 'bg-amber-50/30' : ''}`
+        isDark
+          ? 'bg-navy-card border-gold/30 shadow-lg shadow-black/20 hover:border-gold/50'
+          : `bg-white border-gray-light shadow-sm hover:border-teal/30 ${isHistorical ? 'bg-gold-light/50' : ''}`
     }`}>
       {/* Clickable Area */}
       <div 
         onClick={() => router.push(`/creator/${id}`)}
         className="cursor-pointer w-full flex flex-col items-center"
       >
-        <div className={`relative mb-3 p-1 rounded-full ${isDark ? 'bg-amber-500/10' : 'bg-teal-light/50'}`}>
+        <div className={`relative mb-3 p-1 rounded-full ${isDark ? 'bg-gold/10' : 'bg-teal-light/50'}`}>
           <img
             src={imgSrc}
             alt={displayName}
@@ -85,12 +85,12 @@ export default function CreatorCard(props: CreatorCardProps) {
             }}
           />
           {verified && !isHistorical && (
-            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-amber-500 border-slate-900 text-slate-900' : 'bg-teal text-white border-white'}`}>
+            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-gold border-navy text-navy' : 'bg-teal text-white border-white'}`}>
               <Check className="w-3 h-3" />
             </div>
           )}
           {isPublicFigure && (
-            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-amber-500 border-slate-900 text-slate-900' : 'bg-gold text-white border-white'}`}>
+            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-gold border-navy text-navy' : 'bg-gold text-teal-deep border-white'}`}>
               <Star className="w-3 h-3 fill-current" />
             </div>
           )}
@@ -112,14 +112,14 @@ export default function CreatorCard(props: CreatorCardProps) {
         <div className="flex flex-wrap justify-center gap-1 mb-2 px-1">
           {languages?.slice(0, 2).map((lang) => (
             <span key={lang} className={`text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider border ${
-                isDark ? 'bg-slate-800 text-gray-400 border-slate-700' : 'bg-gray-50 text-gray-400 border-gray-100'
+                isDark ? 'bg-navy text-white/60 border-navy-border' : 'bg-gray-offwhite text-gray-500 border-gray-light'
             }`}>
               {lang.substring(0, 2)}
             </span>
           ))}
           {(languages?.length || 0) > 2 && (
             <span className={`text-[9px] px-1.5 py-0.5 rounded-md border ${
-                isDark ? 'bg-slate-800 text-gray-400 border-slate-700' : 'bg-gray-50 text-gray-400 border-gray-100'
+                isDark ? 'bg-navy text-white/60 border-navy-border' : 'bg-gray-offwhite text-gray-500 border-gray-light'
             }`}>
               +{(languages?.length || 0) - 2}
             </span>
@@ -145,9 +145,9 @@ export default function CreatorCard(props: CreatorCardProps) {
             variant={isFollowing ? "default" : "outline"} // shadcn uses 'default' for primary
             size="sm"
             className={`w-full text-xs rounded-full h-8 ${
-              isFollowing 
-                ? `${isDark ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' : 'bg-gold hover:bg-amber-400 text-slate-900'}` 
-                : `${isDark ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/10' : 'border-gold text-amber-600 hover:bg-gold-light'}`
+              isFollowing
+                ? `${isDark ? 'bg-gold hover:bg-gold-dark text-navy' : 'bg-gold hover:bg-gold-dark text-gray-dark'}`
+                : `${isDark ? 'border-gold/50 text-gold hover:bg-gold/10' : 'border-teal text-teal hover:bg-teal-light'}`
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -170,10 +170,10 @@ export default function CreatorCard(props: CreatorCardProps) {
         )}
       </div>
 
-      <button 
+      <button
         onClick={handleShare}
         className={`absolute top-2 right-2 p-1.5 backdrop-blur-sm rounded-full transition-colors z-20 ${
-            isDark ? 'bg-slate-800/80 text-gray-400 hover:text-amber-500 hover:bg-slate-800' : 'bg-white/80 text-gray-400 hover:text-teal hover:bg-white'
+            isDark ? 'bg-navy/80 text-white/60 hover:text-gold hover:bg-navy' : 'bg-white/80 text-gray-500 hover:text-teal hover:bg-white'
         }`}
       >
         <Share2 className="w-3.5 h-3.5" />

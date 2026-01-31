@@ -51,33 +51,28 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom Lamma colors
+        // LAMMA+ Official Brand Colors (from Brand Guidelines)
         teal: {
-          DEFAULT: "#0D7377", // Primary
-          deep: "#1D4E5F",
-          light: "#E6F4F4",
+          DEFAULT: "#0D7377", // Primary Teal - Growth, life, knowledge
+          deep: "#1D4E5F",    // Deep Teal - Trunk, dark accents
+          light: "#E6F4F4",   // Light Teal - Selected states
         },
         gold: {
-          DEFAULT: "#F5B820", // Warm Gold
-          light: "#FEF9E7",
+          DEFAULT: "#F5B820", // Warm Gold - Backgrounds, highlights, premium
+          light: "#FEF9E7",   // Light Gold - Subtle backgrounds
+          dark: "#D4A01A",    // Darker gold for hover states
         },
+        // Neutral colors
         gray: {
-          dark: "#333333", // Body text
+          dark: "#333333",    // Body text
           offwhite: "#FAFAFA", // Card backgrounds
+          light: "#F5F5F5",   // Borders
         },
-        // NEW: Lamma+ Brand Palette
-        lamma: {
-          gold: '#f59e0b',    // The + symbol and accents
-          yellow: '#eab308',  // Secondary gold
-          teal: '#14b8a6',    // The Palm Tree
-          navy: '#0f172a',    // Main dark background
-          card: '#1e293b',    // Card backgrounds
-          border: '#334155',  // Borders
-          white: '#ffffff',
-          silver: '#cbd5e1',  // Body text
-          muted: '#94a3b8',   // Secondary text
-          cream: '#fdfaf3',   // Light background
-          brown: '#8b5a3c',   // Light mode palm
+        // Navy for dark mode backgrounds
+        navy: {
+          DEFAULT: "#0f172a", // Main dark background
+          card: "#1e293b",    // Card backgrounds
+          border: "#334155",  // Borders
         },
       },
       borderRadius: {

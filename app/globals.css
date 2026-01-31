@@ -78,60 +78,91 @@
 @theme {
   --font-sans: var(--font-inter);
 
+  /* LAMMA+ Official Brand Colors */
   --color-teal: #0d7377;
   --color-teal-deep: #1d4e5f;
   --color-teal-light: #e6f4f4;
 
   --color-gold: #f5b820;
   --color-gold-light: #fef9e7;
+  --color-gold-dark: #d4a01a;
 
   --color-gray-dark: #333333;
   --color-gray-offwhite: #fafafa;
+  --color-gray-light: #f5f5f5;
 
-  /* Lamma+ Brand Variables */
-  --color-lamma-navy: #0f172a;
-  --color-lamma-gold: #f59e0b;
-  --color-lamma-teal: #14b8a6;
-  --color-lamma-cream: #fdfaf3;
-  --color-lamma-card: #1e293b;
-  --color-lamma-border: #334155;
+  /* Dark Mode Navy */
+  --color-navy: #0f172a;
+  --color-navy-card: #1e293b;
+  --color-navy-border: #334155;
 }
 
 @layer components {
-  /* Primary Button (Gold) */
+  /* Primary Button (Gold) - Main CTA */
   .btn-primary {
-    @apply bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-2 px-4 rounded-lg transition-all;
+    @apply bg-gold hover:bg-gold-dark text-gray-dark font-semibold py-2 px-4 rounded-lg transition-all shadow-sm;
   }
 
-  /* Secondary Button */
+  /* Secondary Button (Navy) */
   .btn-secondary {
-    @apply bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded-lg border border-slate-600 transition-all;
+    @apply bg-navy hover:bg-navy-card text-white font-semibold py-2 px-4 rounded-lg border border-navy-border transition-all;
   }
 
-  /* Teal Button */
+  /* Teal Button - Primary Actions */
   .btn-teal {
-    @apply bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-all;
+    @apply bg-teal hover:bg-teal-deep text-white font-semibold py-2 px-4 rounded-lg transition-all shadow-sm;
   }
 
-  /* Card Component */
+  /* Outline Button */
+  .btn-outline {
+    @apply bg-transparent border-2 border-teal text-teal hover:bg-teal hover:text-white font-semibold py-2 px-4 rounded-lg transition-all;
+  }
+
+  /* Card Component (Dark) */
   .card-lamma {
-    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl;
+    @apply bg-navy-card border border-navy-border rounded-xl p-6 shadow-xl;
+  }
+
+  /* Card Component (Light) */
+  .card-lamma-light {
+    @apply bg-white border border-gray-light rounded-xl p-6 shadow-sm;
   }
 
   /* Card with hover effect */
   .card-lamma-hover {
-    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl 
-           hover:border-amber-500/50 hover:shadow-amber-500/10 transition-all duration-300;
+    @apply bg-navy-card border border-navy-border rounded-xl p-6 shadow-xl
+           hover:border-gold/50 hover:shadow-gold/10 transition-all duration-300;
   }
 
   /* Topic/Tag pill */
   .tag-pill {
-    @apply px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-sm 
-           border border-slate-700 hover:border-teal-500 hover:text-teal-400 transition-all;
+    @apply px-3 py-1 bg-navy-card text-white/80 rounded-full text-sm
+           border border-navy-border hover:border-teal hover:text-teal transition-all;
+  }
+
+  /* Tag pill light mode */
+  .tag-pill-light {
+    @apply px-3 py-1 bg-gray-offwhite text-gray-dark rounded-full text-sm
+           border border-gray-light hover:border-teal hover:text-teal transition-all;
   }
 
   /* Category badge */
   .category-badge {
-    @apply px-3 py-1 bg-amber-500/20 text-amber-500 rounded-full text-sm font-medium;
+    @apply px-3 py-1 bg-gold/20 text-gold rounded-full text-sm font-medium;
+  }
+
+  /* Admin card */
+  .admin-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-light p-6;
+  }
+
+  /* Feature section with gold background */
+  .section-gold {
+    @apply bg-gold text-teal-deep;
+  }
+
+  /* Verified badge */
+  .verified-badge {
+    @apply bg-teal text-white p-1 rounded-full;
   }
 }

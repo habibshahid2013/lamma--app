@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  doc, 
-  updateDoc, 
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
   serverTimestamp,
-  orderBy 
+  orderBy
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import LammaLogo from '@/components/LammaLogo';
+import { Database, Zap, Users, Home, Settings, RefreshCw, Plus } from 'lucide-react';
 
 interface ClaimRequest {
   id: string;
@@ -40,10 +42,12 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [stats, setStats] = useState({ creators: 0, users: 0, pending: 0 });
 
   useEffect(() => {
-    const fetchClaims = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch claims
         let q;
         if (filter === 'all') {
           q = query(collection(db, 'claimRequests'), orderBy('createdAt', 'desc'));
@@ -62,45 +66,50 @@ export default function AdminDashboard() {
         })) as ClaimRequest[];
 
         setClaims(claimsData);
+
+        // Fetch stats
+        const creatorsSnap = await getDocs(collection(db, 'creators'));
+        const usersSnap = await getDocs(collection(db, 'users'));
+        const pendingSnap = await getDocs(query(collection(db, 'claimRequests'), where('status', '==', 'pending')));
+
+        setStats({
+          creators: creatorsSnap.size,
+          users: usersSnap.size,
+          pending: pendingSnap.size
+        });
       } catch (error: any) {
-        console.error('Error fetching claims:', error);
-        // ... (existing error handling)
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
     if (!authLoading && userData?.role === 'admin') {
-      fetchClaims();
+      fetchData();
     }
   }, [filter, authLoading, userData]);
 
   const handleMigrateLinks = async () => {
     if (!confirm("This will update podcast links for ALL creators to use Muslim Central. Continue?")) return;
-    
+
     setLoading(true);
     try {
-        // 1. Fetch all creators
         const snapshot = await getDocs(collection(db, 'creators'));
         alert(`Found ${snapshot.size} creators. Starting update...`);
-        
+
         let count = 0;
-        const batchSize = 500;
-        // Firestore batches are limited to 500 ops, but we'll doing it client side loop for simplicity in this admin tool
-        // or sequential await to avoid rate limits if huge.
-        
+
         for (const docSnapshot of snapshot.docs) {
             const creatorId = docSnapshot.id;
-            // Use the slug/id for the URL
             const podcastUrl = `https://feeds.muslimcentral.com/${creatorId}`;
-             
+
             await updateDoc(doc(db, 'creators', creatorId), {
                 'socialLinks.podcast': podcastUrl
             });
             count++;
         }
 
-        alert(`Successfully updated ${count} creators! 🚀`);
+        alert(`Successfully updated ${count} creators!`);
     } catch (e) {
         console.error(e);
         alert("Migration failed. Check console.");
@@ -114,7 +123,6 @@ export default function AdminDashboard() {
 
     setProcessingId(claim.id);
     try {
-      // 1. Update claim request status
       await updateDoc(doc(db, 'claimRequests', claim.id), {
         status: 'approved',
         reviewedBy: user?.uid,
@@ -122,7 +130,6 @@ export default function AdminDashboard() {
         updatedAt: serverTimestamp(),
       });
 
-      // 2. Update creator profile ownership
       await updateDoc(doc(db, 'creators', claim.creatorProfileId), {
         'ownership.ownerId': claim.claimantUserId,
         'ownership.ownershipStatus': 'claimed',
@@ -134,16 +141,14 @@ export default function AdminDashboard() {
         updatedAt: serverTimestamp(),
       });
 
-      // 3. Update user role to creator
       await updateDoc(doc(db, 'users', claim.claimantUserId), {
         role: 'creator',
         creatorProfileId: claim.creatorProfileId,
         updatedAt: serverTimestamp(),
       });
 
-      // Remove from local state
       setClaims(claims.filter(c => c.id !== claim.id));
-      alert('✅ Claim approved! User can now edit their profile.');
+      alert('Claim approved! User can now edit their profile.');
     } catch (error) {
       console.error('Error approving claim:', error);
       alert('Error approving claim');
@@ -154,7 +159,7 @@ export default function AdminDashboard() {
 
   const handleReject = async (claim: ClaimRequest) => {
     const reason = prompt('Reason for rejection (optional):');
-    if (reason === null) return; // User cancelled
+    if (reason === null) return;
 
     setProcessingId(claim.id);
     try {
@@ -179,21 +184,21 @@ export default function AdminDashboard() {
   // Auth checks
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-offwhite">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal"></div>
       </div>
     );
   }
 
   if (!user || userData?.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">🔒 Admin Access Only</h1>
-          <p className="text-gray-600 mb-4">You don't have permission to view this page.</p>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-offwhite">
+        <div className="text-center bg-white rounded-xl p-8 shadow-sm border border-gray-light">
+          <h1 className="text-2xl font-bold mb-4 text-gray-dark">Admin Access Only</h1>
+          <p className="text-gray-500 mb-6">You don't have permission to view this page.</p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-2 bg-teal-600 text-white rounded-lg"
+            className="px-6 py-3 bg-teal hover:bg-teal-deep text-white rounded-lg font-medium transition-colors"
           >
             Go Home
           </button>
@@ -203,170 +208,222 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <div className="flex gap-2">
-             <button onClick={handleMigrateLinks} className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200">
-                ⚡ Fix DB Links
-             </button>
-             <span className="text-sm bg-teal-100 text-teal-800 px-3 py-1 rounded-full">
-                {userData?.email}
-             </span>
+    <div className="min-h-screen bg-gray-offwhite">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-light sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <LammaLogo variant="light" size="sm" />
+            <div className="h-6 w-px bg-gray-light" />
+            <h1 className="text-lg font-bold text-gray-dark">Admin Dashboard</h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleMigrateLinks}
+              className="flex items-center gap-2 text-xs bg-gold/10 text-gold hover:bg-gold/20 px-3 py-2 rounded-lg font-medium transition-colors"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              Fix DB Links
+            </button>
+            <span className="text-sm bg-teal-light text-teal-deep px-3 py-2 rounded-lg font-medium">
+              {userData?.email}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-xl p-6 border border-gray-light shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-teal-light rounded-lg">
+                <Users className="w-5 h-5 text-teal" />
+              </div>
+              <span className="text-sm text-gray-500">Total Creators</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-dark">{stats.creators}</p>
+          </div>
+          <div className="bg-white rounded-xl p-6 border border-gray-light shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-gold-light rounded-lg">
+                <Users className="w-5 h-5 text-gold" />
+              </div>
+              <span className="text-sm text-gray-500">Total Users</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-dark">{stats.users}</p>
+          </div>
+          <div className="bg-white rounded-xl p-6 border border-gray-light shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Settings className="w-5 h-5 text-orange-500" />
+              </div>
+              <span className="text-sm text-gray-500">Pending Claims</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-dark">{stats.pending}</p>
           </div>
         </div>
 
         {/* Admin Navigation Cards */}
+        <h2 className="text-lg font-bold text-gray-dark mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <button
             onClick={() => router.push('/admin/pipeline')}
-            className="bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+            className="group bg-gradient-to-br from-teal to-teal-deep text-white rounded-xl p-5 text-left hover:shadow-lg hover:scale-[1.02] transition-all"
           >
-            <div className="text-2xl mb-2">🚀</div>
+            <div className="p-2 bg-white/20 rounded-lg w-fit mb-3 group-hover:bg-white/30 transition-colors">
+              <Zap className="w-5 h-5" />
+            </div>
             <div className="font-semibold">Profile Pipeline</div>
-            <div className="text-xs opacity-80">Generate new profiles</div>
+            <div className="text-xs opacity-80 mt-1">Generate new profiles</div>
           </button>
 
           <button
             onClick={() => router.push('/admin/sync')}
-            className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+            className="group bg-gradient-to-br from-gold to-gold-dark text-gray-dark rounded-xl p-5 text-left hover:shadow-lg hover:scale-[1.02] transition-all"
           >
-            <div className="text-2xl mb-2">🔄</div>
+            <div className="p-2 bg-white/30 rounded-lg w-fit mb-3 group-hover:bg-white/40 transition-colors">
+              <RefreshCw className="w-5 h-5" />
+            </div>
             <div className="font-semibold">Sync Profiles</div>
-            <div className="text-xs opacity-80">Enrich existing profiles</div>
+            <div className="text-xs opacity-80 mt-1">Enrich existing profiles</div>
           </button>
 
           <button
             onClick={() => router.push('/admin/add-creator')}
-            className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+            className="group bg-gradient-to-br from-teal-deep to-navy text-white rounded-xl p-5 text-left hover:shadow-lg hover:scale-[1.02] transition-all"
           >
-            <div className="text-2xl mb-2">➕</div>
+            <div className="p-2 bg-white/20 rounded-lg w-fit mb-3 group-hover:bg-white/30 transition-colors">
+              <Plus className="w-5 h-5" />
+            </div>
             <div className="font-semibold">Add Creator</div>
-            <div className="text-xs opacity-80">Manual profile entry</div>
+            <div className="text-xs opacity-80 mt-1">AI profile generation</div>
           </button>
 
           <button
             onClick={() => router.push('/')}
-            className="bg-gradient-to-br from-gray-500 to-gray-600 text-white rounded-xl p-4 text-left hover:shadow-lg transition-shadow"
+            className="group bg-white border-2 border-gray-light text-gray-dark rounded-xl p-5 text-left hover:border-teal hover:shadow-lg hover:scale-[1.02] transition-all"
           >
-            <div className="text-2xl mb-2">🏠</div>
+            <div className="p-2 bg-gray-100 rounded-lg w-fit mb-3 group-hover:bg-teal-light transition-colors">
+              <Home className="w-5 h-5 text-gray-500 group-hover:text-teal" />
+            </div>
             <div className="font-semibold">Back to App</div>
-            <div className="text-xs opacity-80">Return to main site</div>
+            <div className="text-xs text-gray-500 mt-1">Return to main site</div>
           </button>
         </div>
 
         {/* Claim Requests Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">📋 Claim Requests</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-light p-6">
+          <h2 className="text-lg font-bold text-gray-dark mb-4">Claim Requests</h2>
 
           {/* Filter Tabs */}
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-2 mb-6 border-b border-gray-light pb-4">
             {(['pending', 'approved', 'rejected', 'all'] as const).map((status) => (
               <button
                 key={status}
                 onClick={() => setFilter(status)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   filter === status
-                    ? 'bg-teal-600 text-white'
+                    ? 'bg-teal text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
-                {status === 'pending' && claims.length > 0 && filter === 'pending' && (
-                  <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                    {claims.length}
+                {status === 'pending' && stats.pending > 0 && (
+                  <span className="ml-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {stats.pending}
                   </span>
                 )}
               </button>
             ))}
           </div>
 
-        {/* Claims List */}
-        {claims.length === 0 ? (
-          <div className="bg-white rounded-xl p-8 text-center">
-            <p className="text-gray-500">No {filter === 'all' ? '' : filter} claims found.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {claims.map((claim) => (
-              <div key={claim.id} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">{claim.creatorName}</h3>
-                    <p className="text-gray-600">
-                      Claimed by: {claim.claimantName} ({claim.claimantEmail})
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      {claim.createdAt?.toDate?.()?.toLocaleDateString() || 'Unknown date'}
-                    </p>
+          {/* Claims List */}
+          {claims.length === 0 ? (
+            <div className="py-12 text-center">
+              <Database className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No {filter === 'all' ? '' : filter} claims found.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {claims.map((claim) => (
+                <div key={claim.id} className="border border-gray-light rounded-xl p-5 hover:border-teal/30 transition-colors">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-dark">{claim.creatorName}</h3>
+                      <p className="text-gray-500 text-sm">
+                        Claimed by: <span className="font-medium">{claim.claimantName}</span> ({claim.claimantEmail})
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {claim.createdAt?.toDate?.()?.toLocaleDateString() || 'Unknown date'}
+                      </p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      claim.status === 'pending' ? 'bg-gold-light text-gold' :
+                      claim.status === 'approved' ? 'bg-green-100 text-green-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {claim.status.toUpperCase()}
+                    </span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    claim.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    claim.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {claim.status}
-                  </span>
-                </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <h4 className="font-medium mb-2">Evidence ({claim.evidence.method})</h4>
-                  
-                  {claim.evidence.socialMediaLinks && claim.evidence.socialMediaLinks.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-sm text-gray-600">Social Links:</p>
-                      {claim.evidence.socialMediaLinks.map((link, i) => (
-                        <a
-                          key={i}
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-teal-600 hover:underline block text-sm"
-                        >
-                          {link}
-                        </a>
-                      ))}
+                  <div className="bg-gray-offwhite rounded-lg p-4 mb-4">
+                    <h4 className="font-medium text-sm text-gray-dark mb-2">Evidence ({claim.evidence.method})</h4>
+
+                    {claim.evidence.socialMediaLinks && claim.evidence.socialMediaLinks.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs text-gray-500 mb-1">Social Links:</p>
+                        {claim.evidence.socialMediaLinks.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-teal hover:underline block text-sm"
+                          >
+                            {link}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
+                    {claim.evidence.officialEmail && (
+                      <p className="text-sm">
+                        <span className="text-gray-500">Official Email:</span> {claim.evidence.officialEmail}
+                      </p>
+                    )}
+
+                    {claim.evidence.additionalNotes && (
+                      <p className="text-sm mt-2">
+                        <span className="text-gray-500">Notes:</span> {claim.evidence.additionalNotes}
+                      </p>
+                    )}
+                  </div>
+
+                  {claim.status === 'pending' && (
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleApprove(claim)}
+                        disabled={processingId === claim.id}
+                        className="flex-1 py-2.5 bg-teal hover:bg-teal-deep text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+                      >
+                        {processingId === claim.id ? 'Processing...' : 'Approve'}
+                      </button>
+                      <button
+                        onClick={() => handleReject(claim)}
+                        disabled={processingId === claim.id}
+                        className="flex-1 py-2.5 bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 rounded-lg font-medium disabled:opacity-50 transition-colors"
+                      >
+                        Reject
+                      </button>
                     </div>
                   )}
-
-                  {claim.evidence.officialEmail && (
-                    <p className="text-sm">
-                      <span className="text-gray-600">Official Email:</span> {claim.evidence.officialEmail}
-                    </p>
-                  )}
-
-                  {claim.evidence.additionalNotes && (
-                    <p className="text-sm mt-2">
-                      <span className="text-gray-600">Notes:</span> {claim.evidence.additionalNotes}
-                    </p>
-                  )}
                 </div>
-
-                {claim.status === 'pending' && (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => handleApprove(claim)}
-                      disabled={processingId === claim.id}
-                      className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:opacity-50"
-                    >
-                      {processingId === claim.id ? 'Processing...' : '✓ Approve'}
-                    </button>
-                    <button
-                      onClick={() => handleReject(claim)}
-                      disabled={processingId === claim.id}
-                      className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50"
-                    >
-                      ✕ Reject
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
