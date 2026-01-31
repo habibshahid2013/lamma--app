@@ -1,3 +1,13 @@
 <svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M50 85V45M50 45C65 30 85 30 95 40M50 45C35 30 15 30 5 40M50 45C65 20 80 20 90 25M50 45C35 20 20 20 10 25" stroke="#14b8a6" stroke-width="6" stroke-linecap="round"/>
+  <!-- App Icon - Teal palm tree -->
+  <path d="M50 92 L50 52" stroke="#0D7377" stroke-width="7" stroke-linecap="round"/>
+  <path d="M50 52 Q38 48 22 58" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 50 Q35 40 18 42" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 48 Q38 32 20 28" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 46 Q42 28 28 15" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 52 Q62 48 78 58" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 50 Q65 40 82 42" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 48 Q62 32 80 28" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 46 Q58 28 72 15" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M50 48 Q50 30 50 10" stroke="#0D7377" stroke-width="4" stroke-linecap="round" fill="none"/>
 </svg>
