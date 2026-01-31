@@ -88,7 +88,8 @@ export default function CreatorProfilePage() {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-white">
-              <span className="text-2xl">🌙</span>
+              {/* <span className="text-2xl">🌙</span> */}
+              <img src="/lamma-tree.png" alt="Lamma" className="w-8 h-8 object-contain contrast-200 brightness-200" />
               <span className="text-xl font-bold">Lamma+</span>
             </Link>
             <div className="flex items-center gap-3">

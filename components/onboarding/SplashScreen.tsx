@@ -19,7 +19,8 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gold text-center p-4">
       <div className="animate-fade-in-up flex flex-col items-center">
-        <TreeDeciduous className="w-32 h-32 text-teal mx-auto mb-6" />
+        {/* <TreeDeciduous className="w-32 h-32 text-teal mx-auto mb-6" /> */}
+        <img src="/lamma-tree.png" alt="Lamma" className="w-32 h-32 object-contain mx-auto mb-6 drop-shadow-md" />
         <h1 className="text-4xl font-bold text-teal tracking-tight mb-2">LAMMA+</h1>
         <p className="text-teal-deep text-lg font-medium">Gather in Faith</p>
       </div>

@@ -17,7 +17,8 @@ export default function WelcomeScreen({ onNext }: WelcomeScreenProps) {
 
       <div className="flex-1 px-8 flex flex-col items-center text-center">
         <div className="flex items-center space-x-3 mb-6">
-          <TreeDeciduous className="w-10 h-10 text-teal" />
+          {/* <TreeDeciduous className="w-10 h-10 text-teal" /> */}
+          <img src="/lamma-tree.png" alt="Lamma" className="w-12 h-12 object-contain" />
           <span className="text-3xl font-bold text-teal">LAMMA+</span>
         </div>
 

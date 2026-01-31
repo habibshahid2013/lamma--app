@@ -35,7 +35,8 @@ export default function HomeScreen() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-2">
-          <TreeDeciduous className="w-6 h-6 text-teal" />
+          {/* <TreeDeciduous className="w-6 h-6 text-teal" /> */}
+          <img src="/lamma-tree.png" alt="Lamma" className="w-8 h-8 object-contain" />
           <span className="font-bold text-lg text-teal-deep tracking-tight">LAMMA+</span>
         </div>
         <div className="flex items-center space-x-3">

@@ -146,8 +146,8 @@ export default function CreatorCard(props: CreatorCardProps) {
             size="sm"
             className={`w-full text-xs rounded-full h-8 ${
               isFollowing 
-                ? `${isDark ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' : 'bg-teal hover:bg-teal-dark text-white'}` 
-                : `${isDark ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/10' : 'border-teal text-teal hover:bg-teal-light'}`
+                ? `${isDark ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' : 'bg-gold hover:bg-amber-400 text-slate-900'}` 
+                : `${isDark ? 'border-amber-500/50 text-amber-500 hover:bg-amber-500/10' : 'border-gold text-amber-600 hover:bg-gold-light'}`
             }`}
             onClick={(e) => {
               e.stopPropagation();
