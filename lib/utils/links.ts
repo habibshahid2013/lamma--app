@@ -19,6 +19,9 @@ export type LinkPlatform =
   | 'instagram'
   | 'tiktok'
   | 'linkedin'
+  | 'twitch'
+  | 'threads'
+  | 'patreon'
   | 'podcast'
   | 'website'
   | 'other';
@@ -117,6 +120,30 @@ export const PLATFORM_INFO: Record<LinkPlatform, PlatformInfo> = {
     bgColor: 'bg-blue-600/20',
     hoverColor: 'hover:bg-blue-600/30',
   },
+  twitch: {
+    platform: 'twitch',
+    name: 'Twitch',
+    icon: 'twitch',
+    color: 'text-purple-400',
+    bgColor: 'bg-purple-500/20',
+    hoverColor: 'hover:bg-purple-500/30',
+  },
+  threads: {
+    platform: 'threads',
+    name: 'Threads',
+    icon: 'threads',
+    color: 'text-white',
+    bgColor: 'bg-slate-700',
+    hoverColor: 'hover:bg-slate-600',
+  },
+  patreon: {
+    platform: 'patreon',
+    name: 'Patreon',
+    icon: 'patreon',
+    color: 'text-orange-400',
+    bgColor: 'bg-orange-500/20',
+    hoverColor: 'hover:bg-orange-500/30',
+  },
   audible: {
     platform: 'audible',
     name: 'Audible',
@@ -186,6 +213,12 @@ const PLATFORM_PATTERNS: Array<{ pattern: RegExp; platform: LinkPlatform }> = [
   { pattern: /^(www\.)?(tiktok\.com|vm\.tiktok\.com)/i, platform: 'tiktok' },
   // LinkedIn
   { pattern: /^(www\.)?linkedin\.com/i, platform: 'linkedin' },
+  // Twitch
+  { pattern: /^(www\.)?twitch\.tv/i, platform: 'twitch' },
+  // Threads
+  { pattern: /^(www\.)?threads\.net/i, platform: 'threads' },
+  // Patreon
+  { pattern: /^(www\.)?patreon\.com/i, platform: 'patreon' },
   // Audible
   { pattern: /^(www\.)?audible\.(com|co\.[a-z]{2})/i, platform: 'audible' },
   // Google Books
@@ -354,6 +387,9 @@ export function convertLegacySocialLinks(
     { key: 'facebook', platform: 'facebook' },
     { key: 'tiktok', platform: 'tiktok' },
     { key: 'linkedin', platform: 'linkedin' },
+    { key: 'twitch', platform: 'twitch' },
+    { key: 'threads', platform: 'threads' },
+    { key: 'patreon', platform: 'patreon' },
     { key: 'podcast', platform: 'podcast' },
   ];
 
@@ -396,6 +432,9 @@ export function convertToLegacySocialLinks(
     facebook: 'facebook',
     tiktok: 'tiktok',
     linkedin: 'linkedin',
+    twitch: 'twitch',
+    threads: 'threads',
+    patreon: 'patreon',
     podcast: 'podcast',
     audible: 'audible',
     google_books: 'google_books',

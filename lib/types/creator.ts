@@ -47,8 +47,11 @@ export interface Creator {
     facebook?: string;
     tiktok?: string;
     linkedin?: string;
+    twitch?: string;
+    threads?: string;
+    patreon?: string;
     podcast?: string;
-    spotify?: string; // Added Spotify
+    spotify?: string;
   };
   
   // Extended Content
