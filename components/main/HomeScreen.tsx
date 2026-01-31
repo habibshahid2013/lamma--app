@@ -12,12 +12,14 @@ import TopicSection from "./TopicSection";
 import SurpriseMeButton from "../ui/SurpriseMeButton";
 import Link from "next/link";
 import { useCreators, useFeaturedCreators } from "@/hooks/useCreators";
+import { useFollow } from "@/hooks/useFollow";
 
 export default function HomeScreen() {
   // Filters
   const [showHistorical, setShowHistorical] = useState(false);
 
-  // Data Hooks
+  // Hooks
+  const { isFollowing, toggleFollow } = useFollow();
   const { creators: featuredData, loading: loadingFeatured } = useFeaturedCreators(20);
   const { creators: publicFiguresData, loading: loadingPublic } = useCreators({ category: 'public_figure', limitCount: 10 });
 
@@ -87,7 +89,13 @@ export default function HomeScreen() {
                     ))
                 ) : (
                     featuredCreators.map(creator => (
-                    <CreatorCard key={creator.id} {...creator} theme="dark" />
+                    <CreatorCard 
+                      key={creator.id} 
+                      {...creator} 
+                      theme="dark" 
+                      isFollowing={isFollowing(creator.id)}
+                      onFollow={() => toggleFollow(creator.id)}
+                    />
                     ))
                 )}
             </div>
@@ -107,7 +115,12 @@ export default function HomeScreen() {
                         ))
                     ) : (
                         publicFigures.map(creator => (
-                        <CreatorCard key={creator.id} {...creator} />
+                        <CreatorCard 
+                          key={creator.id} 
+                          {...creator} 
+                          isFollowing={isFollowing(creator.id)}
+                          onFollow={() => toggleFollow(creator.id)}
+                        />
                         ))
                     )}
                 </div>
