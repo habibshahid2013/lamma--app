@@ -67,17 +67,39 @@ export default function AddCreatorPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate profile');
+        throw new Error(data.error || 'Failed to queue job');
       }
 
-      setGeneratedProfile(data.profile);
-      setEditedData(data.firestoreData);
-      setStageResults(data.stages);
+      const { jobId } = data;
+      console.log('Started Job:', jobId);
+
+      // Listen for updates
+      const { onSnapshot, doc } = await import('firebase/firestore');
+      const { db } = await import('@/lib/firebase');
+
+      const unsub = onSnapshot(doc(db, 'creator_queue', jobId), (snap) => {
+          const jobData = snap.data();
+          if (!jobData) return;
+
+          console.log('Job Update:', jobData.status);
+
+          if (jobData.status === 'completed' && jobData.result) {
+              setGeneratedProfile(jobData.result.profile);
+              setEditedData(jobData.result.firestoreData);
+              setStageResults(jobData.result.stages);
+              setGenerating(false);
+              unsub();
+          } else if (jobData.status === 'failed') {
+              setError(jobData.error || 'Job failed');
+              setGenerating(false);
+              unsub();
+          }
+      });
+
     } catch (err) {
       setError(String(err));
-    } finally {
       setGenerating(false);
-    }
+    } 
   };
 
   const handleSave = async () => {
