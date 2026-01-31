@@ -26,7 +26,8 @@ export default function CreatorProfilePage() {
   
   const [activeTab, setActiveTab] = useState<'about' | 'videos' | 'podcasts' | 'books'>('about');
   const [isFollowing, setIsFollowing] = useState(false);
-  const [imageError, setImageError] = useState(false); // MOVED TO TOP to fix Error #310
+  const [imageError, setImageError] = useState(false);
+  const [useYoutubeFallback, setUseYoutubeFallback] = useState(false);
 
   const handleFollow = () => {
     if (!user) {
@@ -76,7 +77,9 @@ export default function CreatorProfilePage() {
   };
 
   // Get avatar - fallback to YouTube thumbnail or initials
-  const avatarUrl = profile.avatar || content?.youtube?.thumbnailUrl || null;
+  // Priority: 1. Profile Avatar, 2. YouTube Thumbnail (if fallback triggered or avatar missing), 3. Initials
+  const youtubeAvatar = content?.youtube?.thumbnailUrl;
+  const avatarUrl = useYoutubeFallback ? youtubeAvatar : (profile.avatar || youtubeAvatar || null);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -127,7 +130,14 @@ export default function CreatorProfilePage() {
                       src={avatarUrl} 
                       alt={profile.name}
                       className="w-full h-full object-cover"
-                      onError={() => setImageError(true)}
+                      onError={() => {
+                        if (!useYoutubeFallback && youtubeAvatar) {
+                          setUseYoutubeFallback(true);
+                          setImageError(false);
+                        } else {
+                          setImageError(true);
+                        }
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">

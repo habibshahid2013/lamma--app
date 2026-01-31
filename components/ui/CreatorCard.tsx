@@ -39,19 +39,23 @@ export default function CreatorCard(props: CreatorCardProps) {
     languages = [],
     trending,
     theme = 'light',
+    content,
   } = props;
   
   const isDark = theme === 'dark';
+  
+  const displayName = name || "Unknown Creator";
+  const displayCategory = category ? category.replace("_", " ") : "Creator";
+  const youtubeThumbnail = content?.youtube?.thumbnailUrl;
+  const initialImage = avatar || youtubeThumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D7377&color=fff`;
+  
+  const [imgSrc, setImgSrc] = useState(initialImage);
 
   // Prevent card click when clicking share
   const handleShare = (e: React.MouseEvent) => {
       e.stopPropagation();
       setIsShareOpen(true);
   };
-
-  const displayName = name || "Unknown Creator";
-  const displayCategory = category ? category.replace("_", " ") : "Creator";
-  const displayAvatar = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D7377&color=fff`;
 
   const isPublicFigure = category === "public_figure";
 
@@ -68,12 +72,16 @@ export default function CreatorCard(props: CreatorCardProps) {
       >
         <div className={`relative mb-3 p-1 rounded-full ${isDark ? 'bg-amber-500/10' : 'bg-teal-light/50'}`}>
           <img
-            src={displayAvatar}
+            src={imgSrc}
             alt={displayName}
             className={`w-16 h-16 rounded-full object-cover bg-gray-200 ${isHistorical ? 'sepia-[.3]' : ''}`}
-            onError={(e) => {
-              // Fallback if image fails
-              (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`;
+            onError={() => {
+              // Fallback logic
+              if (imgSrc === avatar && youtubeThumbnail) {
+                setImgSrc(youtubeThumbnail);
+              } else if (imgSrc !== `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`) {
+                setImgSrc(`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
+              }
             }}
           />
           {verified && !isHistorical && (
