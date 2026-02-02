@@ -8,11 +8,24 @@ import { Metadata, Viewport } from 'next';
 // SITE CONFIGURATION
 // =============================================================================
 
+const getBaseUrl = () => {
+  // Check for explicitly set URL first
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // Vercel deployment URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Default for local development
+  return 'https://lammaplus.com';
+};
+
 export const siteConfig = {
   name: 'Lamma+',
   tagline: 'Gather in Faith',
   description: 'Discover Islamic scholars and educators who inspire your journey. Your gathering place for faith-based content creators.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://lammaplus.com',
+  url: getBaseUrl(),
   ogImage: '/og-image.png',
   twitterHandle: '@lammaplus',
   locale: 'en_US',
@@ -65,7 +78,6 @@ export const defaultMetadata: Metadata = {
       url: '/icon.svg',
     },
   },
-  manifest: '/manifest.json',
   openGraph: {
     type: 'website',
     locale: siteConfig.locale,
@@ -271,7 +283,7 @@ export function generateCreatorSchema(creator: {
   bio?: string;
   avatar?: string;
   category?: string;
-  socialLinks?: Record<string, string>;
+  socialLinks?: Record<string, string | undefined>;
 }) {
   return {
     '@context': 'https://schema.org',
