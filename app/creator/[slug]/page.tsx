@@ -4,10 +4,11 @@
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { generateCreatorMetadata, generateCreatorSchema, siteConfig } from '@/lib/seo';
+import { generateCreatorMetadata, generateCreatorSchema } from '@/lib/seo';
 import CreatorPageClient from './CreatorPageClient';
+import type { Creator } from '@/lib/types/creator';
 
 // Type for page props
 interface PageProps {
@@ -15,13 +16,14 @@ interface PageProps {
 }
 
 // Fetch creator data (used by both metadata and page)
-async function getCreator(slug: string) {
+async function getCreator(slug: string): Promise<Creator | null> {
   try {
     const creatorDoc = await getDoc(doc(db, 'creators', slug));
     if (!creatorDoc.exists()) {
       return null;
     }
-    return { id: creatorDoc.id, ...creatorDoc.data() };
+    const data = creatorDoc.data() as DocumentData;
+    return { id: creatorDoc.id, ...data } as Creator;
   } catch (error) {
     console.error('Error fetching creator:', error);
     return null;
