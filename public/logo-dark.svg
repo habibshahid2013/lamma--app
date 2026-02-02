@@ -1,5 +1,7 @@
 <svg width="400" height="100" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M45 75V45M45 45C55 35 70 35 80 40M45 45C35 35 20 35 10 40M45 45C55 25 65 25 75 30M45 45C35 25 25 25 15 30" stroke="#14b8a6" stroke-width="5" stroke-linecap="round"/>
-  <text x="100" y="70" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#FFFFFF">LAMMA</text>
-  <text x="275" y="70" font-family="Arial, sans-serif" font-weight="bold" font-size="42" fill="#f59e0b">+</text>
+  <!-- Lamma+ Logo - Dark variant (for dark backgrounds) -->
+  <!-- Tree uses brand teal #0D7377, text is white, + is brand gold #F5B820 -->
+  <path d="M45 75V45M45 45C55 35 70 35 80 40M45 45C35 35 20 35 10 40M45 45C55 25 65 25 75 30M45 45C35 25 25 25 15 30" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
+  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="42" fill="#FFFFFF">LAMMA</text>
+  <text x="275" y="70" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="42" fill="#F5B820">+</text>
 </svg>

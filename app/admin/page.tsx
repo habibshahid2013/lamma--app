@@ -15,7 +15,7 @@ import {
 import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import LammaLogo from '@/components/LammaLogo';
-import { Database, Zap, Users, Home, Settings, RefreshCw, Plus } from 'lucide-react';
+import { Database, Zap, Users, Home, Settings, RefreshCw, Plus, Leaf, ImageIcon } from 'lucide-react';
 
 interface ClaimRequest {
   id: string;
@@ -43,6 +43,8 @@ export default function AdminDashboard() {
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [stats, setStats] = useState({ creators: 0, users: 0, pending: 0 });
+  const [seeding, setSeeding] = useState(false);
+  const [seedStatus, setSeedStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,6 +90,78 @@ export default function AdminDashboard() {
       fetchData();
     }
   }, [filter, authLoading, userData]);
+
+  // Seed creators from static data
+  const handleSeedCreators = async () => {
+    if (!confirm("This will seed/update all creators from static data. Continue?")) return;
+
+    setSeeding(true);
+    setSeedStatus('Seeding creators...');
+    try {
+      const response = await fetch('/api/admin/seed?action=seed', { method: 'POST' });
+      const data = await response.json();
+
+      if (data.success) {
+        setSeedStatus(`✅ Done! Created: ${data.created}, Updated: ${data.updated}`);
+        // Refresh stats
+        const creatorsSnap = await getDocs(collection(db, 'creators'));
+        setStats(prev => ({ ...prev, creators: creatorsSnap.size }));
+      } else {
+        setSeedStatus(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setSeedStatus(`❌ Error: ${String(error)}`);
+    } finally {
+      setSeeding(false);
+    }
+  };
+
+  // Fetch missing images
+  const handleFetchImages = async () => {
+    if (!confirm("This will fetch missing images for all creators. This may take a few minutes. Continue?")) return;
+
+    setSeeding(true);
+    setSeedStatus('Fetching images...');
+    try {
+      const response = await fetch('/api/admin/seed?action=images', { method: 'POST' });
+      const data = await response.json();
+
+      if (data.success) {
+        setSeedStatus(`✅ Images: ${data.fetched} fetched, ${data.placeholder} placeholders`);
+      } else {
+        setSeedStatus(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setSeedStatus(`❌ Error: ${String(error)}`);
+    } finally {
+      setSeeding(false);
+    }
+  };
+
+  // Full pipeline: seed + images
+  const handleFullPipeline = async () => {
+    if (!confirm("This will seed creators AND fetch images. This may take several minutes. Continue?")) return;
+
+    setSeeding(true);
+    setSeedStatus('Running full pipeline...');
+    try {
+      const response = await fetch('/api/admin/seed?action=full', { method: 'POST' });
+      const data = await response.json();
+
+      if (data.success) {
+        setSeedStatus(`✅ Complete! Seed: ${data.seed.created}+${data.seed.updated}, Images: ${data.images.fetched}`);
+        // Refresh stats
+        const creatorsSnap = await getDocs(collection(db, 'creators'));
+        setStats(prev => ({ ...prev, creators: creatorsSnap.size }));
+      } else {
+        setSeedStatus(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setSeedStatus(`❌ Error: ${String(error)}`);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const handleMigrateLinks = async () => {
     if (!confirm("This will update podcast links for ALL creators to use Muslim Central. Continue?")) return;
@@ -261,6 +335,57 @@ export default function AdminDashboard() {
               <span className="text-sm text-gray-500">Pending Claims</span>
             </div>
             <p className="text-3xl font-bold text-gray-dark">{stats.pending}</p>
+          </div>
+        </div>
+
+        {/* Seed Status Banner */}
+        {seedStatus && (
+          <div className={`mb-6 p-4 rounded-xl border ${
+            seedStatus.startsWith('✅') ? 'bg-green-50 border-green-200 text-green-800' :
+            seedStatus.startsWith('❌') ? 'bg-red-50 border-red-200 text-red-800' :
+            'bg-blue-50 border-blue-200 text-blue-800'
+          }`}>
+            <div className="flex items-center justify-between">
+              <span>{seedStatus}</span>
+              <button onClick={() => setSeedStatus(null)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+          </div>
+        )}
+
+        {/* Data Seeding Section */}
+        <div className="bg-white rounded-xl p-6 border border-gray-light shadow-sm mb-8">
+          <h2 className="text-lg font-bold text-gray-dark mb-4 flex items-center gap-2">
+            <Leaf className="w-5 h-5 text-teal" />
+            Data Seeding
+          </h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Seed the database with creator data. This creates/updates profiles from the static data file (68 creators).
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={handleSeedCreators}
+              disabled={seeding}
+              className="flex items-center gap-2 px-4 py-2.5 bg-teal hover:bg-teal-deep text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+            >
+              <Leaf className="w-4 h-4" />
+              {seeding ? 'Seeding...' : 'Seed Creators'}
+            </button>
+            <button
+              onClick={handleFetchImages}
+              disabled={seeding}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gold hover:bg-gold-dark text-gray-dark rounded-lg font-medium disabled:opacity-50 transition-colors"
+            >
+              <ImageIcon className="w-4 h-4" />
+              {seeding ? 'Fetching...' : 'Fetch Images'}
+            </button>
+            <button
+              onClick={handleFullPipeline}
+              disabled={seeding}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal to-gold text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+            >
+              <Zap className="w-4 h-4" />
+              {seeding ? 'Running...' : 'Full Pipeline'}
+            </button>
           </div>
         </div>
 

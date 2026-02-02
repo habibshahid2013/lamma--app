@@ -1,0 +1,19 @@
+# Robots.txt for Lamma+
+# https://lammaplus.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin and auth pages
+Disallow: /admin
+Disallow: /auth/
+Disallow: /api/
+
+# Allow search engines to access static assets
+Allow: /images/
+Allow: /icons/
+Allow: /*.js
+Allow: /*.css
+
+# Sitemap
+Sitemap: https://lammaplus.com/sitemap.xml
