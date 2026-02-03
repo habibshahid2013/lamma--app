@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search as SearchIcon, X, ArrowLeft, Filter, Settings2 } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import { REGIONS } from "@/lib/data/regions";
 import CreatorCard from "../ui/CreatorCard";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import FilterPanel from "./FilterPanel";
 
@@ -20,9 +20,10 @@ import { useCreators } from "@/hooks/useCreators";
 
 export default function SearchScreen() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+
   // Fetch all creators for client-side filtering (efficient for small datasets < 500)
   const { creators: allCreators, loading } = useCreators({ limitCount: 150 });
 
@@ -35,6 +36,40 @@ export default function SearchScreen() {
     includeHistorical: false,
     gender: "all" as "all" | "male" | "female"
   });
+
+  // Read query params on mount to support deep links from creator profiles
+  useEffect(() => {
+    const topic = searchParams.get("topic");
+    const category = searchParams.get("category");
+    const region = searchParams.get("region");
+
+    if (topic) {
+      setSearchTerm(topic);
+    }
+
+    const newFilters = { ...filters };
+    let hasFilterChange = false;
+
+    if (category) {
+      newFilters.categories = [category];
+      hasFilterChange = true;
+    }
+
+    if (region) {
+      // Region param is a key like "east_africa", convert to display name
+      const regionData = REGIONS[region as keyof typeof REGIONS];
+      if (regionData) {
+        newFilters.regions = [regionData.name];
+        hasFilterChange = true;
+      }
+    }
+
+    if (hasFilterChange) {
+      setFilters(newFilters);
+    }
+    // Only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const regionsList = ["All", ...Object.values(REGIONS).map(r => r.name)];
   const languagesList = ["English", "Arabic", "Somali", "Urdu", "Indonesian"];
