@@ -7,7 +7,10 @@ import { Button } from "./button";
 import { Creator } from "@/lib/types/creator";
 import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";
+import ActionGateModal from "@/components/ActionGateModal";
 import { useEngagementContext } from "@/hooks/useEngagement";
+import { useFollow } from "@/hooks/useFollow";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreatorCardProps extends Partial<Creator> {
   onFollow?: () => void;
@@ -19,7 +22,10 @@ interface CreatorCardProps extends Partial<Creator> {
 export default function CreatorCard(props: CreatorCardProps) {
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [showAuthGate, setShowAuthGate] = useState(false);
   const { trackAction, trackInteraction } = useEngagementContext();
+  const { user } = useAuth();
+  const { isFollowing: isFollowingHook, toggleFollow, loading: followLoading } = useFollow();
 
   const {
     id,
@@ -27,8 +33,8 @@ export default function CreatorCard(props: CreatorCardProps) {
     category,
     verified,
     avatar,
-    isFollowing,
-    onFollow,
+    isFollowing: isFollowingProp,
+    onFollow: onFollowProp,
     showUnlock = false,
     isHistorical,
     lifespan,
@@ -41,6 +47,24 @@ export default function CreatorCard(props: CreatorCardProps) {
     theme = 'light',
     content,
   } = props;
+
+  // Use props if provided (from HomeScreen/FollowingList), otherwise use hook directly
+  const following = isFollowingProp !== undefined ? isFollowingProp : (id ? isFollowingHook(id) : false);
+  const handleFollowAction = async () => {
+    if (!user) {
+      setShowAuthGate(true);
+      return;
+    }
+    if (onFollowProp) {
+      onFollowProp();
+    } else if (id) {
+      try {
+        await toggleFollow(id);
+      } catch {
+        // Follow limit errors handled silently on card (shown on profile page)
+      }
+    }
+  };
   
   const isDark = theme === 'dark';
   
@@ -142,22 +166,22 @@ export default function CreatorCard(props: CreatorCardProps) {
           </Button>
         ) : (
           <Button
-            variant={isFollowing ? "default" : "outline"} // shadcn uses 'default' for primary
+            variant={following ? "default" : "outline"}
             size="sm"
+            disabled={followLoading}
             className={`w-full text-xs rounded-full h-8 ${
-              isFollowing
+              following
                 ? `${isDark ? 'bg-gold hover:bg-gold-dark text-navy' : 'bg-gold hover:bg-gold-dark text-gray-dark'}`
                 : `${isDark ? 'border-gold/50 text-gold hover:bg-gold/10' : 'border-teal text-teal hover:bg-teal-light'}`
             }`}
             onClick={(e) => {
               e.stopPropagation();
               trackInteraction('follow_button_click');
-              // Gate follow action - if not subscribed/logged in, show email capture
               const canProceed = trackAction('follow');
-              if (canProceed && onFollow) onFollow();
+              if (canProceed) handleFollowAction();
             }}
           >
-            {isFollowing ? (
+            {following ? (
               <span className="flex items-center justify-center">
                 Following <Check className="w-3 h-3 ml-1" />
               </span>
@@ -179,10 +203,16 @@ export default function CreatorCard(props: CreatorCardProps) {
         <Share2 className="w-3.5 h-3.5" />
       </button>
 
-      <ShareModal 
+      <ShareModal
         creator={props as Creator}
         isOpen={isShareOpen}
         onClose={() => setIsShareOpen(false)}
+      />
+
+      <ActionGateModal
+        isOpen={showAuthGate}
+        onClose={() => setShowAuthGate(false)}
+        triggerAction="follow"
       />
     </div>
   );

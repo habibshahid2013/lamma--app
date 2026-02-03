@@ -9,9 +9,11 @@ import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreatorBySlug } from '@/hooks/useCreators';
+import { useFollow } from '@/hooks/useFollow';
 import CreatorLinks from '@/components/ui/CreatorLinks';
 import ExternalLink, { ExternalLinkButton } from '@/components/ui/ExternalLink';
 import LammaLogo from '@/components/LammaLogo';
+import ActionGateModal from '@/components/ActionGateModal';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { generateCreatorSchema, generateBreadcrumbSchema, siteConfig } from '@/lib/seo';
@@ -201,18 +203,25 @@ function CreatorJsonLd({ creator }: { creator: Creator }) {
 export default function CreatorProfileClient({ slug }: { slug: string }) {
   const { user } = useAuth();
   const { creator, loading } = useCreatorBySlug(slug);
+  const { isFollowing, toggleFollow, loading: followLoading, followingCount, followLimit } = useFollow();
 
   const [activeTab, setActiveTab] = useState<TabType>('about');
-  const [isFollowing, setIsFollowing] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [useYoutubeFallback, setUseYoutubeFallback] = useState(false);
+  const [showAuthGate, setShowAuthGate] = useState(false);
+  const [followError, setFollowError] = useState<string | null>(null);
 
-  const handleFollow = () => {
+  const handleFollow = async () => {
     if (!user) {
-      alert('Please sign in to follow this creator');
+      setShowAuthGate(true);
       return;
     }
-    setIsFollowing(!isFollowing);
+    try {
+      setFollowError(null);
+      await toggleFollow(creator!.id);
+    } catch (err: any) {
+      setFollowError(err.message);
+    }
   };
 
   // ---- Loading State ----
@@ -415,7 +424,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-slate-400">
                   {category && (
                     <Link
-                      href={`/explore?category=${category}`}
+                      href={`/search?category=${category}`}
                       className="px-3 py-1 bg-gold/20 text-gold rounded-full text-sm font-medium hover:bg-gold/30 transition capitalize"
                     >
                       {category.replace('_', ' ')}
@@ -424,7 +433,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
 
                   {country && (
                     <Link
-                      href={`/explore?region=${region}`}
+                      href={`/search?region=${region}`}
                       className="flex items-center gap-1 hover:text-gold transition"
                     >
                       <span>{countryFlag}</span>
@@ -503,15 +512,16 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4 md:mt-0">
                 <Button
                   onClick={handleFollow}
-                  variant={isFollowing ? 'secondary' : 'default'}
+                  disabled={followLoading}
+                  variant={isFollowing(creator.id) ? 'secondary' : 'default'}
                   className={cn(
                     'rounded-full font-semibold',
-                    isFollowing
+                    isFollowing(creator.id)
                       ? 'bg-slate-700 text-white hover:bg-slate-600'
                       : 'bg-gold text-gray-dark hover:bg-gold-dark'
                   )}
                 >
-                  {isFollowing ? (
+                  {isFollowing(creator.id) ? (
                     <>
                       <UserCheck className="w-4 h-4 mr-1" />
                       Following
@@ -519,10 +529,13 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                   ) : (
                     <>
                       <UserPlus className="w-4 h-4 mr-1" />
-                      Follow
+                      {followLoading ? 'Loading...' : 'Follow'}
                     </>
                   )}
                 </Button>
+                {followError && (
+                  <p className="text-red-400 text-xs mt-1">{followError}</p>
+                )}
 
                 <Button
                   variant="secondary"
@@ -577,7 +590,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
             {topics.map(topic => (
               <Link
                 key={topic}
-                href={`/explore?topic=${encodeURIComponent(topic)}`}
+                href={`/search?topic=${encodeURIComponent(topic)}`}
                 className="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-full text-sm hover:bg-slate-700 hover:text-gold transition border border-slate-700"
               >
                 {topic}
@@ -1069,6 +1082,13 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
           &copy; {new Date().getFullYear()} Lamma+. All rights reserved.
         </div>
       </footer>
+
+      {/* Auth Gate Modal for unauthenticated follow */}
+      <ActionGateModal
+        isOpen={showAuthGate}
+        onClose={() => setShowAuthGate(false)}
+        triggerAction="follow"
+      />
     </div>
   );
 }
