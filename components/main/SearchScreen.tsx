@@ -67,8 +67,6 @@ export default function SearchScreen() {
     if (hasFilterChange) {
       setFilters(newFilters);
     }
-    // Only run on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const regionsList = ["All", ...Object.values(REGIONS).map(r => r.name)];
@@ -193,30 +191,30 @@ export default function SearchScreen() {
             <div className="flex flex-wrap gap-2 mb-3">
                  {/* Categories */}
                  {filters.categories.map(cat => (
-                     <span key={cat} className="inline-flex items-center px-2 py-1 rounded bg-teal text-white text-[10px] font-medium">
+                     <span key={cat} className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium">
                          {cat.replace("_", " ")}
-                         <button onClick={() => removeFilterChip("categories", cat)} className="ml-1"><X className="w-3 h-3" /></button>
+                         <button onClick={() => removeFilterChip("categories", cat)} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
                      </span>
                  ))}
                  {/* Languages */}
                  {filters.languages.map(lang => (
-                     <span key={lang} className="inline-flex items-center px-2 py-1 rounded bg-teal text-white text-[10px] font-medium">
+                     <span key={lang} className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium">
                          {lang}
-                         <button onClick={() => removeFilterChip("languages", lang)} className="ml-1"><X className="w-3 h-3" /></button>
+                         <button onClick={() => removeFilterChip("languages", lang)} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
                      </span>
                  ))}
                  {/* Gender */}
                  {filters.gender !== "all" && (
-                      <span className="inline-flex items-center px-2 py-1 rounded bg-teal text-white text-[10px] font-medium capitalize">
+                      <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium capitalize">
                       {filters.gender}
-                      <button onClick={() => setFilters({...filters, gender: "all"})} className="ml-1"><X className="w-3 h-3" /></button>
+                      <button onClick={() => setFilters({...filters, gender: "all"})} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
                   </span>
                  )}
                  {/* Historical */}
                  {filters.includeHistorical && (
-                       <span className="inline-flex items-center px-2 py-1 rounded bg-amber-100 text-amber-800 text-[10px] font-medium capitalize">
+                       <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-xs font-medium capitalize">
                        History Included
-                       <button onClick={() => setFilters({...filters, includeHistorical: false})} className="ml-1"><X className="w-3 h-3" /></button>
+                       <button onClick={() => setFilters({...filters, includeHistorical: false})} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
                    </span>
                  )}
             </div>
@@ -231,7 +229,7 @@ export default function SearchScreen() {
               <button
                 key={lang}
                 onClick={() => toggleLanguage(lang)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-medium whitespace-nowrap transition-colors border ${
+                className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors border ${
                   isSelected
                     ? "bg-gray-800 text-white border-gray-800"
                     : "bg-white text-gray-500 border-gray-200"
@@ -247,7 +245,7 @@ export default function SearchScreen() {
         <div className="flex gap-2 pb-2">
             <button
                 onClick={toggleGender}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-colors border ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold transition-colors border ${
                     filters.gender === "female"
                     ? "bg-purple-100 text-purple-700 border-purple-200"
                     : "bg-gray-50 text-gray-500 border-gray-100"
@@ -268,7 +266,7 @@ export default function SearchScreen() {
                 </div>
                 
                 {filteredCreators.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         {filteredCreators.map(creator => (
                             <div key={creator.id} className="flex justify-center">
                                 <CreatorCard {...creator} />
@@ -309,7 +307,7 @@ export default function SearchScreen() {
                 <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
                     {loading ? (
                          [1, 2, 3].map(i => (
-                             <div key={i} className="w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
+                             <div key={i} className="w-40 sm:w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
                          ))
                     ) : (
                         allCreators.filter(c => c.trending).slice(0, 5).map(creator => (

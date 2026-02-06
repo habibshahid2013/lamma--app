@@ -85,7 +85,7 @@ export default function HomeScreen() {
                 {loadingFeatured ? (
                     // Loading skeleton
                     [1, 2, 3].map(i => (
-                        <div key={i} className="w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
+                        <div key={i} className="w-40 sm:w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
                     ))
                 ) : (
                     featuredCreators.map(creator => (
@@ -111,7 +111,7 @@ export default function HomeScreen() {
                 <div className="flex overflow-x-auto gap-4 px-4 pb-2 scrollbar-hide snap-x">
                     {loadingPublic ? (
                         [1, 2, 3].map(i => (
-                            <div key={i} className="w-44 h-56 bg-white/50 rounded-2xl animate-pulse flex-shrink-0" />
+                            <div key={i} className="w-40 sm:w-44 h-56 bg-white/50 rounded-2xl animate-pulse flex-shrink-0" />
                         ))
                     ) : (
                         publicFigures.map(creator => (

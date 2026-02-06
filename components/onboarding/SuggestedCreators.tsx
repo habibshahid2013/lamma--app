@@ -84,7 +84,7 @@ export default function SuggestedCreators({ onFinish }: SuggestedCreatorsProps) 
 
               <button
                 onClick={() => toggleFollow(creator.id)}
-                className={`flex items-center justify-center px-4 py-2 rounded-full text-xs font-bold transition-all border ${
+                className={`flex items-center justify-center px-4 py-2.5 rounded-full text-xs font-bold transition-all border min-h-[44px] ${
                   isFollowing
                     ? "bg-transparent border-teal text-teal"
                     : "bg-white border-teal text-teal hover:bg-teal-light"

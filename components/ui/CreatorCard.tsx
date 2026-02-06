@@ -84,7 +84,7 @@ export default function CreatorCard(props: CreatorCardProps) {
   const isPublicFigure = category === "public_figure";
 
   return (
-    <div className={`group relative flex flex-col items-center p-4 rounded-xl border w-44 flex-shrink-0 snap-center transition-all ${
+    <div className={`group relative flex flex-col items-center p-3 sm:p-4 rounded-xl border w-40 sm:w-44 flex-shrink-0 snap-center transition-all ${
         isDark
           ? 'bg-navy-card border-gold/30 shadow-lg shadow-black/20 hover:border-gold/50'
           : `bg-white border-gray-light shadow-sm hover:border-teal/30 ${isHistorical ? 'bg-gold-light/50' : ''}`
@@ -196,7 +196,7 @@ export default function CreatorCard(props: CreatorCardProps) {
 
       <button
         onClick={handleShare}
-        className={`absolute top-2 right-2 p-1.5 backdrop-blur-sm rounded-full transition-colors z-20 ${
+        className={`absolute top-2 right-2 p-2 backdrop-blur-sm rounded-full transition-colors z-20 ${
             isDark ? 'bg-navy/80 text-white/60 hover:text-gold hover:bg-navy' : 'bg-white/80 text-gray-500 hover:text-teal hover:bg-white'
         }`}
       >

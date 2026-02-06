@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { CREATORS } from '@/lib/data/creators';
+import { ALL_EXPANSION_PROFILES } from '@/lib/data/profile-expansion';
 import { fetchCreatorImage, generatePlaceholderImage } from '@/lib/image-fetcher';
 
 export async function POST(request: NextRequest) {
@@ -48,9 +49,36 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Seed expansion profiles (curated additional profiles)
+    if (action === 'expansion') {
+      const result = await seedExpansionProfilesInternal();
+      return NextResponse.json({
+        success: true,
+        action: 'expansion',
+        ...result,
+        durationMs: Date.now() - startTime,
+      });
+    }
+
+    // Full expansion: seed original + expansion + images
+    if (action === 'full-expansion') {
+      const seedResult = await seedCreatorsInternal();
+      const expansionResult = await seedExpansionProfilesInternal();
+      const imageResult = await fetchMissingImagesInternal();
+
+      return NextResponse.json({
+        success: true,
+        action: 'full-expansion',
+        seed: seedResult,
+        expansion: expansionResult,
+        images: imageResult,
+        durationMs: Date.now() - startTime,
+      });
+    }
+
     return NextResponse.json({
       error: 'Invalid action',
-      validActions: ['seed', 'images', 'full'],
+      validActions: ['seed', 'images', 'full', 'expansion', 'full-expansion'],
     }, { status: 400 });
 
   } catch (error) {
@@ -180,6 +208,118 @@ async function seedCreatorsInternal() {
   };
 }
 
+// Helper to generate slug
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+async function seedExpansionProfilesInternal() {
+  console.log('\n🌱 Seeding expansion profiles...\n');
+
+  let created = 0;
+  let skipped = 0;
+  let errors = 0;
+  const details: any[] = [];
+
+  for (const profile of ALL_EXPANSION_PROFILES) {
+    if (!profile.name) {
+      skipped++;
+      continue;
+    }
+
+    const creatorId = generateSlug(profile.name);
+
+    try {
+      const docRef = doc(db, 'creators', creatorId);
+      const existing = await getDoc(docRef);
+
+      if (existing.exists()) {
+        console.log(`  ⏭️ ${profile.name} (already exists)`);
+        skipped++;
+        details.push({ id: creatorId, name: profile.name, action: 'skipped' });
+        continue;
+      }
+
+      const creatorData = {
+        id: creatorId,
+        creatorId: creatorId,
+        slug: creatorId,
+        version: 1,
+        name: profile.name,
+        category: profile.category || 'scholar',
+        tier: profile.tier || 'community',
+        gender: profile.gender || 'male',
+        region: profile.region || 'americas',
+        country: profile.country || 'United States',
+        countryFlag: profile.countryFlag || '🇺🇸',
+        location: null,
+        languages: profile.languages || ['English'],
+        topics: profile.topics || [],
+        verified: profile.verified || false,
+        verificationLevel: profile.verificationLevel || 'none',
+        featured: profile.featured || false,
+        trending: profile.trending || false,
+        isHistorical: profile.isHistorical || false,
+        lifespan: profile.lifespan || null,
+        note: null,
+        profile: {
+          name: profile.name,
+          displayName: profile.name,
+          avatar: null,
+          coverImage: null,
+          shortBio: '',
+          bio: '',
+        },
+        socialLinks: profile.socialLinks || {},
+        stats: { followerCount: 0 },
+        content: {},
+        ownership: {
+          ownerId: null,
+          ownershipStatus: 'unclaimed',
+          claimedAt: null,
+          claimMethod: null,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        source: 'curated_expansion',
+      };
+
+      await setDoc(docRef, creatorData);
+
+      // Create slug mapping
+      await setDoc(doc(db, 'slugs', creatorId), {
+        creatorId: creatorId,
+        name: profile.name,
+        updatedAt: new Date(),
+      });
+
+      console.log(`  ✅ ${profile.name}`);
+      created++;
+      details.push({ id: creatorId, name: profile.name, action: 'created' });
+
+    } catch (error) {
+      console.error(`  ❌ ${profile.name}:`, error);
+      errors++;
+      details.push({ id: creatorId, name: profile.name, action: 'error', error: String(error) });
+    }
+  }
+
+  console.log(`\n✅ Expansion seeding complete: ${created} created, ${skipped} skipped, ${errors} errors`);
+
+  return {
+    total: ALL_EXPANSION_PROFILES.length,
+    created,
+    skipped,
+    errors,
+    details: details.slice(0, 30),
+  };
+}
+
 async function fetchMissingImages() {
   const result = await fetchMissingImagesInternal();
   return NextResponse.json({
@@ -297,10 +437,17 @@ export async function GET() {
     return NextResponse.json({
       status: 'ok',
       ...stats,
+      staticData: {
+        original: CREATORS.length,
+        expansion: ALL_EXPANSION_PROFILES.length,
+        total: CREATORS.length + ALL_EXPANSION_PROFILES.length,
+      },
       actions: {
         seed: 'POST /api/admin/seed?action=seed - Seed creators from static data',
+        expansion: 'POST /api/admin/seed?action=expansion - Seed expansion profiles (35 curated)',
         images: 'POST /api/admin/seed?action=images - Fetch missing images',
         full: 'POST /api/admin/seed?action=full - Full pipeline (seed + images)',
+        'full-expansion': 'POST /api/admin/seed?action=full-expansion - Seed all + expansion + images',
       },
     });
 

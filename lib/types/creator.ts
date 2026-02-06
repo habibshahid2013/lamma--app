@@ -181,17 +181,36 @@ export interface YouTubeContent {
   handle?: string;
   description?: string;
   subscriberCount?: string;
+  subscriberCountRaw?: number;
   subscriberCountFormatted?: string;
   videoCount?: string | number;
   viewCount?: string;
   thumbnailUrl?: string;
+  bannerUrl?: string;
   recentVideos?: Array<{
     videoId: string;
     title: string;
     thumbnail: string;
     publishedAt: string;
     viewCount?: number;
+    duration?: string;
   }>;
+  popularVideos?: Array<{
+    videoId: string;
+    title: string;
+    thumbnail: string;
+    publishedAt: string;
+    viewCount?: number;
+    duration?: string;
+  }>;
+  playlists?: Array<{
+    playlistId: string;
+    title: string;
+    thumbnail: string;
+    itemCount: number;
+  }>;
+  derivedCategories?: string[];
+  enrichedAt?: string;
 }
 
 export interface PodcastContent {

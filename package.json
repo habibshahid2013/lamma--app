@@ -7,10 +7,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prepare": "husky install",
+    "enrich": "tsx scripts/enrich-creators.ts",
+    "fetch-images": "tsx scripts/fetch-images.ts",
+    "sync-content": "tsx scripts/sync-content.ts",
+    "generate-assets": "tsx scripts/generate-assets.ts",
+    "generate-profiles": "tsx scripts/generate-profiles.ts",
+    "seed-expansion": "tsx scripts/seed-expansion.ts",
+    "prebuild": "npm run generate-assets"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "stripe": "^17.0.0",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-scroll-area": "^1.2.10",
@@ -37,6 +46,9 @@
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.5",
+    "firebase-admin": "^13.0.0",
+    "husky": "^9.1.0",
+    "sharp": "^0.33.5",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

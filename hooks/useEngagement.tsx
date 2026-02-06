@@ -43,7 +43,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     hasSubscribed: false,
     hasAccount: false,
     lastVisit: new Date().toISOString(),
-    sessionStart: Date.now(),
+    sessionStart: 0,
   });
 
   const [shouldShowCapture, setShouldShowCapture] = useState(false);
@@ -63,8 +63,12 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
             sessionStart: Date.now(),
           });
         } catch {
-          // Invalid data, use defaults
+          // Invalid data, use defaults with current time
+          setState(prev => ({ ...prev, sessionStart: Date.now() }));
         }
+      } else {
+        // No stored data, initialize sessionStart
+        setState(prev => ({ ...prev, sessionStart: Date.now() }));
       }
       setInitialized(true);
     }
@@ -217,7 +221,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
 // ENGAGEMENT CONTEXT (for app-wide access)
 // ============================================
 
-interface EngagementContextType extends ReturnType<typeof useEngagement> {}
+type EngagementContextType = ReturnType<typeof useEngagement>;
 
 const EngagementContext = createContext<EngagementContextType | null>(null);
 

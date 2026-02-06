@@ -54,7 +54,7 @@ export default function InterestsSelection({
             <button
               key={interest}
               onClick={() => toggleInterest(interest)}
-              className={`px-6 py-3 rounded-full border-2 transition-all font-semibold text-sm ${
+              className={`px-5 py-3.5 rounded-full border-2 transition-all font-semibold text-sm min-h-[44px] ${
                 isSelected
                   ? "bg-teal border-teal text-white shadow-md"
                   : "bg-white border-gray-100 text-gray-600 hover:border-teal/50"

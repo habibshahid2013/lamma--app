@@ -1,0 +1,109 @@
+name: Scheduled Agent Tasks
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Task to run"
+        required: true
+        type: choice
+        options:
+          - data-enrichment
+          - image-fetch
+          - content-sync
+          - full-audit
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  data-enrichment:
+    name: Creator Data Enrichment
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task == 'data-enrichment' || github.event.inputs.task == 'full-audit' || github.event_name == 'schedule'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run data enrichment
+        run: npx tsx scripts/enrich-creators.ts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+
+  image-fetch:
+    name: Fetch Creator Images
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task == 'image-fetch' || github.event.inputs.task == 'full-audit'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch missing images
+        run: npx tsx scripts/fetch-images.ts
+        env:
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+
+  content-sync:
+    name: Sync YouTube/Podcast Content
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task == 'content-sync' || github.event.inputs.task == 'full-audit'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync content
+        run: npx tsx scripts/sync-content.ts
+        env:
+          NEXT_PUBLIC_YOUTUBE_API_KEY: ${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+
+  report:
+    name: Generate Report
+    runs-on: ubuntu-latest
+    needs: [data-enrichment]
+    if: always()
+
+    steps:
+      - name: Create summary
+        run: |
+          echo "## Scheduled Tasks Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Task | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Data Enrichment | ${{ needs.data-enrichment.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Run time: $(date)" >> $GITHUB_STEP_SUMMARY

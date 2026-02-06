@@ -70,7 +70,7 @@ export const CREATORS: Creator[] = [
     "trending": true,
     "isHistorical": false,
     "socialLinks": {
-      "youtube": "https://www.youtube.com/@yaborhereareany",
+      "youtube": "https://www.youtube.com/@OmarSuleiman",
       "podcast": "https://feeds.muslimcentral.com/omar-suleiman"
     }
   },
@@ -626,10 +626,8 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
-    "note": "Muslim comedian and actor",
-    "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/dave-chappelle"
-    }
+    "note": "Muslim stand-up comedian and actor",
+    "socialLinks": {}
   },
   {
     "id": "mahershala-ali",
@@ -1066,11 +1064,10 @@ export const CREATORS: Creator[] = [
     "category": "speaker",
     "tier": "rising",
     "gender": "male",
-    "region": "east_africa",
-    "country": "SO",
-    "countryFlag": "🇸🇴",
+    "region": "americas",
+    "country": "CA",
+    "countryFlag": "🇨🇦",
     "languages": [
-      "Somali",
       "English"
     ],
     "topics": [

@@ -38,6 +38,20 @@ import {
   Smartphone,
   Clock,
   Users,
+  Building2,
+  Copy,
+  Check as CheckIcon,
+  Twitter,
+  Facebook,
+  Mail,
+  ChevronRight,
+  Shield,
+  BadgeCheck,
+  Heart,
+  Eye,
+  Play,
+  Bookmark,
+  Crown,
 } from 'lucide-react';
 
 // ============================================================================
@@ -131,6 +145,297 @@ function VerificationLevelBadge({ level }: { level: 'official' | 'community' | '
 }
 
 // ============================================================================
+// SHARE MODAL
+// ============================================================================
+
+function ShareModal({
+  isOpen,
+  onClose,
+  creatorName,
+  creatorSlug,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  creatorName: string;
+  creatorSlug: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/creator/${creatorSlug}` : '';
+  const shareText = `Check out ${creatorName} on Lamma+`;
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareOptions = [
+    {
+      name: 'Twitter',
+      icon: Twitter,
+      color: 'bg-sky-500/20 text-sky-400 hover:bg-sky-500/30',
+      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+    },
+    {
+      name: 'Facebook',
+      icon: Facebook,
+      color: 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    },
+    {
+      name: 'Email',
+      icon: Mail,
+      color: 'bg-slate-500/20 text-slate-300 hover:bg-slate-500/30',
+      href: `mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareUrl)}`,
+    },
+  ];
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-slate-800 rounded-2xl p-6 w-full max-w-sm border border-slate-700 shadow-xl">
+        <h3 className="text-lg font-semibold text-white mb-4">Share Profile</h3>
+
+        {/* Copy Link */}
+        <div className="flex items-center gap-2 p-3 bg-slate-900 rounded-xl mb-4">
+          <input
+            type="text"
+            value={shareUrl}
+            readOnly
+            className="flex-1 bg-transparent text-sm text-slate-300 outline-none"
+          />
+          <button
+            onClick={handleCopy}
+            className="p-2 hover:bg-slate-700 rounded-lg transition"
+          >
+            {copied ? (
+              <CheckIcon className="w-4 h-4 text-green-400" />
+            ) : (
+              <Copy className="w-4 h-4 text-slate-400" />
+            )}
+          </button>
+        </div>
+
+        {/* Social Share Buttons */}
+        <div className="flex gap-3 justify-center">
+          {shareOptions.map((option) => (
+            <a
+              key={option.name}
+              href={option.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn('p-3 rounded-xl transition', option.color)}
+              title={`Share on ${option.name}`}
+            >
+              <option.icon className="w-5 h-5" />
+            </a>
+          ))}
+        </div>
+
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="mt-4 w-full py-2 text-slate-400 hover:text-white transition text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// QUICK INFO CARD (Sidebar-style key info)
+// ============================================================================
+
+function QuickInfoCard({ creator }: { creator: Creator }) {
+  const { profile, stats, affiliations, languages, category, tier, verified, dataSource } = creator;
+
+  const infoItems = [
+    { label: 'Category', value: category?.replace('_', ' '), icon: BadgeCheck },
+    { label: 'Languages', value: languages?.join(', '), icon: Globe },
+    { label: 'Tier', value: tier, icon: Shield },
+    { label: 'Followers', value: stats?.followerCount?.toLocaleString(), icon: Users },
+    { label: 'Content', value: stats?.contentCount?.toLocaleString(), icon: Play },
+  ].filter(item => item.value);
+
+  return (
+    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 backdrop-blur-sm">
+      <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Quick Info</h3>
+      <div className="space-y-3">
+        {infoItems.map((item, idx) => (
+          <div key={idx} className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-slate-400 text-sm">
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </span>
+            <span className="text-white text-sm font-medium capitalize">{item.value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Data Quality Score */}
+      {dataSource?.quality && (
+        <div className="mt-4 pt-4 border-t border-slate-700">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-slate-500">Profile Completeness</span>
+            <span className={cn(
+              'text-xs font-medium px-2 py-0.5 rounded-full',
+              dataSource.quality.level === 'high' ? 'bg-green-500/20 text-green-400' :
+              dataSource.quality.level === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+              'bg-red-500/20 text-red-400'
+            )}>
+              {dataSource.quality.score}%
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={cn(
+                'h-full rounded-full transition-all',
+                dataSource.quality.level === 'high' ? 'bg-green-500' :
+                dataSource.quality.level === 'medium' ? 'bg-yellow-500' :
+                'bg-red-500'
+              )}
+              style={{ width: `${dataSource.quality.score}%` }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// AFFILIATIONS/CREDENTIALS SECTION
+// ============================================================================
+
+function AffiliationsSection({ affiliations, profile }: { affiliations?: string[]; profile?: Creator['profile'] }) {
+  if (!affiliations?.length && !profile?.title) return null;
+
+  return (
+    <section className="mt-6">
+      <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider flex items-center gap-2">
+        <Building2 className="w-4 h-4 text-gold" />
+        Credentials & Affiliations
+      </h3>
+      <div className="space-y-2">
+        {profile?.title && (
+          <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
+            <div className="p-2 bg-gold/20 rounded-lg">
+              <GraduationCap className="w-4 h-4 text-gold" />
+            </div>
+            <span className="text-white font-medium">{profile.title}</span>
+          </div>
+        )}
+        {affiliations?.map((affiliation, idx) => (
+          <div
+            key={idx}
+            className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50"
+          >
+            <div className="p-2 bg-teal/20 rounded-lg">
+              <Building2 className="w-4 h-4 text-teal" />
+            </div>
+            <span className="text-white">{affiliation}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// ENGAGEMENT STATS BAR
+// ============================================================================
+
+function EngagementStatsBar({ stats, youtubeData }: { stats?: Creator['stats']; youtubeData?: Creator['content']['youtube'] }) {
+  const items = [
+    {
+      label: 'Followers',
+      value: stats?.followerCount,
+      icon: Heart,
+      color: 'text-pink-400',
+    },
+    {
+      label: 'Views',
+      value: youtubeData?.viewCount ? parseInt(youtubeData.viewCount.replace(/,/g, '')) : stats?.viewCount,
+      icon: Eye,
+      color: 'text-blue-400',
+      format: 'compact',
+    },
+    {
+      label: 'Videos',
+      value: youtubeData?.videoCount,
+      icon: Play,
+      color: 'text-red-400',
+    },
+    {
+      label: 'Books',
+      value: stats?.booksPublished,
+      icon: Book,
+      color: 'text-amber-400',
+    },
+  ].filter(item => item.value && item.value > 0);
+
+  if (items.length === 0) return null;
+
+  const formatValue = (value: number | string | undefined, format?: string) => {
+    const num = typeof value === 'string' ? parseInt(value.replace(/,/g, '')) : value;
+    if (!num) return '0';
+    if (format === 'compact') {
+      if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
+      if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+      if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+    }
+    return num.toLocaleString();
+  };
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-6">
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className="bg-slate-800/60 rounded-xl p-4 text-center border border-slate-700/50 hover:border-slate-600 transition"
+        >
+          <item.icon className={cn('w-5 h-5 mx-auto mb-2', item.color)} />
+          <div className="text-xl font-bold text-white">{formatValue(item.value, item.format)}</div>
+          <div className="text-xs text-slate-400">{item.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// PREMIUM CTA BANNER
+// ============================================================================
+
+function PremiumCTABanner() {
+  return (
+    <div className="bg-gradient-to-r from-gold/20 via-teal/20 to-gold/20 rounded-xl p-6 border border-gold/30 my-8">
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="p-3 bg-gold/20 rounded-full">
+          <Crown className="w-8 h-8 text-gold" />
+        </div>
+        <div className="flex-1 text-center sm:text-left">
+          <h3 className="text-lg font-bold text-white mb-1">Unlock Premium Features</h3>
+          <p className="text-slate-400 text-sm">
+            Follow unlimited scholars, get early access to content, and support faith educators.
+          </p>
+        </div>
+        <Link
+          href="/premium"
+          className="px-6 py-3 bg-gradient-to-r from-gold to-gold-dark text-gray-dark font-semibold rounded-full hover:shadow-lg hover:shadow-gold/20 transition whitespace-nowrap"
+        >
+          Go Premium
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // TAB BUTTON
 // ============================================================================
 
@@ -148,7 +453,7 @@ function TabButton({
       variant="ghost"
       onClick={onClick}
       className={cn(
-        'px-4 py-3 font-medium transition relative whitespace-nowrap rounded-none',
+        'px-4 py-3 font-medium transition relative whitespace-nowrap rounded-none snap-start',
         active
           ? 'text-gold'
           : 'text-slate-400 hover:text-white hover:bg-transparent'
@@ -159,6 +464,57 @@ function TabButton({
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold" />
       )}
     </Button>
+  );
+}
+
+// ============================================================================
+// VIDEO CARD
+// ============================================================================
+
+function VideoCard({ video }: { video: { videoId: string; title: string; thumbnail: string; publishedAt: string; viewCount?: number; duration?: string } }) {
+  const formattedViews = video.viewCount
+    ? video.viewCount >= 1_000_000
+      ? `${(video.viewCount / 1_000_000).toFixed(1).replace(/\.0$/, '')}M views`
+      : video.viewCount >= 1_000
+        ? `${(video.viewCount / 1_000).toFixed(1).replace(/\.0$/, '')}K views`
+        : `${video.viewCount} views`
+    : null;
+
+  return (
+    <ExternalLink
+      href={`https://www.youtube.com/watch?v=${video.videoId}`}
+      className="group"
+    >
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-800 mb-3">
+        <img
+          src={video.thumbnail}
+          alt={video.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+        />
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+          <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </div>
+        {video.duration && (
+          <span className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+            {video.duration}
+          </span>
+        )}
+      </div>
+      <h3 className="font-medium text-white line-clamp-2 group-hover:text-gold transition text-sm">
+        {video.title}
+      </h3>
+      <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
+        {formattedViews && <span>{formattedViews}</span>}
+        {formattedViews && video.publishedAt && <span>·</span>}
+        {video.publishedAt && (
+          <span>{new Date(video.publishedAt).toLocaleDateString()}</span>
+        )}
+      </div>
+    </ExternalLink>
   );
 }
 
@@ -209,6 +565,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
   const [imageError, setImageError] = useState(false);
   const [useYoutubeFallback, setUseYoutubeFallback] = useState(false);
   const [showAuthGate, setShowAuthGate] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [followError, setFollowError] = useState<string | null>(null);
 
   const handleFollow = async () => {
@@ -266,6 +623,8 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
     verificationLevel,
     location,
     aiGenerated,
+    affiliations,
+    dataSource,
   } = creator;
 
   // Profile with safe fallbacks
@@ -345,7 +704,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
       <div className="relative">
         {/* Cover Gradient */}
         <div className={cn(
-          'h-48 md:h-64',
+          'h-36 sm:h-48 md:h-64',
           isHistorical
             ? 'bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700'
             : 'bg-gradient-to-r from-teal-deep via-teal to-gold/70'
@@ -357,12 +716,12 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
 
         {/* Profile Info */}
         <div className="max-w-6xl mx-auto px-4">
-          <div className="relative -mt-20 md:-mt-24 pb-6">
-            <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
+          <div className="relative -mt-14 sm:-mt-20 md:-mt-24 pb-6">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6">
               {/* Avatar */}
               <div className="relative">
                 <div className={cn(
-                  'w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden ring-4 ring-slate-900 bg-slate-800',
+                  'w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden ring-4 ring-slate-900 bg-slate-800',
                   isHistorical && 'sepia-[.3]'
                 )}>
                   {avatarUrl && !imageError ? (
@@ -405,7 +764,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
 
               {/* Name, Badges, Meta */}
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
                   {profile.displayName || profile.name}
                 </h1>
 
@@ -541,6 +900,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                   variant="secondary"
                   size="icon"
                   className="rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600"
+                  onClick={() => setShowShareModal(true)}
                 >
                   <Share2 className="w-5 h-5" />
                 </Button>
@@ -604,7 +964,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
       {/* TAB NAVIGATION */}
       {/* ================================================================ */}
       <div className="max-w-6xl mx-auto px-4 mt-4">
-        <div className="flex gap-1 border-b border-slate-700 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1 border-b border-slate-700 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
           <TabButton active={activeTab === 'about'} onClick={() => setActiveTab('about')}>
             About
           </TabButton>
@@ -648,160 +1008,253 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
 
         {/* ---- ABOUT TAB ---- */}
         {activeTab === 'about' && (
-          <div className="space-y-8">
-            {/* Biography */}
-            <section>
-              <h2 className="text-xl font-semibold text-white mb-4">About</h2>
-              <div className="prose prose-invert max-w-none">
-                <p className="text-slate-300 leading-relaxed whitespace-pre-line">
-                  {profile.bio || profile.shortBio || 'No biography available.'}
-                </p>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content Column */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Engagement Stats */}
+              <EngagementStatsBar stats={stats} youtubeData={youtubeData} />
 
-              {/* Birth/Location Info */}
-              <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-400">
-                {profile.birthDate && (
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    Born {new Date(profile.birthDate).toLocaleDateString()}
-                  </span>
-                )}
-                {profile.birthPlace && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    Born in {profile.birthPlace}
-                  </span>
-                )}
-                {profile.nationality && (
-                  <span className="flex items-center gap-1">
-                    <Globe className="w-4 h-4" />
-                    {profile.nationality}
-                  </span>
-                )}
-              </div>
-
-              {/* AI-generated disclaimer */}
-              {aiGenerated && (
-                <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-                  <p className="text-xs text-slate-500">
-                    <Sparkles className="w-3 h-3 inline mr-1" />
-                    Some information on this profile was AI-generated on {new Date(aiGenerated.generatedAt).toLocaleDateString()}.
-                    Confidence: {aiGenerated.confidence}
+              {/* Biography */}
+              <section className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-gold" />
+                  About
+                </h2>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-slate-300 leading-relaxed whitespace-pre-line text-base">
+                    {profile.bio || profile.shortBio || 'No biography available.'}
                   </p>
                 </div>
-              )}
-            </section>
 
-            {/* YouTube Channel Summary (on About tab) */}
-            {hasYouTube && youtubeData && (
-              <section>
-                <h2 className="text-xl font-semibold text-white mb-4">YouTube Channel</h2>
-                <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                  <div className="flex items-center gap-4 mb-4">
-                    {youtubeData.thumbnailUrl && (
-                      <img
-                        src={youtubeData.thumbnailUrl}
-                        alt={youtubeData.channelTitle || 'YouTube channel'}
-                        className="w-16 h-16 rounded-full"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-white">{youtubeData.channelTitle || youtubeData.channelName}</h3>
-                      {youtubeData.description && (
-                        <p className="text-sm text-slate-400 line-clamp-2 mt-1">
-                          {youtubeData.description}
-                        </p>
-                      )}
-                      <ExternalLink
-                        href={youtubeData.channelUrl}
-                        className="text-red-400 text-sm hover:underline inline-flex items-center gap-1 mt-1"
-                        showIcon
-                      >
-                        View on YouTube
-                      </ExternalLink>
-                    </div>
+                {/* Birth/Location Info */}
+                <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-400">
+                  {profile.birthDate && (
+                    <span className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg">
+                      <Calendar className="w-4 h-4 text-teal" />
+                      Born {new Date(profile.birthDate).toLocaleDateString()}
+                    </span>
+                  )}
+                  {profile.birthPlace && (
+                    <span className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg">
+                      <MapPin className="w-4 h-4 text-teal" />
+                      {profile.birthPlace}
+                    </span>
+                  )}
+                  {profile.nationality && (
+                    <span className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg">
+                      <Globe className="w-4 h-4 text-teal" />
+                      {profile.nationality}
+                    </span>
+                  )}
+                </div>
+
+                {/* AI-generated disclaimer */}
+                {aiGenerated && (
+                  <div className="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700">
+                    <p className="text-xs text-slate-500 flex items-center gap-2">
+                      <Sparkles className="w-3 h-3 text-gold" />
+                      <span>
+                        Profile enhanced with AI on {new Date(aiGenerated.generatedAt).toLocaleDateString()}
+                        {aiGenerated.confidence && (
+                          <span className={cn(
+                            'ml-2 px-2 py-0.5 rounded-full',
+                            aiGenerated.confidence === 'high' ? 'bg-green-500/20 text-green-400' :
+                            aiGenerated.confidence === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-orange-500/20 text-orange-400'
+                          )}>
+                            {aiGenerated.confidence} confidence
+                          </span>
+                        )}
+                      </span>
+                    </p>
                   </div>
+                )}
+              </section>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className="text-2xl font-bold text-white">
-                        {youtubeData.subscriberCountFormatted || youtubeData.subscriberCount || '-'}
+              {/* Affiliations & Credentials */}
+              <AffiliationsSection affiliations={affiliations} profile={profile} />
+
+              {/* YouTube Channel Summary (on About tab) */}
+              {hasYouTube && youtubeData && (
+                <section>
+                  <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <Youtube className="w-5 h-5 text-red-500" />
+                    YouTube Channel
+                  </h2>
+                  <div className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-red-500/30 transition">
+                    <div className="flex items-center gap-4 mb-4">
+                      {youtubeData.thumbnailUrl && (
+                        <img
+                          src={youtubeData.thumbnailUrl}
+                          alt={youtubeData.channelTitle || 'YouTube channel'}
+                          className="w-16 h-16 rounded-full ring-2 ring-red-500/30"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white">{youtubeData.channelTitle || youtubeData.channelName}</h3>
+                        {youtubeData.description && (
+                          <p className="text-sm text-slate-400 line-clamp-2 mt-1">
+                            {youtubeData.description}
+                          </p>
+                        )}
+                        <ExternalLink
+                          href={youtubeData.channelUrl}
+                          className="text-red-400 text-sm hover:underline inline-flex items-center gap-1 mt-1"
+                          showIcon
+                        >
+                          View on YouTube
+                        </ExternalLink>
                       </div>
-                      <div className="text-sm text-slate-400">Subscribers</div>
                     </div>
-                    <div>
-                      <div className="text-2xl font-bold text-white">
-                        {typeof youtubeData.videoCount === 'number'
-                          ? youtubeData.videoCount.toLocaleString()
-                          : youtubeData.videoCount || '-'}
+
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="text-xl font-bold text-white">
+                          {youtubeData.subscriberCountFormatted || youtubeData.subscriberCount || '-'}
+                        </div>
+                        <div className="text-xs text-slate-400">Subscribers</div>
                       </div>
-                      <div className="text-sm text-slate-400">Videos</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-white">
-                        {youtubeData.viewCount
-                          ? `${(Number(youtubeData.viewCount) / 1000000).toFixed(1)}M`
-                          : '-'}
+                      <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="text-xl font-bold text-white">
+                          {typeof youtubeData.videoCount === 'number'
+                            ? youtubeData.videoCount.toLocaleString()
+                            : youtubeData.videoCount || '-'}
+                        </div>
+                        <div className="text-xs text-slate-400">Videos</div>
                       </div>
-                      <div className="text-sm text-slate-400">Total Views</div>
+                      <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="text-xl font-bold text-white">
+                          {youtubeData.viewCount
+                            ? `${(Number(youtubeData.viewCount) / 1000000).toFixed(1)}M`
+                            : '-'}
+                        </div>
+                        <div className="text-xs text-slate-400">Total Views</div>
+                      </div>
                     </div>
+
+                    {/* Quick action to view videos tab */}
+                    <button
+                      onClick={() => setActiveTab('videos')}
+                      className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition text-sm font-medium"
+                    >
+                      <Play className="w-4 h-4" />
+                      Watch Latest Videos
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </section>
+              )}
+
+              {/* Premium CTA for non-premium users */}
+              {!user && <PremiumCTABanner />}
+            </div>
+
+            {/* Sidebar Column */}
+            <div className="space-y-6">
+              <QuickInfoCard creator={creator} />
+
+              {/* Follow CTA Card */}
+              {!isFollowing(creator.id) && (
+                <div className="bg-gradient-to-br from-teal/20 to-gold/20 rounded-xl p-5 border border-teal/30">
+                  <h4 className="font-semibold text-white mb-2">Stay Updated</h4>
+                  <p className="text-sm text-slate-400 mb-4">
+                    Follow {profile.displayName || profile.name} to get notified about new content.
+                  </p>
+                  <Button
+                    onClick={handleFollow}
+                    disabled={followLoading}
+                    className="w-full bg-teal hover:bg-teal-deep text-white"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Follow
+                  </Button>
+                </div>
+              )}
+
+              {/* Bookmark Card */}
+              <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-500/20 rounded-lg">
+                    <Bookmark className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white text-sm">Save for Later</h4>
+                    <p className="text-xs text-slate-400">Bookmark this profile</p>
                   </div>
                 </div>
-              </section>
-            )}
+              </div>
+            </div>
           </div>
         )}
 
         {/* ---- VIDEOS TAB ---- */}
         {activeTab === 'videos' && hasYouTube && youtubeData && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Latest Videos</h2>
-              <ExternalLink
-                href={youtubeData.channelUrl}
-                className="text-gold hover:underline text-sm"
-                showIcon
-              >
-                View all on YouTube
-              </ExternalLink>
-            </div>
+          <div className="space-y-8">
 
-            {youtubeData.recentVideos && youtubeData.recentVideos.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {youtubeData.recentVideos.map(video => (
-                  <ExternalLink
-                    key={video.videoId}
-                    href={`https://www.youtube.com/watch?v=${video.videoId}`}
-                    className="group"
-                  >
-                    <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-800 mb-3">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                        <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center">
-                          <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                    <h3 className="font-medium text-white line-clamp-2 group-hover:text-gold transition">
-                      {video.title}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-slate-400">
-                      {video.viewCount && (
-                        <span>{video.viewCount.toLocaleString()} views</span>
-                      )}
-                      {video.publishedAt && (
-                        <span>{new Date(video.publishedAt).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                  </ExternalLink>
-                ))}
+            {/* Channel Stats Bar */}
+            <section className="bg-slate-800/60 rounded-xl p-5 border border-slate-700">
+              <div className="flex items-center gap-4 mb-4">
+                {youtubeData.thumbnailUrl && (
+                  <img
+                    src={youtubeData.thumbnailUrl}
+                    alt={youtubeData.channelTitle || 'YouTube channel'}
+                    className="w-12 h-12 rounded-full"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white truncate">{youtubeData.channelTitle || youtubeData.channelName}</h3>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-400 mt-0.5">
+                    {youtubeData.subscriberCount && <span>{youtubeData.subscriberCount} subscribers</span>}
+                    {youtubeData.videoCount && <span>{typeof youtubeData.videoCount === 'number' ? youtubeData.videoCount.toLocaleString() : youtubeData.videoCount} videos</span>}
+                    {youtubeData.viewCount && <span>{youtubeData.viewCount} total views</span>}
+                  </div>
+                </div>
+                <ExternalLink
+                  href={youtubeData.channelUrl}
+                  className="flex-shrink-0 bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-red-500 transition inline-flex items-center gap-1.5"
+                >
+                  <Youtube className="w-4 h-4" />
+                  <span className="hidden sm:inline">Subscribe</span>
+                </ExternalLink>
               </div>
+            </section>
+
+            {/* Content Categories (from enrichment) */}
+            {youtubeData.derivedCategories && youtubeData.derivedCategories.length > 0 && (
+              <section>
+                <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-3">Content Categories</h3>
+                <div className="flex flex-wrap gap-2">
+                  {youtubeData.derivedCategories.map(category => (
+                    <span
+                      key={category}
+                      className="px-3 py-1.5 rounded-full text-sm font-medium bg-teal/10 text-teal border border-teal/20"
+                    >
+                      {category}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Recent Videos */}
+            {youtubeData.recentVideos && youtubeData.recentVideos.length > 0 ? (
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Recent Videos</h3>
+                  <ExternalLink
+                    href={youtubeData.channelUrl}
+                    className="text-gold hover:underline text-sm"
+                    showIcon
+                  >
+                    View all
+                  </ExternalLink>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {youtubeData.recentVideos.map(video => (
+                    <VideoCard key={video.videoId} video={video} />
+                  ))}
+                </div>
+              </section>
             ) : (
               <div className="bg-slate-800 rounded-xl p-8 text-center border border-slate-700">
                 <p className="text-slate-400 mb-4">Videos are loaded from YouTube</p>
@@ -813,6 +1266,56 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                   Watch on YouTube
                 </ExternalLinkButton>
               </div>
+            )}
+
+            {/* Popular Videos (All Time) */}
+            {youtubeData.popularVideos && youtubeData.popularVideos.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Popular Videos</h3>
+                  <span className="text-xs text-slate-500 uppercase tracking-wider">All Time</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {youtubeData.popularVideos.map(video => (
+                    <VideoCard key={video.videoId} video={video} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Playlists */}
+            {youtubeData.playlists && youtubeData.playlists.length > 0 && (
+              <section>
+                <h3 className="text-lg font-semibold text-white mb-4">Playlists</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {youtubeData.playlists.map(playlist => (
+                    <ExternalLink
+                      key={playlist.playlistId}
+                      href={`https://www.youtube.com/playlist?list=${playlist.playlistId}`}
+                      className="group bg-slate-800/60 rounded-xl overflow-hidden border border-slate-700 hover:border-gold/40 transition"
+                    >
+                      <div className="relative aspect-video bg-slate-700">
+                        {playlist.thumbnail && (
+                          <img
+                            src={playlist.thumbnail}
+                            alt={playlist.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                          />
+                        )}
+                        <div className="absolute inset-y-0 right-0 w-1/3 bg-black/70 flex flex-col items-center justify-center">
+                          <span className="text-white font-bold text-lg">{playlist.itemCount}</span>
+                          <span className="text-slate-300 text-xs">videos</span>
+                        </div>
+                      </div>
+                      <div className="p-3">
+                        <h4 className="font-medium text-white line-clamp-2 group-hover:text-gold transition text-sm">
+                          {playlist.title}
+                        </h4>
+                      </div>
+                    </ExternalLink>
+                  ))}
+                </div>
+              </section>
             )}
           </div>
         )}
@@ -1088,6 +1591,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
         isOpen={showAuthGate}
         onClose={() => setShowAuthGate(false)}
         triggerAction="follow"
+      />
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        creatorName={profile.displayName || profile.name}
+        creatorSlug={creator.slug}
       />
     </div>
   );
