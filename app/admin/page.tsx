@@ -19,7 +19,7 @@ import {
   Database, Zap, Users, Home, Settings, RefreshCw, Plus, Leaf, ImageIcon,
   Search, BarChart3, AlertTriangle, CheckCircle2, Clock, Play, Pause,
   ChevronRight, ExternalLink, Edit, Trash2, MoreVertical, Filter,
-  Download, Upload, X
+  Download, Upload, X, Mail
 } from 'lucide-react';
 
 interface ClaimRequest {
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected' | 'all'>('pending');
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [stats, setStats] = useState({ creators: 0, users: 0, pending: 0, premium: 0 });
+  const [stats, setStats] = useState({ creators: 0, users: 0, pending: 0, waitlist: 0 });
   const [dataQuality, setDataQuality] = useState<DataQualityStats | null>(null);
   const [pipelineRunning, setPipelineRunning] = useState(false);
   const [pipelineSteps, setPipelineSteps] = useState<PipelineStatus[]>([]);
@@ -117,13 +117,13 @@ export default function AdminDashboard() {
         const creatorsSnap = await getDocs(collection(db, 'creators'));
         const usersSnap = await getDocs(collection(db, 'users'));
         const pendingSnap = await getDocs(query(collection(db, 'claimRequests'), where('status', '==', 'pending')));
-        const premiumSnap = await getDocs(query(collection(db, 'users'), where('isPremium', '==', true)));
+        const waitlistSnap = await getDocs(collection(db, 'waitlist'));
 
         setStats({
           creators: creatorsSnap.size,
           users: usersSnap.size,
           pending: pendingSnap.size,
-          premium: premiumSnap.size,
+          waitlist: waitlistSnap.size,
         });
 
         // Fetch data quality
@@ -352,11 +352,11 @@ export default function AdminDashboard() {
               <div className="bg-white rounded-xl p-5 border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-purple-100 rounded-lg">
-                    <Zap className="w-5 h-5 text-purple-600" />
+                    <Mail className="w-5 h-5 text-purple-600" />
                   </div>
-                  <span className="text-sm text-gray-500">Premium</span>
+                  <span className="text-sm text-gray-500">Waitlist</span>
                 </div>
-                <p className="text-3xl font-bold text-gray-800">{stats.premium}</p>
+                <p className="text-3xl font-bold text-gray-800">{stats.waitlist}</p>
               </div>
               <div className="bg-white rounded-xl p-5 border shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
