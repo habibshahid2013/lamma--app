@@ -14,6 +14,7 @@ import SurpriseMeButton from "../ui/SurpriseMeButton";
 import Link from "next/link";
 import { useCreators, useFeaturedCreators } from "@/hooks/useCreators";
 import { useFollow } from "@/hooks/useFollow";
+import { SkeletonCreatorRow } from "../ui/SkeletonCard";
 
 export default function HomeScreen() {
   // Filters
@@ -34,18 +35,15 @@ export default function HomeScreen() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm">
-        <div className="flex items-center space-x-2">
-          <LammaLogo variant="light" size="sm" />
-        </div>
-        <div className="flex items-center space-x-3">
-            <Link href="/search">
-             <Search className="w-6 h-6 text-gray-dark" />
-            </Link>
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
-            <User className="w-5 h-5 text-gray-500" />
-          </div>
-        </div>
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-4 py-3 flex items-center gap-3 shadow-sm">
+        <LammaLogo variant="light" size="icon" />
+        <Link href="/search" className="flex-1 flex items-center bg-gray-100 rounded-xl px-4 py-2.5 text-gray-400 text-sm gap-2 hover:bg-gray-200/70 transition-colors">
+          <Search className="w-4 h-4 flex-shrink-0" />
+          <span>Search scholars, topics...</span>
+        </Link>
+        <Link href="/profile" className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 flex-shrink-0">
+          <User className="w-5 h-5 text-gray-500" />
+        </Link>
       </header>
 
       <main className="flex-1 overflow-y-auto w-full">
@@ -80,13 +78,11 @@ export default function HomeScreen() {
             <section>
             <div className="flex items-center justify-between px-4 mb-3">
                 <h3 className="font-bold text-gray-dark text-lg">For You</h3>
+                <Link href="/search" className="text-teal text-sm font-medium">See All →</Link>
             </div>
             <div className="flex overflow-x-auto gap-4 px-4 pb-4 scrollbar-hide snap-x intro-x">
                 {loadingFeatured ? (
-                    // Loading skeleton
-                    [1, 2, 3].map(i => (
-                        <div key={i} className="w-40 sm:w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
-                    ))
+                    <SkeletonCreatorRow count={3} />
                 ) : (
                     featuredCreators.map(creator => (
                     <CreatorCard 
@@ -107,12 +103,11 @@ export default function HomeScreen() {
                     <h3 className="font-bold text-teal-deep text-lg flex items-center">
                          Muslim Voices <Star className="w-4 h-4 ml-2 fill-gold text-gold" />
                     </h3>
+                    <Link href="/search?category=public_figure" className="text-teal text-sm font-medium">See All →</Link>
                 </div>
                 <div className="flex overflow-x-auto gap-4 px-4 pb-2 scrollbar-hide snap-x">
                     {loadingPublic ? (
-                        [1, 2, 3].map(i => (
-                            <div key={i} className="w-40 sm:w-44 h-56 bg-white/50 rounded-2xl animate-pulse flex-shrink-0" />
-                        ))
+                        <SkeletonCreatorRow count={3} />
                     ) : (
                         publicFigures.map(creator => (
                         <CreatorCard 

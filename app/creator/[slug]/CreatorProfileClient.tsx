@@ -16,6 +16,8 @@ import LammaLogo from '@/components/LammaLogo';
 import ActionGateModal from '@/components/ActionGateModal';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { SkeletonProfilePage } from '@/components/ui/SkeletonCard';
+import { motion, AnimatePresence } from 'framer-motion';
 import { generateCreatorSchema, generateBreadcrumbSchema, siteConfig } from '@/lib/seo';
 import type { Creator } from '@/lib/types/creator';
 import {
@@ -447,10 +449,12 @@ function TabButton({
   children,
   active,
   onClick,
+  tabId,
 }: {
   children: React.ReactNode;
   active: boolean;
   onClick: () => void;
+  tabId: string;
 }) {
   return (
     <Button
@@ -465,7 +469,11 @@ function TabButton({
     >
       {children}
       {active && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold" />
+        <motion.div
+          layoutId="tab-indicator"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold"
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        />
       )}
     </Button>
   );
@@ -587,11 +595,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
 
   // ---- Loading State ----
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold" />
-      </div>
-    );
+    return <SkeletonProfilePage />;
   }
 
   // ---- Not Found State ----
@@ -969,36 +973,36 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
       {/* ================================================================ */}
       <div className="max-w-6xl mx-auto px-4 mt-4">
         <div className="flex gap-1 border-b border-slate-700 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
-          <TabButton active={activeTab === 'about'} onClick={() => setActiveTab('about')}>
+          <TabButton tabId="about" active={activeTab === 'about'} onClick={() => setActiveTab('about')}>
             About
           </TabButton>
           {hasYouTube && (
-            <TabButton active={activeTab === 'videos'} onClick={() => setActiveTab('videos')}>
+            <TabButton tabId="videos" active={activeTab === 'videos'} onClick={() => setActiveTab('videos')}>
               Videos
             </TabButton>
           )}
           {hasPodcast && (
-            <TabButton active={activeTab === 'podcasts'} onClick={() => setActiveTab('podcasts')}>
+            <TabButton tabId="podcasts" active={activeTab === 'podcasts'} onClick={() => setActiveTab('podcasts')}>
               Podcast
             </TabButton>
           )}
           {hasBooks && (
-            <TabButton active={activeTab === 'books'} onClick={() => setActiveTab('books')}>
+            <TabButton tabId="books" active={activeTab === 'books'} onClick={() => setActiveTab('books')}>
               Books ({booksData!.length})
             </TabButton>
           )}
           {hasEbooks && (
-            <TabButton active={activeTab === 'ebooks'} onClick={() => setActiveTab('ebooks')}>
+            <TabButton tabId="ebooks" active={activeTab === 'ebooks'} onClick={() => setActiveTab('ebooks')}>
               eBooks ({ebooksData!.length})
             </TabButton>
           )}
           {hasAudiobooks && (
-            <TabButton active={activeTab === 'audiobooks'} onClick={() => setActiveTab('audiobooks')}>
+            <TabButton tabId="audiobooks" active={activeTab === 'audiobooks'} onClick={() => setActiveTab('audiobooks')}>
               Audiobooks ({audiobooksData!.length})
             </TabButton>
           )}
           {hasCourses && (
-            <TabButton active={activeTab === 'courses'} onClick={() => setActiveTab('courses')}>
+            <TabButton tabId="courses" active={activeTab === 'courses'} onClick={() => setActiveTab('courses')}>
               Courses ({coursesData!.length})
             </TabButton>
           )}
@@ -1009,6 +1013,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
       {/* TAB CONTENT */}
       {/* ================================================================ */}
       <div className="max-w-6xl mx-auto px-4 py-8">
+        <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+        >
 
         {/* ---- ABOUT TAB ---- */}
         {activeTab === 'about' && (
@@ -1579,6 +1591,8 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
             </div>
           </div>
         )}
+        </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* ================================================================ */}

@@ -1,69 +1,81 @@
-# Lamma+ (Gather in Faith) 🌳
+# Lamma+ (Gather in Faith)
 
-Lamma+ is a mobile-first content creator discovery platform designed for the faith community. It connects users with scholars, educators, and content creators in a warm, welcoming environment.
+Lamma+ is a mobile-first content creator discovery platform designed for the faith community. It connects users with 487+ scholars, educators, and content creators in a warm, welcoming environment.
 
-**🚀 Live Demo:** [https://lamma-app.vercel.app](https://lamma-app.vercel.app)
+**Live Demo:** [https://lamma-app.vercel.app](https://lamma-app.vercel.app)
 
-## 📱 Features
+## Features
 
-- **Onboarding Flow**:
-  - Personalized region and interest selection (2-step filter)
-  - Beautiful splash and welcome screens with gold/teal branding
-  - Suggested creators based on choices
-- **Discovery**:
-  - **Smart Search**: Advanced filtering by category, region, language, and tier
-  - **Topics**: Deep dives into Quran, Spirituality, Youth, and more
-  - **Surprise Me**: Fun random creator discovery
-- **Main Application**:
-  - **Home**: Curated rows for Women Scholars, Historical Figures, and Regional Voices
-  - **Profile**: Detailed creator profiles with content tabs and sharing capabilities
-  - **Compare**: Side-by-side scholar comparison tool
-  - **Collections**: Dedicated spaces for Women Scholars and Giants of History
-  - **Following**: Manage connections
-  - **Premium**: Upgrade flow for unlimited access
+- **Onboarding Flow**: Personalized region and interest selection, splash screen with tap-to-skip, suggested creators
+- **Discovery**: Smart search with category/region/language/tier filtering, sort by relevance/name/followers, topic deep dives, "Surprise Me" random discovery
+- **Home**: Curated rows (For You, Muslim Voices, Women Scholars, Historical Figures, Regional Voices) with "See All" navigation
+- **Creator Profiles**: Detailed profiles with tabs (About, Videos, Podcasts, Books, eBooks, Audiobooks, Courses), animated tab transitions, skeleton loading
+- **Compare**: Side-by-side scholar comparison tool
+- **Collections**: Dedicated spaces for Women Scholars and Giants of History
+- **Following**: Firestore-backed follow system with auth gate for unauthenticated users
+- **Premium**: Email waitlist collection (Stripe integration preserved for future use)
+- **Admin**: Dashboard with data seeding, creator pipeline, sync tools, data quality audit
 
-## 🛠 Tech Stack
+## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16.1.5 (App Router) / React 19
 - **Styling**: Tailwind CSS v4 (Mobile-first design)
+- **Backend**: Firebase (Auth, Firestore, Storage)
+- **Animations**: Framer Motion (page transitions, bottom sheet, tab animations)
 - **Icons**: Lucide React
 - **Font**: Inter (Google Fonts)
+- **Deployment**: Vercel (with Analytics)
+- **CI/CD**: GitHub Actions (lint, build, TypeScript check)
 
-## 🎨 Brand Identity
+## Brand Identity
 
 - **Primary Colors**: Teal (`#0D7377`) & Gold (`#F5B820`)
+- **Deep Teal**: `#1D4E5F` (dark text, accents)
 - **Typography**: Clean, accessible Sans Serif (Inter)
 - **Aesthetic**: Warm, premium, and welcoming
 
-## 🚀 Getting Started
+## Getting Started
 
 1. **Install Dependencies**:
-
    ```bash
    npm install
    ```
 
-2. **Run Development Server**:
+2. **Set up environment**: Copy `.env.local.example` to `.env.local` and fill in Firebase credentials
 
+3. **Run Development Server**:
    ```bash
    npm run dev
    ```
 
-3. **Open Application**:
-   Visit [http://localhost:3000](http://localhost:3000)
+4. **Open Application**: Visit [http://localhost:3000](http://localhost:3000)
 
-## 📂 Project Structure
+## Project Structure
 
-- `app/`: Next.js App Router pages and layouts
-- `components/onboarding/`: Screens for the entry flow
-- `components/main/`: Core application screens (Home, Profile, Search)
-- `components/ui/`: Reusable primitives (Buttons, Cards, Nav)
-- `lib/data/`: Static data (Regions, Countries)
+```
+app/                          # Next.js App Router pages
+  creator/[slug]/             # Dynamic creator profiles (server + client components)
+  admin/                      # Admin dashboard and tools
+  api/                        # API routes (AI, Stripe, seeding, etc.)
+components/
+  onboarding/                 # 7 onboarding screens
+  main/                       # Core screens (Home, Search, Following, Premium)
+  ui/                         # Reusable UI (CreatorCard, BottomNav, SkeletonCard, PageTransition, etc.)
+hooks/                        # Custom hooks (useCreators, useFollow, useEngagement)
+contexts/                     # React contexts (AuthContext)
+lib/
+  firebase.ts                 # Firebase config (lazy Proxy initialization)
+  data/creators.ts            # Static seed data (487 creators)
+  seo.ts                      # SEO configuration
+  types/                      # TypeScript type definitions
+scripts/                      # Data seeding and enrichment scripts
+docs/                         # Specifications and architecture docs
+PROJECT_SYNC.md               # Development status (source of truth)
+```
 
-## ✅ Verification
+## Development Notes
 
-The application has been fully verified with automated browser testing:
-
-- Full navigation flow is functional.
-- UI styling matches strict brand guidelines.
-- Mobile responsiveness (375px width) confirmed.
+- **Node.js 24** (see `.nvmrc`)
+- **Firebase lazy init**: `lib/firebase.ts` uses Proxy pattern to defer initialization, allowing builds without env vars (important for CI)
+- **Dual branch deployment**: Push to both `main` and `vercel/set-up-vercel-web-analytics-in-m9kl9x`
+- See `PROJECT_SYNC.md` for detailed session-by-session development history

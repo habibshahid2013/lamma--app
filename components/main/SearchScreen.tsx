@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search as SearchIcon, X, ArrowLeft, Settings2 } from "lucide-react";
+import { Search as SearchIcon, X, ArrowLeft, Settings2, Compass, ArrowUpDown } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import { REGIONS } from "@/lib/data/regions";
 import CreatorCard from "../ui/CreatorCard";
@@ -15,6 +15,7 @@ const POPULAR_TOPICS = [
 ];
 
 import { useCreators } from "@/hooks/useCreators";
+import { SkeletonCreatorGrid, SkeletonCreatorRow } from "../ui/SkeletonCard";
 
 // Helper to get initial filters from search params
 function getInitialFilters(searchParams: URLSearchParams) {
@@ -51,6 +52,7 @@ export default function SearchScreen() {
   // Initialize from URL params using lazy initializer
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get("topic") || "");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"relevant" | "az" | "followers">("relevant");
 
   // Fetch all creators for client-side filtering (efficient for small datasets < 500)
   const { creators: allCreators, loading } = useCreators({ limitCount: 150 });
@@ -96,43 +98,41 @@ export default function SearchScreen() {
 
   const filteredCreators = useMemo(() => {
     if (loading) return [];
-    
-    return allCreators.filter(c => {
-      const matchesSearch = searchTerm === "" || 
+
+    const filtered = allCreators.filter(c => {
+      const matchesSearch = searchTerm === "" ||
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.topics.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      // Region Filter
-      // Note: region in Firestore is a string key (e.g. "americas"), need to map if filter uses names.
-      // The filter logic uses REGIONS[c.region].name. 
-      // c.region from Firestore should be "americas", "europe" etc.
-      // Type safe check:
+
       const regionKey = c.region as keyof typeof REGIONS;
-      const matchesRegion = filters.regions.length === 0 || 
+      const matchesRegion = filters.regions.length === 0 ||
         (REGIONS[regionKey] && filters.regions.includes(REGIONS[regionKey].name));
 
-      // Language Filter
-      const matchesLanguage = filters.languages.length === 0 || 
+      const matchesLanguage = filters.languages.length === 0 ||
         c.languages.some(l => filters.languages.includes(l));
 
-      // Category Filter
-      const matchesCategory = filters.categories.length === 0 || 
+      const matchesCategory = filters.categories.length === 0 ||
          filters.categories.includes(c.category);
 
-      // Tier Filter
       const matchesTier = filters.tiers.length === 0 ||
          filters.tiers.includes(c.tier);
 
-      // Gender Filter
       const matchesGender = filters.gender === "all" || c.gender === filters.gender;
 
-      // Historical Filter
-      // Default behavior: Exclude historical unless 'includeHistorical' is true OR specifically filtering for them
       const isHistoricalMatch = filters.includeHistorical ? true : !c.isHistorical;
-      
+
       return matchesSearch && matchesRegion && matchesLanguage && matchesCategory && matchesTier && matchesGender && isHistoricalMatch;
     });
-  }, [searchTerm, filters, allCreators, loading]);
+
+    // Sort
+    if (sortBy === "az") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "followers") {
+      filtered.sort((a, b) => (b.stats?.followerCount || 0) - (a.stats?.followerCount || 0));
+    }
+
+    return filtered;
+  }, [searchTerm, filters, allCreators, loading, sortBy]);
 
   const activeFilterCount = 
     filters.categories.length + 
@@ -251,9 +251,23 @@ export default function SearchScreen() {
             <section>
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-bold text-gray-dark">{filteredCreators.length} Results</h3>
+                    <div className="relative">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                        className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 text-xs font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal/20"
+                      >
+                        <option value="relevant">Most Relevant</option>
+                        <option value="az">A–Z</option>
+                        <option value="followers">Most Followed</option>
+                      </select>
+                      <ArrowUpDown className="w-3 h-3 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                 </div>
-                
-                {filteredCreators.length > 0 ? (
+
+                {loading ? (
+                    <SkeletonCreatorGrid count={4} />
+                ) : filteredCreators.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3">
                         {filteredCreators.map(creator => (
                             <div key={creator.id} className="flex justify-center">
@@ -262,13 +276,14 @@ export default function SearchScreen() {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-10 text-gray-400">
-                        <p>No creators found matching your filters.</p>
-                        <button 
+                    <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                        <Compass className="w-10 h-10 mb-3 text-gray-300" />
+                        <p className="font-medium text-gray-500">No creators found</p>
+                        <button
                             onClick={clearFilters}
-                            className="text-teal font-medium mt-2 text-sm"
+                            className="text-teal font-medium mt-2 text-sm hover:underline"
                         >
-                            Clear Filters
+                            Clear filters
                         </button>
                     </div>
                 )}
@@ -294,9 +309,7 @@ export default function SearchScreen() {
                 <h3 className="font-bold text-gray-dark mb-3">Trending Creators</h3>
                 <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
                     {loading ? (
-                         [1, 2, 3].map(i => (
-                             <div key={i} className="w-40 sm:w-44 h-56 bg-gray-100 rounded-2xl animate-pulse flex-shrink-0" />
-                         ))
+                         <SkeletonCreatorRow count={3} />
                     ) : (
                         allCreators.filter(c => c.trending).slice(0, 5).map(creator => (
                         <CreatorCard key={creator.id} {...creator} />

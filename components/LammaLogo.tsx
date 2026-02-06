@@ -2,7 +2,7 @@
 
 interface LammaLogoProps {
   variant?: 'dark' | 'light' | 'gold-bg';
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'icon' | 'sm' | 'md' | 'lg' | 'xl';
   showTagline?: boolean;
   className?: string;
 }
@@ -24,11 +24,26 @@ export default function LammaLogo({
   className = '',
 }: LammaLogoProps) {
   const sizes = {
+    icon: { height: 28, width: 28, tagline: 'text-[10px]' },
     sm: { height: 28, width: 140, tagline: 'text-xs' },
     md: { height: 36, width: 180, tagline: 'text-sm' },
     lg: { height: 48, width: 240, tagline: 'text-base' },
     xl: { height: 64, width: 320, tagline: 'text-lg' },
   };
+
+  // Icon-only mode: render PalmIcon instead of full logo
+  if (size === 'icon') {
+    const iconColors = {
+      dark: 'teal' as const,
+      light: 'brown' as const,
+      'gold-bg': 'brown' as const,
+    };
+    return (
+      <div className={`flex-shrink-0 ${className}`}>
+        <PalmIcon variant={iconColors[variant]} size={28} />
+      </div>
+    );
+  }
 
   const { height, width, tagline } = sizes[size];
 

@@ -46,6 +46,7 @@ export default function CreatorCard(props: CreatorCardProps) {
     trending,
     theme = 'light',
     content,
+    stats,
   } = props;
 
   // Use props if provided (from HomeScreen/FollowingList), otherwise use hook directly
@@ -83,11 +84,19 @@ export default function CreatorCard(props: CreatorCardProps) {
 
   const isPublicFigure = category === "public_figure";
 
+  const formatFollowers = (count?: number) => {
+    if (!count) return null;
+    if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+    if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+    return count.toString();
+  };
+  const followerDisplay = formatFollowers(stats?.followerCount);
+
   return (
-    <div className={`group relative flex flex-col items-center p-3 sm:p-4 rounded-xl border w-40 sm:w-44 flex-shrink-0 snap-center transition-all ${
+    <div className={`group relative flex flex-col items-center p-3 sm:p-4 rounded-xl border w-40 sm:w-44 flex-shrink-0 snap-center transition-all duration-200 hover:-translate-y-1 ${
         isDark
-          ? 'bg-navy-card border-gold/30 shadow-lg shadow-black/20 hover:border-gold/50'
-          : `bg-white border-gray-light shadow-sm hover:border-teal/30 ${isHistorical ? 'bg-gold-light/50' : ''}`
+          ? 'bg-navy-card border-gold/30 shadow-sm hover:shadow-lg hover:shadow-black/20 hover:border-gold/50'
+          : `bg-white border-gray-light shadow-sm hover:shadow-md hover:border-teal/30 ${isHistorical ? 'bg-gold-light/50' : ''}`
     }`}>
       {/* Clickable Area */}
       <div 
@@ -127,10 +136,17 @@ export default function CreatorCard(props: CreatorCardProps) {
         {isHistorical && lifespan ? (
           <p className="text-[10px] text-gray-400 mb-1 font-mono">{lifespan}</p>
         ) : (
-          <p className={`text-xs mb-2 text-center capitalize ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          <p className={`text-xs text-center capitalize ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               {displayCategory}
           </p>
         )}
+
+        {followerDisplay && (
+          <p className={`text-[10px] mb-1 ${isDark ? 'text-white/40' : 'text-gray-400'}`}>
+            {followerDisplay} followers
+          </p>
+        )}
+        {!followerDisplay && !isHistorical && <div className="mb-1" />}
         
         {/* Languages (New Feature) */}
         <div className="flex flex-wrap justify-center gap-1 mb-2 px-1">
@@ -169,7 +185,7 @@ export default function CreatorCard(props: CreatorCardProps) {
             variant={following ? "default" : "outline"}
             size="sm"
             disabled={followLoading}
-            className={`w-full text-xs rounded-full h-8 ${
+            className={`w-full text-xs rounded-full h-8 active:scale-95 transition-transform ${
               following
                 ? `${isDark ? 'bg-gold hover:bg-gold-dark text-navy' : 'bg-gold hover:bg-gold-dark text-gray-dark'}`
                 : `${isDark ? 'border-gold/50 text-gold hover:bg-gold/10' : 'border-teal text-teal hover:bg-teal-light'}`

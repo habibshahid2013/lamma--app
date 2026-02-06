@@ -1,5 +1,5 @@
 # PROJECT_SYNC.md - Lamma+ Development Status
-## Last Updated: 2026-02-06 (Session 8)
+## Last Updated: 2026-02-06 (Session 9)
 
 This file is the **source of truth** for syncing between Claude Chat (planning) and Claude Code (implementation).
 
@@ -46,7 +46,7 @@ lamma-app/                         # Main Next.js application (this repo)
 
 | Screen | Status | File Location | Notes |
 |--------|--------|---------------|-------|
-| Splash Screen | DONE | `components/onboarding/SplashScreen.tsx` | Auto-advance after 2.5s |
+| Splash Screen | DONE | `components/onboarding/SplashScreen.tsx` | Auto-advance 1.5s, tap-to-skip |
 | Welcome Screen | DONE | `components/onboarding/WelcomeScreen.tsx` | Tree logo + CTA |
 | Personalize Choice | DONE | `components/onboarding/PersonalizeChoice.tsx` | Two-card selection |
 | Region Selection | DONE | `components/onboarding/RegionSelection.tsx` | 8 region cards |
@@ -78,14 +78,16 @@ app/creator/[slug]/
 - Vercel Analytics (`@vercel/analytics`)
 
 ### UI Components
-- `BottomNav.tsx` - Tab navigation
-- `CreatorCard.tsx` - Creator display cards
+- `BottomNav.tsx` - Tab navigation with active indicator bar + backdrop blur
+- `CreatorCard.tsx` - Creator display cards with follower count, hover lift, micro-interactions
 - `CreatorLinks.tsx` - External link buttons (with platform detection)
 - `ExternalLink.tsx` - Safe external link with URL sanitization
 - `Badge.tsx` - Status badges
 - `Button.tsx` - shadcn/ui button
-- `LammaLogo.tsx` - Brand logos (dark/light/gold-bg variants)
+- `LammaLogo.tsx` - Brand logos (dark/light/gold-bg variants + icon-only mode)
 - `ShareModal.tsx` - Social sharing
+- `PageTransition.tsx` - Reusable Framer Motion page entrance animation wrapper
+- `SkeletonCard.tsx` - Skeleton loading states (SkeletonCreatorCard, Grid, Row, ProfilePage)
 - And more in `components/ui/`
 
 ---
@@ -168,9 +170,58 @@ app/creator/[slug]/
 - [x] Stripe API routes kept intact but unused
 - [x] Admin dashboard updated: "Premium" stat → "Waitlist" counter
 
+### Priority 14: CI Fix + UX Modernization — COMPLETE (Session 9)
+
+**CI Fix:**
+- [x] Fixed GitHub Actions build failure — Firebase `auth/invalid-api-key` error caused by empty env secrets
+- [x] Rewrote `lib/firebase.ts` with lazy Proxy-based initialization (defers Firebase init from import-time to first property access)
+- [x] Build passes both with and without Firebase env vars
+
+**UX Modernization (framer-motion added):**
+- [x] Splash screen — reduced auto-advance from 2.5s→1.5s, added tap-to-skip, "Tap to continue" hint
+- [x] Filter panel — converted from full-screen modal to bottom sheet (slide-up spring animation, backdrop blur, drag handle)
+- [x] Page transitions — new `PageTransition.tsx` wrapper (Framer Motion fade + Y-translate)
+- [x] Skeleton loading — new `SkeletonCard.tsx` with 4 skeleton variants (card, grid, row, profile page)
+- [x] Creator cards — added follower count display, hover lift (`-translate-y-1`), improved shadows, `active:scale-95` on follow button
+- [x] HomeScreen header — replaced icon-only header with tappable search bar + compact palm icon logo
+- [x] "See All" CTAs — added to "For You" and "Muslim Voices" home sections
+- [x] BottomNav — added teal indicator bar on active tab, smooth transitions, backdrop blur
+- [x] Creator Profile — replaced spinner with `SkeletonProfilePage`, added animated tab indicator (`layoutId`), tab content fade transitions (`AnimatePresence`)
+- [x] Search — added sort dropdown (Relevant / A-Z / Most Followed), improved empty state (compass icon), replaced loading rectangles with skeleton components
+- [x] LammaLogo — added `icon` size variant (renders PalmIcon only, used in compact header)
+
 ---
 
 ## RECENT CHANGES LOG
+
+### 2026-02-06 — CI Fix + UX Modernization (Session 9)
+
+**Context:** GitHub Actions CI was failing on every push because Firebase env secrets were not configured. Additionally, the UX felt dated — splash screen forced a 2.5s wait, filter panel took over full screen, loading states used basic spinners, and transitions were abrupt.
+
+**CI Fix:**
+1. **Root cause:** `lib/firebase.ts` eagerly called `initializeApp()` at import time. In CI, `NEXT_PUBLIC_FIREBASE_*` secrets were empty strings, causing `auth/invalid-api-key` during `next build`.
+2. **First attempt (failed):** Made exports conditionally undefined (`Firestore | undefined`). Caused TypeScript errors in 20+ consumer files that expect non-optional types.
+3. **Final fix:** Used JavaScript `Proxy` pattern for lazy initialization. Exports remain typed as `Firestore`, `Auth`, etc. (non-optional). Actual Firebase init is deferred to first property access at runtime. Build succeeds with empty env vars (CI) and real vars (.env.local).
+
+**UX Modernization:**
+
+*New dependency added: `framer-motion`*
+
+| File | Changes |
+|------|---------|
+| `lib/firebase.ts` | Lazy Proxy-based initialization for CI compatibility |
+| `components/onboarding/SplashScreen.tsx` | 1.5s auto-advance, tap-to-skip, hint text |
+| `components/main/FilterPanel.tsx` | Bottom sheet with spring animation, backdrop blur, drag handle |
+| `components/ui/PageTransition.tsx` | **NEW** — Reusable Framer Motion page transition wrapper |
+| `components/ui/SkeletonCard.tsx` | **NEW** — 4 skeleton components matching real content shapes |
+| `components/ui/CreatorCard.tsx` | Follower count badge, hover lift, shadow improvements, active:scale-95 |
+| `components/main/HomeScreen.tsx` | Search bar header, "See All" CTAs, skeleton loading states |
+| `components/ui/BottomNav.tsx` | Active indicator bar, size transitions, backdrop blur |
+| `app/creator/[slug]/CreatorProfileClient.tsx` | SkeletonProfilePage, animated tab indicator (layoutId), AnimatePresence tab content transitions |
+| `components/main/SearchScreen.tsx` | Sort dropdown (Relevant/A-Z/Followers), improved empty state, skeleton loading |
+| `components/LammaLogo.tsx` | Added `icon` size variant (compact palm tree only) |
+
+**Build:** Passes with 0 errors. All 43 routes generate successfully.
 
 ### 2026-02-06 — Branding, Database Expansion, Premium→Waitlist (Session 8)
 
@@ -380,6 +431,8 @@ Added 142 new creator profiles across all regions:
 10. ~~**Branding/Logo**~~ — **RESOLVED (Session 8)**: All SVG logos now use solid filled paths matching brand palette images.
 11. **Stripe env vars** — When ready to enable premium, set `STRIPE_SECRET_KEY`, `STRIPE_MONTHLY_PRICE_ID`, `STRIPE_YEARLY_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` in Vercel.
 12. **Firestore seeding** — 487 creators in static data need to be seeded to Firestore via admin dashboard "Seed Data" button or `POST /api/admin/seed?action=seed`.
+13. **GitHub Actions secrets** — Firebase env vars need to be configured in repo settings (`github.com/habibshahid2013/lamma--app/settings/secrets/actions`) for CI to run Firebase-dependent tests. The lazy Proxy fix allows builds without secrets, but runtime features still need real keys.
+14. ~~**CI build failure**~~ — **RESOLVED (Session 9)**: Firebase lazy initialization via Proxy pattern. Build passes with or without env vars.
 
 ---
 
@@ -407,6 +460,8 @@ lamma-app/
 │   ├── ui/                   # Reusable UI components
 │   │   ├── CreatorLinks.tsx  # Social link badges (platform detection)
 │   │   ├── ExternalLink.tsx  # Safe external links
+│   │   ├── PageTransition.tsx # Framer Motion page transition wrapper
+│   │   ├── SkeletonCard.tsx  # Skeleton loading components (Card, Grid, Row, Profile)
 │   │   └── button.tsx        # shadcn/ui button
 │   ├── content/              # Video/podcast lists
 │   ├── claim/                # Profile claiming
@@ -526,6 +581,6 @@ Before switching between Claude Chat and Claude Code:
 
 ---
 
-*Last sync by: Claude Code (Session 8)*
+*Last sync by: Claude Code (Session 9)*
 *Last sync date: 2026-02-06*
-*Next action: Seed 487 creators to Firestore, run image fetcher, production QA*
+*Next action: Configure GitHub Actions Firebase secrets, seed 487 creators to Firestore, run image fetcher, production QA*
