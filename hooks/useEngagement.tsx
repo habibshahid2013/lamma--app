@@ -70,8 +70,6 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
   // Use lazy initializer to read from localStorage
   const [state, setState] = useState<EngagementState>(getInitialState);
 
-  // Track capture type explicitly - 'action' when user tries an action, otherwise 'passive'
-  const [captureType, setCaptureType] = useState<'passive' | 'action'>('passive');
   const [dismissed, setDismissed] = useState(false);
   const [initialized, setInitialized] = useState(() => typeof window !== 'undefined');
   const [actionRequested, setActionRequested] = useState(false);
@@ -87,9 +85,9 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     !dismissed &&
     (thresholdsMet || actionRequested);
 
-  // Derive the effective captureType based on current state
-  // If actionRequested is true, show 'action' type, otherwise 'passive'
-  const effectiveCaptureType: 'passive' | 'action' = actionRequested ? 'action' : captureType;
+  // Derive the captureType based on current state
+  // If actionRequested is true (user tried an action), show 'action' type, otherwise 'passive'
+  const captureType: 'passive' | 'action' = actionRequested ? 'action' : 'passive';
 
   // Save state to localStorage
   useEffect(() => {
@@ -196,7 +194,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     // State
     state,
     shouldShowCapture,
-    captureType: effectiveCaptureType,
+    captureType,
     initialized,
 
     // Tracking functions
