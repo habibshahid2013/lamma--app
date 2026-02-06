@@ -1,5 +1,5 @@
 # Claude Chat Briefing: Lamma+ Development Status
-## Updated: 2026-02-03 (After Session 6)
+## Updated: 2026-02-06 (After Session 8)
 ## For: Claude Chat planning and next steps
 
 ---
@@ -215,25 +215,29 @@ interface Creator {
 
 ## REMAINING ISSUES
 
-### 1. Stripe Integration (NEXT PRIORITY)
-Premium subscriptions not yet implemented. The `/premium` page exists with pricing cards but no Stripe checkout flow. This was explicitly deferred by the user.
+### 1. Firestore Seeding
+487 creators in static data (`lib/data/creators.ts`) need to be seeded to Firestore. Use admin dashboard "Seed Data" button or `POST /api/admin/seed?action=seed`.
 
-### 2. Data Quality — Systemic (Needs Bulk Enrichment)
-Session 6 audit of 10 random creators revealed systemic issues across the ~79 creators in `lib/data/creators.ts`:
-- **Missing bios**: 8/10 creators had no `note` field (bio text)
-- **Templated podcast links**: Most creators have auto-generated `feeds.muslimcentral.com/{slug}` links. Valid for Islamic scholars but not for public figures (e.g., Dave Chappelle)
-- **No YouTube links**: Only 1/10 creators had a YouTube `socialLinks` entry (and it was bogus)
-- **No social media links**: Most creators have empty or minimal `socialLinks`
-- 3 critical errors were fixed in Session 6 (Boonaa Mohammed, Omar Suleiman, Dave Chappelle)
-- **Recommendation**: A bulk data enrichment pass is needed — either manual curation or a second AI pipeline run with better prompts
+### 2. Creator Images
+Many of the 487 profiles may show fallback avatars. Need to run image fetcher batch: admin dashboard "Fetch Images" button or `POST /api/admin/seed?action=images`.
+
+### 3. Stripe Env Vars (When Ready)
+Stripe integration is fully coded but disabled for MVP. When ready to enable premium:
+- Set `STRIPE_SECRET_KEY`, `STRIPE_MONTHLY_PRICE_ID`, `STRIPE_YEARLY_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` in Vercel
+- Revert `PremiumUpgrade.tsx` to Stripe checkout version
+- Re-add follow limit in `useFollow.ts`
 
 ### RESOLVED ISSUES
-- ~~Creator images~~ — All 71 creators have images. Image fetcher at `/api/creators/fetch-images` works.
+- ~~Creator images~~ — Image fetcher at `/api/creators/fetch-images` works. Needs batch run for 487 creators.
 - ~~Unused grey card components~~ — Deleted in Session 4.
-- ~~Following system~~ — Fully wired to Firestore in Session 5. Profile page + all cards use `useFollow` hook. Auth gate modal for unauthenticated users. 5-follow free plan limit enforced.
+- ~~Following system~~ — Fully wired to Firestore in Session 5. Profile page + all cards use `useFollow` hook. Auth gate modal for unauthenticated users. Follow limit removed for MVP (was 5-follow free plan).
 - ~~Dead /explore links~~ — Fixed to `/search` in Session 4.
 - ~~Engagement tracking~~ — `EngagementWrapper` wired into app layout. Tracks page views, session time, interactions. Email capture modal triggers at configurable thresholds.
 - ~~Mobile responsiveness~~ — Full audit at 375px viewport in Session 6. Fixed card overflow, touch targets (WCAG 44px minimum), iOS safe area insets, tab scroll snap, and missing CSS utility classes.
+- ~~Data quality — systemic~~ — All 68 original creators enriched with bios, YouTube, social links. Database expanded to 487 creators across 9 regions.
+- ~~Premium/Stripe~~ — Disabled for MVP. Page converted to email waitlist collection. Stripe code preserved but unused.
+- ~~Branding/Logo~~ — All SVG logos now use solid filled paths matching brand palette (Session 8).
+- ~~Database expansion~~ — 487 creators across 9 regions, 10 categories (Session 8).
 
 ---
 
@@ -278,8 +282,8 @@ git push origin main:vercel/set-up-vercel-web-analytics-in-m9kl9x
 | `next.config.ts` | Image optimization, headers, caching | CURRENT |
 | `tailwind.config.ts` | Brand colors + shadcn/ui theme | CURRENT |
 | `app/globals.css` | CSS variables + Tailwind v4 theme + safe-bottom/scrollbar-hide | UPDATED (Session 6) |
-| `lib/data/creators.ts` | Static seed data (~79 creators) | UPDATED (Session 6) |
-| `hooks/useFollow.ts` | Firestore follow/unfollow with 5-follow limit | CURRENT |
+| `lib/data/creators.ts` | Static seed data (487 creators) | UPDATED (Session 8) |
+| `hooks/useFollow.ts` | Firestore follow/unfollow (no limit for MVP) | UPDATED (Session 8) |
 | `hooks/useEngagement.tsx` | Engagement tracking (page views, time, interactions) | CURRENT |
 | `components/ActionGateModal.tsx` | Auth gate for unauthenticated actions | CURRENT |
 | `components/EmailCaptureModal.tsx` | Email capture after engagement threshold | CURRENT |
@@ -308,5 +312,5 @@ git push origin main:vercel/set-up-vercel-web-analytics-in-m9kl9x
 
 ---
 
-*Updated by Claude Code — 2026-02-03 (Session 6)*
-*For use by Claude Chat to plan next steps (data enrichment batch, Stripe integration, production deploy)*
+*Updated by Claude Code — 2026-02-06 (Session 8)*
+*For use by Claude Chat to plan next steps (Firestore seeding, image fetching, production QA)*

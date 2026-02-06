@@ -1,7 +1,8 @@
 # Lamma+ Comprehensive Improvement Plan
 
 **Generated:** February 6, 2026
-**Status:** Ready for Implementation
+**Last Updated:** February 6, 2026 (Session 8)
+**Status:** Partially Complete — See checkmarks below
 **Estimated Timeline:** 4-6 weeks
 
 ---
@@ -29,14 +30,16 @@ Based on comprehensive analysis of your Lamma+ application, this plan addresses:
 - Vercel deployment live
 
 ### Critical Issues Found
-| Issue | Severity | Impact |
-|-------|----------|--------|
-| 93% creators missing bios | HIGH | Empty profiles hurt trust |
-| 0% real avatar images | HIGH | Generic initials look unprofessional |
-| 91% missing YouTube data | HIGH | Missing primary content source |
-| 100% templated podcast links | MEDIUM | Links may not resolve |
-| Admin tools disconnected | MEDIUM | Manual work required |
-| Logo inconsistencies | LOW | Brand perception |
+| Issue | Severity | Impact | Status |
+|-------|----------|--------|--------|
+| 93% creators missing bios | HIGH | Empty profiles hurt trust | RESOLVED — All 68 originals enriched (Session 7) |
+| 0% real avatar images | HIGH | Generic initials look unprofessional | PARTIAL — Image fetcher exists, needs batch run |
+| 91% missing YouTube data | HIGH | Missing primary content source | PARTIAL — Links added for 26 creators |
+| 100% templated podcast links | MEDIUM | Links may not resolve | PARTIAL — Bogus links removed from non-scholars |
+| Admin tools disconnected | MEDIUM | Manual work required | RESOLVED — Unified admin dashboard (Session 8) |
+| Logo inconsistencies | LOW | Brand perception | RESOLVED — Filled SVGs matching brand palette (Session 8) |
+| Database only 68 creators | HIGH | Limited content | RESOLVED — Expanded to 487 (Session 8) |
+| Premium paywall blocks MVP | MEDIUM | Limits showcasing | RESOLVED — Converted to email waitlist (Session 8) |
 
 ---
 
@@ -450,21 +453,24 @@ jobs:
 - Custom error pages (404, 500)
 - Toast notifications for user actions
 
-### 6.4 Stripe Integration
+### 6.4 Stripe Integration — DEFERRED (MVP uses email waitlist)
 
-**Required:**
-1. Create Stripe account & products
-2. Implement checkout flow
-3. Set up webhooks for subscription events
-4. Update Firestore `isPremium` flag
+**Status:** Code fully implemented but disabled for MVP.
 
-**Files to Create:**
+**Already Created:**
 ```
-app/api/stripe/create-checkout/route.ts
-app/api/stripe/webhook/route.ts
-app/premium/success/page.tsx
-app/premium/cancel/page.tsx
+app/api/stripe/create-checkout/route.ts   ✓ EXISTS
+app/api/stripe/webhook/route.ts           ✓ EXISTS
+app/premium/success/page.tsx              ✓ EXISTS
+app/premium/cancel/page.tsx               ✓ EXISTS
 ```
+
+**To Enable:**
+1. Set env vars: `STRIPE_SECRET_KEY`, `STRIPE_MONTHLY_PRICE_ID`, `STRIPE_YEARLY_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`
+2. Revert `PremiumUpgrade.tsx` to Stripe checkout version
+3. Re-add follow limit in `useFollow.ts`
+
+**Current MVP:** Premium page collects emails to Firestore `waitlist` collection instead.
 
 ---
 
