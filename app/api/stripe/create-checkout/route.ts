@@ -1,18 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-12-18.acacia",
-});
+// Lazy initialization to avoid build-time errors
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error("STRIPE_SECRET_KEY is not configured");
+  }
+  return new Stripe(key, {
+    apiVersion: "2025-02-24.acacia",
+  });
+}
 
 // Price IDs - set these in Stripe Dashboard
-const PRICES = {
-  monthly: process.env.STRIPE_MONTHLY_PRICE_ID!,
-  yearly: process.env.STRIPE_YEARLY_PRICE_ID!,
-};
+function getPrices() {
+  return {
+    monthly: process.env.STRIPE_MONTHLY_PRICE_ID,
+    yearly: process.env.STRIPE_YEARLY_PRICE_ID,
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe();
+    const PRICES = getPrices();
+
     const { plan, userId, email } = await request.json();
 
     if (!plan || !["monthly", "yearly"].includes(plan)) {

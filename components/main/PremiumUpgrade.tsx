@@ -50,7 +50,7 @@ export default function PremiumUpgrade() {
   };
 
   // Already premium
-  if (userData?.isPremium) {
+  if (userData?.subscription?.plan === 'premium') {
     return (
       <div className="flex flex-col min-h-screen bg-white">
         <div className="p-4">

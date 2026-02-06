@@ -349,7 +349,7 @@ function AffiliationsSection({ affiliations, profile }: { affiliations?: string[
 // ENGAGEMENT STATS BAR
 // ============================================================================
 
-function EngagementStatsBar({ stats, youtubeData }: { stats?: Creator['stats']; youtubeData?: Creator['content']['youtube'] }) {
+function EngagementStatsBar({ stats, youtubeData }: { stats?: Creator['stats']; youtubeData?: NonNullable<Creator['content']>['youtube'] }) {
   const items = [
     {
       label: 'Followers',
@@ -376,7 +376,11 @@ function EngagementStatsBar({ stats, youtubeData }: { stats?: Creator['stats']; 
       icon: Book,
       color: 'text-amber-400',
     },
-  ].filter(item => item.value && item.value > 0);
+  ].filter(item => {
+    if (!item.value) return false;
+    const numValue = typeof item.value === 'string' ? parseInt(item.value.replace(/,/g, '')) : item.value;
+    return numValue > 0;
+  });
 
   if (items.length === 0) return null;
 

@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, TreeDeciduous, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function PremiumSuccessPage() {
+function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUserData } = useAuth();
   const [loading, setLoading] = useState(true);
 
   const sessionId = searchParams.get("session_id");
@@ -17,14 +17,14 @@ export default function PremiumSuccessPage() {
   useEffect(() => {
     // Refresh user data to get updated premium status
     const verifySubscription = async () => {
-      if (sessionId && refreshUser) {
-        await refreshUser();
+      if (sessionId && refreshUserData) {
+        await refreshUserData();
       }
       setLoading(false);
     };
 
     verifySubscription();
-  }, [sessionId, refreshUser]);
+  }, [sessionId, refreshUserData]);
 
   useEffect(() => {
     // Confetti effect
@@ -120,5 +120,21 @@ export default function PremiumSuccessPage() {
         </a>
       </p>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gold-light to-white">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal"></div>
+    </div>
+  );
+}
+
+export default function PremiumSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SuccessContent />
+    </Suspense>
   );
 }

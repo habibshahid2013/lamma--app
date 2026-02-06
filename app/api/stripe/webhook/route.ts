@@ -1,30 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, Firestore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin
-if (getApps().length === 0) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
+// Lazy initialization to avoid build-time errors
+let db: Firestore | null = null;
+
+function getDb() {
+  if (db) return db;
+
+  if (getApps().length === 0) {
+    initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      }),
+    });
+  }
+
+  db = getFirestore();
+  return db;
+}
+
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error("STRIPE_SECRET_KEY is not configured");
+  }
+  return new Stripe(key, {
+    apiVersion: "2025-02-24.acacia",
   });
 }
 
-const db = getFirestore();
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-12-18.acacia",
-});
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = request.headers.get("stripe-signature")!;
+  const signature = request.headers.get("stripe-signature");
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!signature || !webhookSecret) {
+    return NextResponse.json(
+      { error: "Missing signature or webhook secret" },
+      { status: 400 }
+    );
+  }
+
+  const stripe = getStripe();
+  const firestore = getDb();
 
   let event: Stripe.Event;
 
@@ -46,7 +68,7 @@ export async function POST(request: NextRequest) {
         const plan = session.metadata?.plan;
 
         if (userId) {
-          await db.collection("users").doc(userId).update({
+          await firestore.collection("users").doc(userId).update({
             isPremium: true,
             premiumPlan: plan,
             stripeCustomerId: session.customer,
@@ -65,7 +87,7 @@ export async function POST(request: NextRequest) {
 
         if (userId) {
           const isActive = ["active", "trialing"].includes(subscription.status);
-          await db.collection("users").doc(userId).update({
+          await firestore.collection("users").doc(userId).update({
             isPremium: isActive,
             subscriptionStatus: subscription.status,
             updatedAt: new Date().toISOString(),
@@ -80,7 +102,7 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.userId;
 
         if (userId) {
-          await db.collection("users").doc(userId).update({
+          await firestore.collection("users").doc(userId).update({
             isPremium: false,
             subscriptionStatus: "canceled",
             premiumEndedAt: new Date().toISOString(),
@@ -100,7 +122,7 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.userId;
 
         if (userId) {
-          await db.collection("users").doc(userId).update({
+          await firestore.collection("users").doc(userId).update({
             subscriptionStatus: "past_due",
             updatedAt: new Date().toISOString(),
           });
@@ -122,10 +144,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Disable body parsing for webhooks
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
