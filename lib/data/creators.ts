@@ -69,8 +69,12 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": true,
     "isHistorical": false,
+    "note": "Founder and president of Yaqeen Institute for Islamic Research",
     "socialLinks": {
       "youtube": "https://www.youtube.com/@OmarSuleiman",
+      "twitter": "https://twitter.com/omarsuleiman",
+      "instagram": "https://www.instagram.com/imamomarsuleiman",
+      "website": "https://yaqeeninstitute.org",
       "podcast": "https://feeds.muslimcentral.com/omar-suleiman"
     }
   },
@@ -100,7 +104,11 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": true,
     "isHistorical": false,
+    "note": "Founder of Bayyinah Institute, renowned Quran and Arabic educator",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@bayyinah",
+      "instagram": "https://www.instagram.com/noumanali1",
+      "website": "https://www.bayyinah.com",
       "podcast": "https://feeds.muslimcentral.com/nouman-ali-khan"
     }
   },
@@ -129,7 +137,11 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Dean of the Islamic Seminary of America, Yale PhD in Islamic Studies",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@YasirQadhi",
+      "twitter": "https://twitter.com/YasirQadhi",
+      "website": "https://www.yasirqadhi.com",
       "podcast": "https://feeds.muslimcentral.com/yasir-qadhi"
     }
   },
@@ -157,7 +169,10 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Co-founder of Zaytuna College, first accredited Muslim liberal arts college in the US",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@zaytunacollege",
+      "website": "https://www.zaytuna.edu",
       "podcast": "https://feeds.muslimcentral.com/hamza-yusuf"
     }
   },
@@ -185,7 +200,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Co-founder of Zaytuna College, scholar of Islamic law and social justice",
     "socialLinks": {
+      "twitter": "https://twitter.com/imamzaidshakir",
+      "website": "https://www.zaytuna.edu",
       "podcast": "https://feeds.muslimcentral.com/zaid-shakir"
     }
   },
@@ -213,7 +231,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "American imam and scholar, known for accessible online Islamic education",
     "socialLinks": {
+      "instagram": "https://www.instagram.com/suhaibwebb",
       "podcast": "https://feeds.muslimcentral.com/suhaib-webb"
     }
   },
@@ -240,6 +260,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Imam of Masjid Al-Taqwa in Brooklyn, first Muslim to give opening prayer in US Congress",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/siraj-wahhaj"
     }
@@ -269,7 +290,11 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Founder of Qalam Institute, expert in Seerah and Quranic Arabic",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@QalamInstitute",
+      "instagram": "https://www.instagram.com/abdulnasirjangda",
+      "website": "https://www.qalaminstitute.org",
       "podcast": "https://feeds.muslimcentral.com/abdul-nasir-jangda"
     }
   },
@@ -296,7 +321,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Resident scholar at Roots Community Center, host of Khutbah podcast",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@RootsCommunity",
+      "instagram": "https://www.instagram.com/abdelrahmanm",
       "podcast": "https://feeds.muslimcentral.com/abdelrahman-murphy"
     }
   },
@@ -323,7 +351,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "AlMaghrib Institute instructor, known for engaging youth-focused content",
     "socialLinks": {
+      "instagram": "https://www.instagram.com/saadtasleem",
       "podcast": "https://feeds.muslimcentral.com/saad-tasleem"
     }
   },
@@ -351,7 +381,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Quran coach and recitation instructor, founder of Quran Revolution",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@WisamSharieff",
+      "instagram": "https://www.instagram.com/wisamsharieff",
       "podcast": "https://feeds.muslimcentral.com/wisam-sharieff"
     }
   },
@@ -379,7 +412,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Georgetown professor of Islamic civilization, author of Misquoting Muhammad",
     "socialLinks": {
+      "twitter": "https://twitter.com/jonathanacbrown",
       "podcast": "https://feeds.muslimcentral.com/jonathan-brown"
     }
   },
@@ -407,6 +442,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "USC professor, leading voice on Islam and Black American Muslim experience",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/sherman-jackson"
     }
@@ -434,7 +470,12 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": true,
     "isHistorical": false,
+    "note": "Author of Reclaim Your Heart, international speaker on spirituality and healing",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@YasminMogahed",
+      "twitter": "https://twitter.com/YasminMogahed",
+      "instagram": "https://www.instagram.com/yasminmogahed",
+      "website": "https://www.yasminmogahed.com",
       "podcast": "https://feeds.muslimcentral.com/yasmin-mogahed"
     }
   },
@@ -462,7 +503,11 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Director of research at ISPU, author of American Muslim Poll, former Obama advisor",
     "socialLinks": {
+      "twitter": "https://twitter.com/DaliaMogahed",
+      "instagram": "https://www.instagram.com/daliamogahed",
+      "website": "https://www.ispu.org",
       "podcast": "https://feeds.muslimcentral.com/dalia-mogahed"
     }
   },
@@ -490,7 +535,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Former president of ISNA, professor at Huron University College",
     "socialLinks": {
+      "twitter": "https://twitter.com/IngridMattson",
       "podcast": "https://feeds.muslimcentral.com/ingrid-mattson"
     }
   },
@@ -517,7 +564,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Speaker on women's issues, family, and Islamic identity in America",
     "socialLinks": {
+      "instagram": "https://www.instagram.com/ieashaprime",
       "podcast": "https://feeds.muslimcentral.com/ieasha-prime"
     }
   },
@@ -544,7 +593,11 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Licensed clinical psychologist specializing in Muslim family counseling",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@HalehBanani",
+      "instagram": "https://www.instagram.com/halehbanani",
+      "website": "https://www.halehbanani.com",
       "podcast": "https://feeds.muslimcentral.com/haleh-banani"
     }
   },
@@ -572,7 +625,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Founder of Rabata, scholar of women in Islamic civilization",
     "socialLinks": {
+      "website": "https://rabata.org",
       "podcast": "https://feeds.muslimcentral.com/tamara-gray"
     }
   },
@@ -599,7 +654,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Quran educator and speaker on women and youth issues",
     "socialLinks": {
+      "instagram": "https://www.instagram.com/maryamamir",
       "podcast": "https://feeds.muslimcentral.com/maryam-amir"
     }
   },
@@ -652,9 +709,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
-    "note": "Oscar-winning Muslim actor",
+    "note": "Two-time Oscar-winning actor, first Muslim to win an Academy Award",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/mahershala-ali"
+      "instagram": "https://www.instagram.com/mahershalaali"
     }
   },
   {
@@ -680,9 +737,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
-    "note": "Comedian and TV host",
+    "note": "Comedian, TV host, and former correspondent on The Daily Show",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/hasan-minhaj"
+      "youtube": "https://www.youtube.com/@HasanMinhaj",
+      "instagram": "https://www.instagram.com/hasanminhaj"
     }
   },
   {
@@ -709,9 +767,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
-    "note": "Creator/star of 'Ramy' TV series",
+    "note": "Golden Globe-winning creator and star of Hulu's Ramy",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/ramy-youssef"
+      "instagram": "https://www.instagram.com/ramy",
+      "twitter": "https://twitter.com/ramyyoussef"
     }
   },
   {
@@ -738,8 +797,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Palestinian-American activist, co-chair of the Women's March",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/linda-sarsour"
+      "twitter": "https://twitter.com/lsarsour",
+      "instagram": "https://www.instagram.com/lindasarsour"
     }
   },
   {
@@ -766,8 +827,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Somali-American congresswoman, first Muslim woman elected to US Congress",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/ilhan-omar"
+      "twitter": "https://twitter.com/IlhanMN",
+      "instagram": "https://www.instagram.com/ilhanomar"
     }
   },
   {
@@ -793,8 +856,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "First Muslim elected to US Congress, Minnesota Attorney General",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/keith-ellison"
+      "twitter": "https://twitter.com/keithellison"
     }
   },
   {
@@ -820,9 +884,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
-    "note": "Olympic fencer",
+    "note": "Olympic bronze medalist fencer, first US athlete to compete in hijab at the Olympics",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/ibtihaj-muhammad"
+      "twitter": "https://twitter.com/IbtihajMuhammad",
+      "instagram": "https://www.instagram.com/ibtihajmuhammad"
     }
   },
   {
@@ -848,8 +913,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Journalist and media personality, advocate for Muslim representation",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/noor-tagouri"
+      "instagram": "https://www.instagram.com/noortagouri",
+      "twitter": "https://twitter.com/NoorTagouri"
     }
   },
   {
@@ -876,9 +943,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
-    "note": "Former Prime Minister of Pakistan",
+    "note": "Former Prime Minister of Pakistan, cricket legend, founder of PTI",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/imran-khan"
+      "twitter": "https://twitter.com/ImranKhanPTI",
+      "instagram": "https://www.instagram.com/imrankhan.pti"
     }
   },
   {
@@ -906,7 +974,11 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": true,
     "isHistorical": false,
+    "note": "Grand Mufti of Zimbabwe, one of the most followed Islamic scholars on social media",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@MuftiMenk",
+      "instagram": "https://www.instagram.com/muftimenovmenk",
+      "website": "https://www.muftimenk.com",
       "podcast": "https://feeds.muslimcentral.com/mufti-menk"
     }
   },
@@ -935,7 +1007,9 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Somali-Canadian imam and speaker, founder of Masjid Huda in Montreal",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@SaidRageah",
       "podcast": "https://feeds.muslimcentral.com/said-rageah"
     }
   },
@@ -964,6 +1038,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Somali scholar known for Quran and fiqh teachings in the diaspora",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/sheikh-umal"
     }
@@ -994,6 +1069,7 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Minneapolis-based Somali scholar serving the local Muslim community",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/sheikh-hassan-jaamici"
     }
@@ -1024,6 +1100,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Minneapolis-based Somali scholar focused on Quran and community education",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/mohamed-idris"
     }
@@ -1053,6 +1130,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Somali youth speaker and dawah advocate in the diaspora",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/nuradin-jama"
     }
@@ -1080,7 +1158,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Ethiopian-Canadian spoken word poet and filmmaker",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@BoonaaMohammed",
+      "instagram": "https://www.instagram.com/boonaamo",
       "podcast": "https://feeds.muslimcentral.com/boonaa-mohammed"
     }
   },
@@ -1136,7 +1217,9 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "World-renowned Kuwaiti Quran reciter, imam of the Grand Mosque in Kuwait",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@Alafasy",
       "podcast": "https://feeds.muslimcentral.com/mishary-alafasy"
     }
   },
@@ -1162,6 +1245,7 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Imam and khatib of Masjid al-Haram in Mecca, renowned Quran reciter",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/abdul-rahman-al-sudais"
     }
@@ -1190,7 +1274,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Saudi scholar known for popular YouTube Q&A sessions on Islamic rulings",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@assimalhakeem",
+      "website": "https://www.assimalhakeem.net",
       "podcast": "https://feeds.muslimcentral.com/assim-al-hakeem"
     }
   },
@@ -1218,7 +1305,12 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Egyptian TV preacher, one of the most influential Muslim figures in the Arab world",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@AmrKhaled",
+      "twitter": "https://twitter.com/AmrKhaled",
+      "instagram": "https://www.instagram.com/amrkhaled",
+      "website": "https://www.amrkhaled.net",
       "podcast": "https://feeds.muslimcentral.com/amr-khaled"
     }
   },
@@ -1392,7 +1484,9 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Pakistani scholar of the Tablighi Jamaat, known for emotional sermons on repentance",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@TariqJameel",
       "podcast": "https://feeds.muslimcentral.com/tariq-jameel"
     }
   },
@@ -1420,7 +1514,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Founder of Peace TV, known for comparative religion lectures and debates",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@DrZakirNaik",
       "podcast": "https://feeds.muslimcentral.com/zakir-naik"
     }
   },
@@ -1449,7 +1545,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Founder of Al-Huda International, pioneering women's Quran education",
     "socialLinks": {
+      "website": "https://www.alhudapk.com",
       "podcast": "https://feeds.muslimcentral.com/farhat-hashmi"
     }
   },
@@ -1478,7 +1576,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Pakistani theologian and Quran scholar, known for progressive Islamic thought",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@JavedAhmadGhamidi",
+      "website": "https://www.javedahmadghamidi.org",
       "podcast": "https://feeds.muslimcentral.com/javed-ghamidi"
     }
   },
@@ -1720,7 +1821,10 @@ export const CREATORS: Creator[] = [
     "featured": true,
     "trending": false,
     "isHistorical": false,
+    "note": "Dean of Cambridge Muslim College, British scholar of traditional Islamic thought",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@CambridgeMuslimCollege",
+      "website": "https://www.cambridgemuslimcollege.ac.uk",
       "podcast": "https://feeds.muslimcentral.com/abdal-hakim-murad"
     }
   },
@@ -1748,7 +1852,12 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Greek-British speaker and author, co-founder of Sapience Institute",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@SapienceInstitute",
+      "twitter": "https://twitter.com/HmzaTzortzis",
+      "instagram": "https://www.instagram.com/hamza.tzortzis",
+      "website": "https://www.sapienceinstitute.org",
       "podcast": "https://feeds.muslimcentral.com/hamza-tzortzis"
     }
   },
@@ -1776,7 +1885,11 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "British speaker, debater, and popular YouTuber on Islamic apologetics",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@MohammedHijab",
+      "twitter": "https://twitter.com/MohammedHijab",
+      "instagram": "https://www.instagram.com/mohammed_hijab",
       "podcast": "https://feeds.muslimcentral.com/mohammed-hijab"
     }
   },
@@ -1803,7 +1916,11 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "British street dawah YouTuber and speaker, known for engaging debates",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@AliDawah",
+      "twitter": "https://twitter.com/AliDawah",
+      "instagram": "https://www.instagram.com/alidawah",
       "podcast": "https://feeds.muslimcentral.com/ali-dawah"
     }
   },
@@ -1831,7 +1948,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "British author, scholar, and podcaster on women, family, and parenting in Islam",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@FatimaBarkatulla",
+      "twitter": "https://twitter.com/fatimabarkatulla",
       "podcast": "https://feeds.muslimcentral.com/fatima-barkatulla"
     }
   },
@@ -1858,8 +1978,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Youngest and first female Secretary General of the Muslim Council of Britain",
     "socialLinks": {
-      "podcast": "https://feeds.muslimcentral.com/zara-mohammed"
+      "twitter": "https://twitter.com/Zara_Mohammed1"
     }
   },
   {
@@ -1886,7 +2007,10 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Australian imam and AlMaghrib Institute instructor, popular on social media",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@ShYahyaIbrahim",
+      "instagram": "https://www.instagram.com/yahyaibrahim",
       "podcast": "https://feeds.muslimcentral.com/yahya-ibrahim"
     }
   },
@@ -1915,6 +2039,7 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Australian-Bangladeshi scholar, founder of Mercy Mission and AlKauthar Institute",
     "socialLinks": {
       "podcast": "https://feeds.muslimcentral.com/tawfique-chowdhury"
     }
@@ -1943,7 +2068,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": false,
     "isHistorical": false,
+    "note": "Indonesian preacher, one of the most popular Islamic speakers in Southeast Asia",
     "socialLinks": {
+      "youtube": "https://www.youtube.com/@UstadzAbdulSomad",
       "podcast": "https://feeds.muslimcentral.com/abdul-somad"
     }
   },
@@ -1971,7 +2098,9 @@ export const CREATORS: Creator[] = [
     "featured": false,
     "trending": true,
     "isHistorical": false,
+    "note": "Chinese-Indonesian convert, popular speaker on youth and modern Muslim life",
     "socialLinks": {
+      "instagram": "https://www.instagram.com/felixsiauw",
       "podcast": "https://feeds.muslimcentral.com/felix-siauw"
     }
   }
