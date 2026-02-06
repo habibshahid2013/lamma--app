@@ -1,7 +1,6 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
-echo "📝 Post-commit: Updating sync state..."
+echo "Post-commit: Updating sync state..."
 
 # Update session with commit info
 COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -9,4 +8,4 @@ COMMIT_HASH=$(git rev-parse --short HEAD)
 
 ../scripts/update-session.sh "Committed: $COMMIT_MSG ($COMMIT_HASH)" "claude-code"
 
-echo "✅ Sync state updated"
+echo "Sync state updated"

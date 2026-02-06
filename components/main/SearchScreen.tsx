@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search as SearchIcon, X, ArrowLeft, Filter, Settings2 } from "lucide-react";
+import { Search as SearchIcon, X, ArrowLeft, Settings2 } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import { REGIONS } from "@/lib/data/regions";
 import CreatorCard from "../ui/CreatorCard";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import FilterPanel from "./FilterPanel";
 
 // Mock Data
@@ -16,7 +15,6 @@ const POPULAR_TOPICS = [
 ];
 
 import { useCreators } from "@/hooks/useCreators";
-// ... other imports
 
 // Helper to get initial filters from search params
 function getInitialFilters(searchParams: URLSearchParams) {
@@ -60,7 +58,6 @@ export default function SearchScreen() {
   // Consolidated Filter State - initialized from URL params
   const [filters, setFilters] = useState(() => getInitialFilters(searchParams));
 
-  const regionsList = ["All", ...Object.values(REGIONS).map(r => r.name)];
   const languagesList = ["English", "Arabic", "Somali", "Urdu", "Indonesian"];
 
   // Quick toggle helpers (sync with consolidated state)

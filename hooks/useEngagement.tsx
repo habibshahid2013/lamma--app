@@ -70,6 +70,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
   // Use lazy initializer to read from localStorage
   const [state, setState] = useState<EngagementState>(getInitialState);
 
+  // Track capture type explicitly - 'action' when user tries an action, otherwise 'passive'
   const [captureType, setCaptureType] = useState<'passive' | 'action'>('passive');
   const [dismissed, setDismissed] = useState(false);
   const [initialized, setInitialized] = useState(() => typeof window !== 'undefined');
@@ -86,8 +87,9 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     !dismissed &&
     (thresholdsMet || actionRequested);
 
-  // Track if we've triggered the capture display
-  const [captureTriggered, setCaptureTriggered] = useState(false);
+  // Derive the effective captureType based on current state
+  // If actionRequested is true, show 'action' type, otherwise 'passive'
+  const effectiveCaptureType: 'passive' | 'action' = actionRequested ? 'action' : captureType;
 
   // Save state to localStorage
   useEffect(() => {
@@ -107,13 +109,6 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
 
     return () => clearInterval(interval);
   }, []);
-
-  // Set captureType to passive when capture becomes visible
-  // Using a ref-based approach to avoid effect warnings
-  if (shouldShowCapture && !captureTriggered) {
-    setCaptureTriggered(true);
-    setCaptureType('passive');
-  }
 
   // Track page view
   const trackPageView = useCallback(() => {
@@ -143,7 +138,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
   const trackAction = useCallback((action: 'follow' | 'save' | 'like' | 'collection') => {
     if (!state.hasSubscribed && !state.hasAccount) {
       setActionRequested(true);
-      setCaptureType('action');
+      // captureType will be derived as 'action' when actionRequested is true
       return false; // Action blocked, show capture
     }
     return true; // Action allowed
@@ -201,15 +196,15 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     // State
     state,
     shouldShowCapture,
-    captureType,
+    captureType: effectiveCaptureType,
     initialized,
-    
+
     // Tracking functions
     trackPageView,
     trackProfileView,
     trackInteraction,
     trackAction,
-    
+
     // Actions
     markSubscribed,
     markHasAccount,
