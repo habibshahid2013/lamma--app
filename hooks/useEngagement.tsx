@@ -32,10 +32,9 @@ const DEFAULT_CONFIG: EngagementConfig = {
 
 const STORAGE_KEY = 'lamma_engagement';
 
-export function useEngagement(config: Partial<EngagementConfig> = {}) {
-  const finalConfig = { ...DEFAULT_CONFIG, ...config };
-  
-  const [state, setState] = useState<EngagementState>({
+// Helper to get initial state from localStorage (runs during state initialization)
+function getInitialState(): EngagementState {
+  const defaultState: EngagementState = {
     pageViews: 0,
     profilesViewed: 0,
     timeOnSite: 0,
@@ -43,36 +42,52 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     hasSubscribed: false,
     hasAccount: false,
     lastVisit: new Date().toISOString(),
-    sessionStart: 0,
-  });
+    sessionStart: Date.now(),
+  };
 
-  const [shouldShowCapture, setShouldShowCapture] = useState(false);
+  if (typeof window === 'undefined') {
+    return defaultState;
+  }
+
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      return {
+        ...parsed,
+        sessionStart: Date.now(),
+      };
+    } catch {
+      return defaultState;
+    }
+  }
+  return defaultState;
+}
+
+export function useEngagement(config: Partial<EngagementConfig> = {}) {
+  const finalConfig = { ...DEFAULT_CONFIG, ...config };
+
+  // Use lazy initializer to read from localStorage
+  const [state, setState] = useState<EngagementState>(getInitialState);
+
   const [captureType, setCaptureType] = useState<'passive' | 'action'>('passive');
   const [dismissed, setDismissed] = useState(false);
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState(() => typeof window !== 'undefined');
+  const [actionRequested, setActionRequested] = useState(false);
 
-  // Initialize from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          setState({
-            ...parsed,
-            sessionStart: Date.now(),
-          });
-        } catch {
-          // Invalid data, use defaults with current time
-          setState(prev => ({ ...prev, sessionStart: Date.now() }));
-        }
-      } else {
-        // No stored data, initialize sessionStart
-        setState(prev => ({ ...prev, sessionStart: Date.now() }));
-      }
-      setInitialized(true);
-    }
-  }, []);
+  // Derive shouldShowCapture from state instead of using effect
+  const thresholdsMet = state.pageViews >= finalConfig.pageViewThreshold ||
+    state.profilesViewed >= finalConfig.profileViewThreshold ||
+    state.timeOnSite >= finalConfig.timeThreshold ||
+    state.interactions >= finalConfig.interactionThreshold;
+
+  const shouldShowCapture = !state.hasSubscribed &&
+    !state.hasAccount &&
+    !dismissed &&
+    (thresholdsMet || actionRequested);
+
+  // Track if we've triggered the capture display
+  const [captureTriggered, setCaptureTriggered] = useState(false);
 
   // Save state to localStorage
   useEffect(() => {
@@ -93,26 +108,12 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
     return () => clearInterval(interval);
   }, []);
 
-  // Check if should show capture popup
-  useEffect(() => {
-    // Don't show if already subscribed, has account, or dismissed this session
-    if (state.hasSubscribed || state.hasAccount || dismissed) {
-      setShouldShowCapture(false);
-      return;
-    }
-
-    // Check thresholds
-    const shouldShow = 
-      state.pageViews >= finalConfig.pageViewThreshold ||
-      state.profilesViewed >= finalConfig.profileViewThreshold ||
-      state.timeOnSite >= finalConfig.timeThreshold ||
-      state.interactions >= finalConfig.interactionThreshold;
-
-    if (shouldShow && !shouldShowCapture) {
-      setShouldShowCapture(true);
-      setCaptureType('passive');
-    }
-  }, [state, finalConfig, dismissed, shouldShowCapture]);
+  // Set captureType to passive when capture becomes visible
+  // Using a ref-based approach to avoid effect warnings
+  if (shouldShowCapture && !captureTriggered) {
+    setCaptureTriggered(true);
+    setCaptureType('passive');
+  }
 
   // Track page view
   const trackPageView = useCallback(() => {
@@ -141,7 +142,7 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
   // Track action that requires capture (follow, save, etc.)
   const trackAction = useCallback((action: 'follow' | 'save' | 'like' | 'collection') => {
     if (!state.hasSubscribed && !state.hasAccount) {
-      setShouldShowCapture(true);
+      setActionRequested(true);
       setCaptureType('action');
       return false; // Action blocked, show capture
     }
@@ -154,8 +155,8 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
       ...prev,
       hasSubscribed: true,
     }));
-    setShouldShowCapture(false);
-    
+    setActionRequested(false);
+
     // Store email for later account creation
     if (typeof window !== 'undefined') {
       localStorage.setItem('lamma_pending_email', email);
@@ -168,13 +169,13 @@ export function useEngagement(config: Partial<EngagementConfig> = {}) {
       ...prev,
       hasAccount: true,
     }));
-    setShouldShowCapture(false);
+    setActionRequested(false);
   }, []);
 
   // Dismiss popup for this session
   const dismissCapture = useCallback(() => {
     setDismissed(true);
-    setShouldShowCapture(false);
+    setActionRequested(false);
   }, []);
 
   // Reset engagement (for testing)

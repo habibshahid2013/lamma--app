@@ -4,7 +4,7 @@
   "description": "Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A2A36",
+  "background_color": "#0f172a",
   "theme_color": "#0D7377",
   "orientation": "portrait-primary",
   "icons": [

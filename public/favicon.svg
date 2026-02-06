@@ -1,13 +1,17 @@
 <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Favicon - Teal palm tree icon -->
-  <path d="M50 92 L50 52" stroke="#0D7377" stroke-width="9" stroke-linecap="round"/>
-  <path d="M50 52 Q38 48 22 58" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 50 Q35 40 18 42" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 48 Q38 32 20 28" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 46 Q42 28 28 15" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 52 Q62 48 78 58" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 50 Q65 40 82 42" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 48 Q62 32 80 28" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 46 Q58 28 72 15" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
-  <path d="M50 48 Q50 30 50 10" stroke="#0D7377" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- Favicon - Elegant teal palm tree icon -->
+  <!-- Trunk -->
+  <path d="M50 92 L50 48" stroke="#0D7377" stroke-width="8" stroke-linecap="round"/>
+  <!-- Left fronds -->
+  <path d="M50 48 Q36 42 20 52" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 45 Q32 35 14 38" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 42 Q36 26 18 20" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 39 Q42 22 30 10" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <!-- Right fronds -->
+  <path d="M50 48 Q64 42 80 52" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 45 Q68 35 86 38" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 42 Q64 26 82 20" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <path d="M50 39 Q58 22 70 10" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <!-- Center frond -->
+  <path d="M50 42 Q50 24 50 6" stroke="#0D7377" stroke-width="4.5" stroke-linecap="round" fill="none"/>
 </svg>

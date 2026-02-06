@@ -1,7 +1,30 @@
-<svg width="400" height="100" viewBox="0 0 400 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="260" height="64" viewBox="0 0 260 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Lamma+ Logo - Dark variant (for dark backgrounds) -->
-  <!-- Tree uses brand teal #0D7377, text is white, + is brand gold #F5B820 -->
-  <path d="M45 75V45M45 45C55 35 70 35 80 40M45 45C35 35 20 35 10 40M45 45C55 25 65 25 75 30M45 45C35 25 25 25 15 30" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
-  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="42" fill="#FFFFFF">LAMMA</text>
-  <text x="275" y="70" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="42" fill="#F5B820">+</text>
+  <!-- Palm tree integrated with L, white AMMA text, gold + -->
+
+  <!-- Palm Tree integrated with L -->
+  <g transform="translate(0, 0)">
+    <!-- Palm trunk (forms the stem of the L) -->
+    <path d="M18 58 L18 28" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
+    <!-- L horizontal stroke -->
+    <path d="M18 58 L38 58" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
+    <!-- Palm fronds - left side -->
+    <path d="M18 28 Q10 24 4 30" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 26 Q8 20 2 22" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 24 Q10 14 4 10" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 22 Q14 12 10 4" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Palm fronds - right side -->
+    <path d="M18 28 Q26 24 32 30" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 26 Q28 20 34 22" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 24 Q26 14 32 10" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M18 22 Q22 12 26 4" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Center frond -->
+    <path d="M18 24 Q18 12 18 2" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- AMMA text -->
+  <text x="44" y="52" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="38" letter-spacing="-0.02em" fill="#FFFFFF">AMMA</text>
+
+  <!-- + sign in gold -->
+  <text x="188" y="52" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="38" fill="#F5B820">+</text>
 </svg>

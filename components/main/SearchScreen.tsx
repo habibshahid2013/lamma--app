@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Search as SearchIcon, X, ArrowLeft, Filter, Settings2 } from "lucide-react";
 import BottomNav from "../ui/BottomNav";
 import { REGIONS } from "@/lib/data/regions";
@@ -18,56 +18,47 @@ const POPULAR_TOPICS = [
 import { useCreators } from "@/hooks/useCreators";
 // ... other imports
 
-export default function SearchScreen() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+// Helper to get initial filters from search params
+function getInitialFilters(searchParams: URLSearchParams) {
+  const category = searchParams.get("category");
+  const region = searchParams.get("region");
 
-  // Fetch all creators for client-side filtering (efficient for small datasets < 500)
-  const { creators: allCreators, loading } = useCreators({ limitCount: 150 });
-
-  // Consolidated Filter State
-  const [filters, setFilters] = useState({
+  const filters = {
     categories: [] as string[],
     regions: [] as string[],
     languages: [] as string[],
     tiers: [] as string[],
     includeHistorical: false,
     gender: "all" as "all" | "male" | "female"
-  });
+  };
 
-  // Read query params on mount to support deep links from creator profiles
-  useEffect(() => {
-    const topic = searchParams.get("topic");
-    const category = searchParams.get("category");
-    const region = searchParams.get("region");
+  if (category) {
+    filters.categories = [category];
+  }
 
-    if (topic) {
-      setSearchTerm(topic);
+  if (region) {
+    const regionData = REGIONS[region as keyof typeof REGIONS];
+    if (regionData) {
+      filters.regions = [regionData.name];
     }
+  }
 
-    const newFilters = { ...filters };
-    let hasFilterChange = false;
+  return filters;
+}
 
-    if (category) {
-      newFilters.categories = [category];
-      hasFilterChange = true;
-    }
+export default function SearchScreen() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-    if (region) {
-      // Region param is a key like "east_africa", convert to display name
-      const regionData = REGIONS[region as keyof typeof REGIONS];
-      if (regionData) {
-        newFilters.regions = [regionData.name];
-        hasFilterChange = true;
-      }
-    }
+  // Initialize from URL params using lazy initializer
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get("topic") || "");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    if (hasFilterChange) {
-      setFilters(newFilters);
-    }
-  }, []);
+  // Fetch all creators for client-side filtering (efficient for small datasets < 500)
+  const { creators: allCreators, loading } = useCreators({ limitCount: 150 });
+
+  // Consolidated Filter State - initialized from URL params
+  const [filters, setFilters] = useState(() => getInitialFilters(searchParams));
 
   const regionsList = ["All", ...Object.values(REGIONS).map(r => r.name)];
   const languagesList = ["English", "Arabic", "Somali", "Urdu", "Indonesian"];

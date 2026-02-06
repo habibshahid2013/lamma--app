@@ -1,5 +1,6 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Apple Touch Icon - 180x180 with rounded corners simulated -->
+  <!-- Apple Touch Icon - 180x180 -->
+  <!-- Teal background with elegant palm tree in gold/light teal -->
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0D7377"/>
@@ -10,17 +11,21 @@
   <!-- Background -->
   <rect width="180" height="180" fill="url(#bgGrad)"/>
 
-  <!-- Palm Tree Icon (centered) -->
-  <g transform="translate(40, 25) scale(1)">
-    <path d="M50 130 L50 70" stroke="#F5B820" stroke-width="10" stroke-linecap="round"/>
-    <path d="M50 70 Q35 65 15 78" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 67 Q30 55 10 58" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 64 Q35 45 12 38" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 61 Q40 38 22 22" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 70 Q65 65 85 78" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 67 Q70 55 90 58" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 64 Q65 45 88 38" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 61 Q60 38 78 22" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <path d="M50 64 Q50 40 50 15" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Palm Tree Icon (centered) - elegant silhouette -->
+  <g transform="translate(40, 28)">
+    <!-- Trunk -->
+    <path d="M50 125 L50 60" stroke="#F5B820" stroke-width="10" stroke-linecap="round"/>
+    <!-- Left fronds -->
+    <path d="M50 60 Q34 52 15 64" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 56 Q30 44 8 48" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 52 Q34 32 12 24" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 48 Q40 26 26 12" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <!-- Right fronds -->
+    <path d="M50 60 Q66 52 85 64" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 56 Q70 44 92 48" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 52 Q66 32 88 24" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M50 48 Q60 26 74 12" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <!-- Center frond -->
+    <path d="M50 52 Q50 30 50 8" stroke="#F5B820" stroke-width="6" stroke-linecap="round" fill="none"/>
   </g>
 </svg>

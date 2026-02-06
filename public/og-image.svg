@@ -1,48 +1,54 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background gradient: teal to dark navy -->
+  <!-- Open Graph Image - Dark navy background with branded logo -->
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0D7377"/>
-      <stop offset="50%" stop-color="#14595B"/>
-      <stop offset="100%" stop-color="#0A2A36"/>
-    </linearGradient>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F5B820"/>
-      <stop offset="100%" stop-color="#D4982A"/>
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
   </defs>
 
-  <!-- Background -->
+  <!-- Background - Dark navy -->
   <rect width="1200" height="630" fill="url(#bgGradient)"/>
 
-  <!-- Decorative pattern -->
-  <circle cx="100" cy="100" r="200" fill="#0D7377" opacity="0.3"/>
-  <circle cx="1100" cy="530" r="250" fill="#0D7377" opacity="0.2"/>
+  <!-- Subtle decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="#0D7377" opacity="0.08"/>
+  <circle cx="1100" cy="530" r="250" fill="#0D7377" opacity="0.06"/>
 
-  <!-- Palm Tree Icon (centered, larger) -->
-  <g transform="translate(500, 120) scale(2.5)">
-    <path d="M50 92 L50 52" stroke="#F5B820" stroke-width="7" stroke-linecap="round"/>
-    <path d="M50 52 Q38 48 22 58" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 50 Q35 40 18 42" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 48 Q38 32 20 28" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 46 Q42 28 28 15" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 52 Q62 48 78 58" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 50 Q65 40 82 42" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 48 Q62 32 80 28" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 46 Q58 28 72 15" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M50 48 Q50 30 50 10" stroke="#F5B820" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Centered Logo Group -->
+  <g transform="translate(350, 180)">
+    <!-- Palm Tree integrated with L -->
+    <g transform="translate(0, 0) scale(2.2)">
+      <!-- Palm trunk (forms the stem of the L) -->
+      <path d="M18 58 L18 28" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
+      <!-- L horizontal stroke -->
+      <path d="M18 58 L38 58" stroke="#0D7377" stroke-width="5" stroke-linecap="round"/>
+      <!-- Palm fronds - left side -->
+      <path d="M18 28 Q10 24 4 30" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 26 Q8 20 2 22" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 24 Q10 14 4 10" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 22 Q14 12 10 4" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <!-- Palm fronds - right side -->
+      <path d="M18 28 Q26 24 32 30" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 26 Q28 20 34 22" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 24 Q26 14 32 10" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M18 22 Q22 12 26 4" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <!-- Center frond -->
+      <path d="M18 24 Q18 12 18 2" stroke="#0D7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- AMMA text (positioned after the L-tree) -->
+    <text x="100" y="120" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="80" letter-spacing="-0.02em" fill="#FFFFFF">AMMA</text>
+    <!-- + sign in gold -->
+    <text x="410" y="120" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="80" fill="#F5B820">+</text>
   </g>
 
-  <!-- Main Title -->
-  <text x="600" y="420" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="72" fill="#FFFFFF">LAMMA</text>
-  <text x="770" y="420" font-family="Inter, Arial, sans-serif" font-weight="bold" font-size="72" fill="#F5B820">+</text>
-
   <!-- Tagline -->
-  <text x="600" y="490" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="28" fill="#FFFFFF" opacity="0.9">Discover Islamic Scholars</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="32" fill="#FFFFFF" opacity="0.9">Discover Islamic Scholars</text>
 
   <!-- Subtitle -->
-  <text x="600" y="540" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="400" font-size="20" fill="#FFFFFF" opacity="0.7">Your gateway to Islamic knowledge</text>
+  <text x="600" y="470" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="22" fill="#FFFFFF" opacity="0.6">Your gateway to Islamic knowledge</text>
 
   <!-- Bottom accent line -->
-  <rect x="500" y="580" width="200" height="4" rx="2" fill="url(#goldGradient)"/>
+  <rect x="500" y="540" width="200" height="4" rx="2" fill="#F5B820"/>
 </svg>
