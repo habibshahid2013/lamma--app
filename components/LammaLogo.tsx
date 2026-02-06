@@ -11,9 +11,11 @@ interface LammaLogoProps {
  * Lamma+ Logo Component
  * Brand specifications:
  * - Palm tree integrated with the "L" in "LAMMA+"
- * - Dark variant: Navy background, teal palm, white "LAMMA", gold "+"
+ * - Filled solid fronds (leaf shapes), not line strokes
+ * - Coconut/date cluster at the crown
+ * - Dark variant: Navy background, teal palm, white "AMMA", gold "+"
  * - Light variant: Light background, teal palm, dark text, gold "+"
- * - Gold-bg variant: Gold background, teal palm and text
+ * - Gold-bg variant: Gold background, deep teal palm and text
  */
 export default function LammaLogo({
   variant = 'dark',
@@ -22,10 +24,10 @@ export default function LammaLogo({
   className = '',
 }: LammaLogoProps) {
   const sizes = {
-    sm: { height: 28, width: 120, tagline: 'text-xs' },
-    md: { height: 36, width: 150, tagline: 'text-sm' },
-    lg: { height: 48, width: 200, tagline: 'text-base' },
-    xl: { height: 64, width: 260, tagline: 'text-lg' },
+    sm: { height: 28, width: 140, tagline: 'text-xs' },
+    md: { height: 36, width: 180, tagline: 'text-sm' },
+    lg: { height: 48, width: 240, tagline: 'text-base' },
+    xl: { height: 64, width: 320, tagline: 'text-lg' },
   };
 
   const { height, width, tagline } = sizes[size];
@@ -39,15 +41,15 @@ export default function LammaLogo({
       taglineColor: 'text-white/60',
     },
     light: {
-      palm: '#0D7377',      // Teal palm
-      text: '#1e293b',       // Dark text
+      palm: '#1D4E5F',      // Deep teal palm on light backgrounds
+      text: '#1D4E5F',       // Deep teal text
       plus: '#F5B820',       // Gold +
       taglineColor: 'text-slate-500',
     },
     'gold-bg': {
-      palm: '#0D7377',      // Teal palm
+      palm: '#1D4E5F',      // Deep teal palm on gold
       text: '#1D4E5F',       // Deep teal text
-      plus: '#1D4E5F',       // Deep teal +
+      plus: '#1D4E5F',       // Deep teal + on gold bg
       taglineColor: 'text-teal-deep/70',
     },
   };
@@ -59,61 +61,76 @@ export default function LammaLogo({
       <svg
         width={width}
         height={height}
-        viewBox="0 0 260 64"
+        viewBox="0 0 320 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-label="Lamma+"
       >
-        {/* Palm Tree integrated with L - elegant silhouette */}
-        <g transform="translate(0, 0)">
-          {/* Palm trunk (forms the stem of the L) */}
-          <path
-            d="M18 58 L18 28"
-            stroke={palm}
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          {/* L horizontal stroke */}
-          <path
-            d="M18 58 L38 58"
-            stroke={palm}
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          {/* Palm fronds - left side */}
-          <path d="M18 28 Q10 24 4 30" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 26 Q8 20 2 22" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 24 Q10 14 4 10" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 22 Q14 12 10 4" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          {/* Palm fronds - right side */}
-          <path d="M18 28 Q26 24 32 30" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 26 Q28 20 34 22" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 24 Q26 14 32 10" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          <path d="M18 22 Q22 12 26 4" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
-          {/* Center frond */}
-          <path d="M18 24 Q18 12 18 2" stroke={palm} strokeWidth="3" strokeLinecap="round" fill="none"/>
+        {/* Palm Tree - solid filled silhouette integrated as the "L" */}
+        <g transform="translate(4, 2)">
+          {/* === FRONDS (filled leaf shapes) === */}
+
+          {/* Center frond - straight up */}
+          <path d="M22,26 C21,18 21,10 22,2 L26,2 C27,10 27,18 26,26 Z" fill={palm} />
+
+          {/* Upper-left frond */}
+          <path d="M23,26 C17,18 11,12 4,6 C8,9 16,17 25,24 Z" fill={palm} />
+
+          {/* Upper-right frond */}
+          <path d="M25,26 C31,18 37,12 44,6 C40,9 32,17 23,24 Z" fill={palm} />
+
+          {/* Left frond - more horizontal */}
+          <path d="M22,28 C16,26 8,24 0,27 C7,22 15,24 24,27 Z" fill={palm} />
+
+          {/* Right frond - more horizontal */}
+          <path d="M26,28 C32,26 40,24 48,27 C41,22 33,24 24,27 Z" fill={palm} />
+
+          {/* Lower-left frond - drooping */}
+          <path d="M22,30 C16,33 10,37 3,42 C8,36 14,31 24,29 Z" fill={palm} />
+
+          {/* Lower-right frond - drooping */}
+          <path d="M26,30 C32,33 38,37 45,42 C40,36 34,31 24,29 Z" fill={palm} />
+
+          {/* Extra upper-left frond (between center and upper-left) */}
+          <path d="M23,25 C19,17 14,10 10,3 C14,7 19,15 25,23 Z" fill={palm} />
+
+          {/* Extra upper-right frond (between center and upper-right) */}
+          <path d="M25,25 C29,17 34,10 38,3 C34,7 29,15 23,23 Z" fill={palm} />
+
+          {/* === COCONUTS/DATES at crown === */}
+          <circle cx="21" cy="31" r="2.2" fill={palm} />
+          <circle cx="27" cy="31" r="2.2" fill={palm} />
+          <circle cx="24" cy="33" r="2.2" fill={palm} />
+          <circle cx="21" cy="34" r="1.8" fill={palm} />
+          <circle cx="27" cy="34" r="1.8" fill={palm} />
+
+          {/* === TRUNK (solid, forms vertical stroke of L) === */}
+          <rect x="21" y="32" width="6" height="36" rx="1" fill={palm} />
+
+          {/* === L BASE (horizontal stroke) === */}
+          <rect x="18" y="64" width="26" height="6" rx="1" fill={palm} />
         </g>
 
-        {/* AMMA text */}
+        {/* AMMA text - positioned after the palm tree L */}
         <text
-          x="44"
-          y="52"
+          x="56"
+          y="68"
           fontFamily="Inter, system-ui, sans-serif"
-          fontWeight="700"
-          fontSize="38"
-          letterSpacing="-0.02em"
+          fontWeight="800"
+          fontSize="50"
+          letterSpacing="0.01em"
           fill={text}
         >
           AMMA
         </text>
 
-        {/* + sign in gold */}
+        {/* + sign */}
         <text
-          x="188"
-          y="52"
+          x="248"
+          y="68"
           fontFamily="Inter, system-ui, sans-serif"
-          fontWeight="700"
-          fontSize="38"
+          fontWeight="800"
+          fontSize="50"
           fill={plus}
         >
           +
@@ -130,19 +147,21 @@ export default function LammaLogo({
 }
 
 // Palm tree icon only - for decorative use
+// Uses filled shapes matching the brand palm tree design
 export function PalmIcon({
   variant = 'teal',
   size = 32,
   className = '',
 }: {
-  variant?: 'teal' | 'brown' | 'gold';
+  variant?: 'teal' | 'brown' | 'gold' | 'white';
   size?: number;
   className?: string;
 }) {
   const colors = {
     teal: '#0D7377',
-    brown: '#78350f',
+    brown: '#1D4E5F',
     gold: '#F5B820',
+    white: '#FFFFFF',
   };
 
   const color = colors[variant];
@@ -157,26 +176,46 @@ export function PalmIcon({
       className={className}
       aria-hidden="true"
     >
-      {/* Elegant palm tree silhouette */}
-      {/* Trunk */}
-      <path
-        d="M50 92 L50 48"
-        stroke={color}
-        strokeWidth="8"
-        strokeLinecap="round"
-      />
-      {/* Left fronds */}
-      <path d="M50 48 Q36 42 20 52" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 45 Q32 35 14 38" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 42 Q36 26 18 20" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 39 Q42 22 30 10" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      {/* Right fronds */}
-      <path d="M50 48 Q64 42 80 52" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 45 Q68 35 86 38" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 42 Q64 26 82 20" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
-      <path d="M50 39 Q58 22 70 10" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
+      {/* Filled palm tree silhouette matching brand design */}
+
+      {/* === FRONDS (filled leaf shapes) === */}
+
       {/* Center frond */}
-      <path d="M50 42 Q50 24 50 6" stroke={color} strokeWidth="4.5" strokeLinecap="round" fill="none"/>
+      <path d="M48,42 C46,30 46,18 48,4 L52,4 C54,18 54,30 52,42 Z" fill={color} />
+
+      {/* Upper-left frond */}
+      <path d="M48,42 C38,30 28,20 16,10 C22,16 34,28 52,40 Z" fill={color} />
+
+      {/* Upper-right frond */}
+      <path d="M52,42 C62,30 72,20 84,10 C78,16 66,28 48,40 Z" fill={color} />
+
+      {/* Left frond */}
+      <path d="M47,46 C34,42 20,40 6,46 C18,38 32,40 51,45 Z" fill={color} />
+
+      {/* Right frond */}
+      <path d="M53,46 C66,42 80,40 94,46 C82,38 68,40 49,45 Z" fill={color} />
+
+      {/* Lower-left frond */}
+      <path d="M47,48 C36,54 24,60 12,68 C20,60 32,52 51,47 Z" fill={color} />
+
+      {/* Lower-right frond */}
+      <path d="M53,48 C64,54 76,60 88,68 C80,60 68,52 49,47 Z" fill={color} />
+
+      {/* Extra upper-left */}
+      <path d="M48,40 C40,28 32,18 22,6 C28,14 38,26 52,38 Z" fill={color} />
+
+      {/* Extra upper-right */}
+      <path d="M52,40 C60,28 68,18 78,6 C72,14 62,26 48,38 Z" fill={color} />
+
+      {/* === COCONUTS/DATES === */}
+      <circle cx="44" cy="50" r="4" fill={color} />
+      <circle cx="56" cy="50" r="4" fill={color} />
+      <circle cx="50" cy="54" r="4" fill={color} />
+      <circle cx="44" cy="55" r="3" fill={color} />
+      <circle cx="56" cy="55" r="3" fill={color} />
+
+      {/* === TRUNK === */}
+      <rect x="46" y="50" width="8" height="46" rx="2" fill={color} />
     </svg>
   );
 }

@@ -17,11 +17,11 @@ export default function Logo({
   className = '' 
 }: LogoProps) {
   
-  // New logo aspect ratio: 260x64 (roughly 4:1)
+  // Logo aspect ratio: 320x80 (4:1)
   const sizes = {
-    sm: { height: 24, width: 97 },
-    md: { height: 32, width: 130 },
-    lg: { height: 40, width: 162 },
+    sm: { height: 24, width: 96 },
+    md: { height: 32, width: 128 },
+    lg: { height: 40, width: 160 },
   };
 
   const logoSrc = variant === 'dark' ? '/logo-dark.svg' : '/logo-light.svg';
