@@ -1,56 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Check, TreeDeciduous, Loader2 } from "lucide-react";
+import { ArrowLeft, TreeDeciduous, Mail, Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function PremiumUpgrade() {
   const router = useRouter();
-  const { user, userData } = useAuth();
-  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "yearly">("yearly");
+  const { user } = useAuth();
+  const [email, setEmail] = useState(user?.email || "");
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubscribe = async () => {
-    if (!user) {
-      router.push("/auth/login?redirect=/premium");
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/stripe/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          plan: selectedPlan,
-          userId: user.uid,
-          email: user.email,
-        }),
+      // Check if email already exists
+      const q = query(collection(db, "waitlist"), where("email", "==", email.trim().toLowerCase()));
+      const existing = await getDocs(q);
+
+      if (!existing.empty) {
+        setSubmitted(true);
+        setLoading(false);
+        return;
+      }
+
+      await addDoc(collection(db, "waitlist"), {
+        email: email.trim().toLowerCase(),
+        userId: user?.uid || null,
+        source: "premium_page",
+        createdAt: new Date(),
       });
 
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Redirect to Stripe Checkout
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      setSubmitted(true);
     } catch (err) {
-      console.error("Checkout error:", err);
-      setError(err instanceof Error ? err.message : "Failed to start checkout");
+      console.error("Waitlist error:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
-  // Already premium
-  if (userData?.subscription?.plan === 'premium') {
+  if (submitted) {
     return (
       <div className="flex flex-col min-h-screen bg-white">
         <div className="p-4">
@@ -62,9 +61,9 @@ export default function PremiumUpgrade() {
           <div className="w-20 h-20 bg-gradient-to-br from-teal to-gold rounded-full flex items-center justify-center mb-6">
             <Check className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-teal-deep mb-2">You're Premium!</h1>
+          <h1 className="text-2xl font-bold text-teal-deep mb-2">You&apos;re on the list!</h1>
           <p className="text-gray-500 text-center mb-8">
-            You have unlimited access to all Lamma+ features.
+            We&apos;ll notify you when premium features launch. Thank you for your interest in supporting faith scholars.
           </p>
           <button
             onClick={() => router.push("/home")}
@@ -79,7 +78,6 @@ export default function PremiumUpgrade() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* Header */}
       <div className="p-4">
         <button onClick={() => router.back()}>
           <ArrowLeft className="w-6 h-6 text-gray-dark" />
@@ -94,17 +92,18 @@ export default function PremiumUpgrade() {
 
           <h1 className="text-3xl font-bold text-teal mb-2">LAMMA+ Premium</h1>
           <p className="text-teal-deep/80 text-sm font-medium">
-            Unlimited access to the gathering. Support the creators who inspire you.
+            Premium features are coming soon. Be the first to know when we launch.
           </p>
         </div>
 
-        {/* Feature List */}
+        {/* Upcoming Features */}
         <div className="w-full space-y-4 mb-10 px-2">
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Coming Soon</h3>
           {[
-            "Follow unlimited creators",
             "Ad-free experience",
             "Early access to new content",
             "Directly support faith scholars",
+            "Exclusive scholar Q&A sessions",
           ].map((feature, idx) => (
             <div key={idx} className="flex items-center space-x-3">
               <div className="w-6 h-6 rounded-full bg-teal/10 flex items-center justify-center flex-shrink-0">
@@ -115,79 +114,50 @@ export default function PremiumUpgrade() {
           ))}
         </div>
 
-        {/* Pricing Cards */}
-        <div className="w-full space-y-3 mb-8">
-          <button
-            onClick={() => setSelectedPlan("yearly")}
-            disabled={loading}
-            className={`w-full p-5 rounded-2xl border-2 flex items-center justify-between transition-all relative overflow-hidden ${
-              selectedPlan === "yearly"
-                ? "border-teal bg-teal-light ring-1 ring-teal"
-                : "border-gray-100 bg-white"
-            } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {selectedPlan === "yearly" && (
-              <div className="absolute top-0 right-0 bg-teal text-white text-[10px] uppercase font-bold px-2 py-1 rounded-bl-lg">
-                Selected
-              </div>
-            )}
-            <div className="text-left">
-              <div className="font-bold text-gray-dark text-lg">Yearly</div>
-              <div className="text-xs text-teal font-bold bg-teal/10 px-2 py-1 rounded-full inline-block mt-1">
-                Best Value · Save 17%
-              </div>
+        {/* Email Collection */}
+        <form onSubmit={handleSubmit} className="w-full mt-auto">
+          <div className="w-full mb-4">
+            <label htmlFor="waitlist-email" className="block text-sm font-semibold text-gray-dark mb-2">
+              Get notified when we launch
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                id="waitlist-email"
+                type="email"
+                required
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-teal focus:outline-none text-gray-dark"
+              />
             </div>
-            <div className="text-right">
-              <div className="font-bold text-xl text-teal">$49.99</div>
-              <div className="text-xs text-gray-400">/year</div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setSelectedPlan("monthly")}
-            disabled={loading}
-            className={`w-full p-5 rounded-2xl border-2 flex items-center justify-between transition-all ${
-              selectedPlan === "monthly"
-                ? "border-teal bg-teal-light ring-1 ring-teal"
-                : "border-gray-100 bg-white"
-            } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            <div className="text-left">
-              <div className="font-bold text-gray-dark text-lg">Monthly</div>
-            </div>
-            <div className="text-right">
-              <div className="font-bold text-xl text-teal">$4.99</div>
-              <div className="text-xs text-gray-400">/month</div>
-            </div>
-          </button>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="w-full mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-            {error}
           </div>
-        )}
 
-        <div className="w-full mt-auto">
+          {error && (
+            <div className="w-full mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
           <button
-            onClick={handleSubscribe}
-            disabled={loading}
+            type="submit"
+            disabled={loading || !email.trim()}
             className="w-full mb-4 py-4 bg-gradient-to-r from-teal to-teal-deep hover:from-teal-deep hover:to-teal text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Processing...
+                Joining...
               </>
             ) : (
-              "Subscribe Now"
+              "Join the Waitlist"
             )}
           </button>
           <p className="text-center text-xs text-gray-400">
-            Cancel anytime · Secure payment via Stripe
+            No spam, ever. We&apos;ll only email you about Lamma+ updates.
           </p>
-        </div>
+        </form>
       </main>
     </div>
   );

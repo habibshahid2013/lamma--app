@@ -38,14 +38,8 @@ export default function FollowingList() {
       {/* Status Banner */}
       <div className="bg-teal-light px-4 py-3 flex items-center justify-between text-sm">
         <span className="text-teal-deep font-medium">
-          Following {followingIds.length} {userData?.subscription.plan === 'free' ? '/ 5' : ''} creators
-          {userData?.subscription.plan === 'free' && ' (Free Plan)'}
+          Following {followingIds.length} creators
         </span>
-        {userData?.subscription.plan === 'free' && (
-          <Link href="/premium" className="text-teal font-bold hover:underline">
-            Upgrade →
-          </Link>
-        )}
       </div>
 
       <main className="flex-1 overflow-y-auto px-4 py-6">

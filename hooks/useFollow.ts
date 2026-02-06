@@ -16,10 +16,7 @@ export function useFollow() {
       throw new Error('Must be logged in to follow');
     }
 
-    // Check follow limit for free users
-    if (userData.subscription.plan === 'free' && userData.followingCount >= 5) {
-      throw new Error('Free plan limited to 5 follows. Upgrade to Premium!');
-    }
+    // MVP: No follow limit — premium enforcement disabled for now
 
     setLoading(true);
     try {
@@ -77,6 +74,6 @@ export function useFollow() {
     toggleFollow,
     loading,
     followingCount: userData?.followingCount || 0,
-    followLimit: userData?.subscription.plan === 'free' ? 5 : Infinity,
+    followLimit: Infinity, // MVP: no limit
   };
 }

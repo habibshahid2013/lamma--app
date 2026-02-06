@@ -423,16 +423,16 @@ function PremiumCTABanner() {
           <Crown className="w-8 h-8 text-gold" />
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <h3 className="text-lg font-bold text-white mb-1">Unlock Premium Features</h3>
+          <h3 className="text-lg font-bold text-white mb-1">Premium Coming Soon</h3>
           <p className="text-slate-400 text-sm">
-            Follow unlimited scholars, get early access to content, and support faith educators.
+            Join the waitlist for early access to premium features and exclusive scholar content.
           </p>
         </div>
         <Link
           href="/premium"
           className="px-6 py-3 bg-gradient-to-r from-gold to-gold-dark text-gray-dark font-semibold rounded-full hover:shadow-lg hover:shadow-gold/20 transition whitespace-nowrap"
         >
-          Go Premium
+          Join Waitlist
         </Link>
       </div>
     </div>
