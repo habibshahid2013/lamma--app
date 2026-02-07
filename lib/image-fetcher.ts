@@ -13,32 +13,29 @@ interface ImageResult {
 
 /**
  * Fetch creator image from multiple sources
- * Tries each source in order until one succeeds
+ * Priority: YouTube thumbnail (1 unit) > Wikipedia (free) > Knowledge Graph > fallback
+ * YouTube search removed — costs 100 units per call, not worth it for images
  */
 export async function fetchCreatorImage(
   name: string,
   existingYoutubeChannelId?: string
 ): Promise<ImageResult | null> {
-  
-  // 1. Try YouTube channel thumbnail (if we have channel ID)
+
+  // 1. Try YouTube channel thumbnail (1 API unit, only if we already have channelId)
   if (existingYoutubeChannelId) {
     const ytImage = await fetchYouTubeThumbnail(existingYoutubeChannelId);
     if (ytImage) return ytImage;
   }
 
-  // 2. Try Knowledge Graph (Google's verified entity images)
-  const kgImage = await fetchKnowledgeGraphImage(name);
-  if (kgImage) return kgImage;
-
-  // 3. Try Wikipedia
+  // 2. Try Wikipedia (FREE — no API key needed)
   const wikiImage = await fetchWikipediaImage(name);
   if (wikiImage) return wikiImage;
 
-  // 4. Try YouTube search (find their channel)
-  const ytSearchImage = await searchYouTubeForImage(name);
-  if (ytSearchImage) return ytSearchImage;
+  // 3. Try Knowledge Graph (separate quota from YouTube, good for famous people)
+  const kgImage = await fetchKnowledgeGraphImage(name);
+  if (kgImage) return kgImage;
 
-  // 5. Return null - will use initials fallback
+  // 4. Return null — caller will use generated placeholder
   return null;
 }
 

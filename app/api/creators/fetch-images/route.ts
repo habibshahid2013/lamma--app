@@ -9,7 +9,8 @@ import { fetchCreatorImage, generatePlaceholderImage } from '@/lib/image-fetcher
 
 export async function POST(request: NextRequest) {
   try {
-    const { creatorId, fetchAll = false } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const { creatorId, fetchAll = false, batchSize = 0, offset = 0 } = body;
 
     // Single creator update
     if (creatorId && !fetchAll) {
@@ -17,13 +18,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(result);
     }
 
-    // Batch update all creators missing images
-    if (fetchAll) {
-      const result = await updateAllMissingImages();
+    // Batch update creators missing images
+    // Use batchSize > 0 for paginated processing, fetchAll for all at once
+    if (fetchAll || batchSize > 0) {
+      const result = await updateAllMissingImages(batchSize, offset);
       return NextResponse.json(result);
     }
 
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    return NextResponse.json({
+      error: 'Invalid request. Use { fetchAll: true } or { batchSize: 50, offset: 0 }',
+    }, { status: 400 });
 
   } catch (error) {
     console.error('Fetch images error:', error);
@@ -76,20 +80,27 @@ async function updateSingleCreatorImage(creatorId: string) {
   };
 }
 
-async function updateAllMissingImages() {
+async function updateAllMissingImages(batchSize = 0, offset = 0) {
   // Get all creators
   const creatorsSnapshot = await getDocs(collection(db, 'creators'));
-  
+
   const creatorsNeedingImages: { id: string; name: string; youtubeChannelId?: string }[] = [];
-  
+
   creatorsSnapshot.docs.forEach(docSnap => {
     const data = docSnap.data();
-    const hasAvatar = data.profile?.avatar && 
-                      !data.profile.avatar.includes('ui-avatars.com') &&
-                      !data.profile.avatar.includes('placeholder') &&
-                      !data.profile.avatar.startsWith('/creators/');
-    
-    if (!hasAvatar) {
+    const avatar = data.profile?.avatar;
+    const avatarSource = data.profile?.avatarSource;
+
+    // Skip if already has a real image (not placeholder/generated)
+    const hasRealAvatar = avatar &&
+                          !avatar.includes('ui-avatars.com') &&
+                          !avatar.includes('placeholder') &&
+                          !avatar.startsWith('/creators/');
+
+    // Also skip if we already attempted and got only a generated image
+    const alreadyAttempted = avatarSource === 'generated';
+
+    if (!hasRealAvatar && !alreadyAttempted) {
       creatorsNeedingImages.push({
         id: docSnap.id,
         name: data.profile?.name || data.profile?.displayName,
@@ -98,20 +109,30 @@ async function updateAllMissingImages() {
     }
   });
 
-  console.log(`Found ${creatorsNeedingImages.length} creators needing images`);
+  // Apply pagination if batchSize specified
+  const totalNeeding = creatorsNeedingImages.length;
+  const batch = batchSize > 0
+    ? creatorsNeedingImages.slice(offset, offset + batchSize)
+    : creatorsNeedingImages;
+
+  console.log(`Found ${totalNeeding} creators needing images, processing ${batch.length} (offset: ${offset})`);
 
   const results = {
-    total: creatorsNeedingImages.length,
+    totalNeedingImages: totalNeeding,
+    batchSize: batch.length,
+    offset,
+    nextOffset: batchSize > 0 ? offset + batchSize : null,
+    hasMore: batchSize > 0 ? offset + batchSize < totalNeeding : false,
     updated: 0,
     failed: 0,
     details: [] as any[],
   };
 
-  // Process each creator
-  for (const creator of creatorsNeedingImages) {
+  // Process the batch
+  for (const creator of batch) {
     try {
       const image = await fetchCreatorImage(creator.name, creator.youtubeChannelId);
-      
+
       const imageUrl = image?.url || generatePlaceholderImage(creator.name);
       const source = image?.source || 'generated';
 
@@ -125,7 +146,7 @@ async function updateAllMissingImages() {
       results.details.push({
         creatorId: creator.id,
         name: creator.name,
-        imageUrl,
+        imageUrl: imageUrl.substring(0, 100),
         source,
       });
 

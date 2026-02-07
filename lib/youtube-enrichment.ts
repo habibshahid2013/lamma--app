@@ -138,7 +138,7 @@ export async function enrichYouTubeChannel(
     // Step 2: Fetch recent videos, popular videos, and playlists in parallel
     const [recentVideos, popularVideos, playlists] = await Promise.all([
       fetchRecentVideos(uploadsPlaylistId, 12),
-      fetchPopularVideos(channelId, 12),
+      fetchPopularVideos(uploadsPlaylistId, 12),
       fetchPlaylists(channelId, 10),
     ]);
 
@@ -188,34 +188,44 @@ async function fetchRecentVideos(uploadsPlaylistId: string, maxResults: number):
   }
 }
 
-async function fetchPopularVideos(channelId: string, maxResults: number): Promise<EnrichedVideo[]> {
+async function fetchPopularVideos(uploadsPlaylistId: string, maxResults: number): Promise<EnrichedVideo[]> {
+  // Instead of search.list (100 units!), fetch recent uploads and sort by views.
+  // This costs only 2 units vs 101 units for the old search+videos approach.
   try {
-    // Search for most popular videos on channel
-    const searchData = await ytFetch(
-      `search?part=snippet&channelId=${channelId}&order=viewCount&type=video&maxResults=${maxResults}`
+    if (!uploadsPlaylistId) return [];
+
+    // Get last 50 uploads (max allowed in one call)
+    const playlistData = await ytFetch(
+      `playlistItems?part=contentDetails&playlistId=${uploadsPlaylistId}&maxResults=50`
     );
-    if (!searchData.items?.length) return [];
+    if (!playlistData.items?.length) return [];
 
-    const videoIds = searchData.items.map((item: any) => item.id.videoId).join(',');
+    const videoIds = playlistData.items.map((item: any) => item.contentDetails.videoId).join(',');
 
-    // Get full video details
+    // Get full video details including stats
     const videosData = await ytFetch(
       `videos?part=snippet,statistics,contentDetails&id=${videoIds}`
     );
     if (!videosData.items?.length) return [];
 
-    return videosData.items.map((video: any) => ({
-      videoId: video.id,
-      title: video.snippet.title,
-      description: video.snippet.description?.substring(0, 200) || '',
-      thumbnail: video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url || '',
-      publishedAt: video.snippet.publishedAt,
-      viewCount: parseInt(video.statistics.viewCount || '0', 10),
-      likeCount: parseInt(video.statistics.likeCount || '0', 10),
-      commentCount: parseInt(video.statistics.commentCount || '0', 10),
-      duration: formatDuration(video.contentDetails.duration || 'PT0S'),
-      tags: video.snippet.tags?.slice(0, 10),
-    }));
+    // Sort by view count descending and take top N
+    return videosData.items
+      .sort((a: any, b: any) =>
+        parseInt(b.statistics.viewCount || '0', 10) - parseInt(a.statistics.viewCount || '0', 10)
+      )
+      .slice(0, maxResults)
+      .map((video: any) => ({
+        videoId: video.id,
+        title: video.snippet.title,
+        description: video.snippet.description?.substring(0, 200) || '',
+        thumbnail: video.snippet.thumbnails?.medium?.url || video.snippet.thumbnails?.default?.url || '',
+        publishedAt: video.snippet.publishedAt,
+        viewCount: parseInt(video.statistics.viewCount || '0', 10),
+        likeCount: parseInt(video.statistics.likeCount || '0', 10),
+        commentCount: parseInt(video.statistics.commentCount || '0', 10),
+        duration: formatDuration(video.contentDetails.duration || 'PT0S'),
+        tags: video.snippet.tags?.slice(0, 10),
+      }));
   } catch {
     return [];
   }
