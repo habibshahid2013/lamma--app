@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Inter, Amiri } from "next/font/google";
+import { cookies } from "next/headers";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import EngagementWrapper from "@/components/EngagementWrapper";
 import PostHogProvider from "@/components/PostHogProvider";
+import InstallPrompt from "@/components/ui/InstallPrompt";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Analytics } from "@vercel/analytics/next";
@@ -85,35 +89,42 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} suppressHydrationWarning>
       <body className={`${inter.variable} ${amiri.variable} font-sans antialiased`} suppressHydrationWarning>
         <a href="#main-content" className="skip-link">Skip to main content</a>
-        <AuthProvider>
-          <EngagementWrapper>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Suspense fallback={null}>
-                <PostHogProvider>
-                  <div className="flex min-h-screen flex-col">
-                    <Navbar />
-                    <main id="main-content" className="flex-1">{children}</main>
-                    <Footer />
-                  </div>
-                </PostHogProvider>
-              </Suspense>
-            </ThemeProvider>
-          </EngagementWrapper>
-        </AuthProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <AuthProvider>
+            <EngagementWrapper>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Suspense fallback={null}>
+                  <PostHogProvider>
+                    <div className="flex min-h-screen flex-col">
+                      <Navbar />
+                      <main id="main-content" className="flex-1">{children}</main>
+                      <Footer />
+                    </div>
+                    <InstallPrompt />
+                  </PostHogProvider>
+                </Suspense>
+              </ThemeProvider>
+            </EngagementWrapper>
+          </AuthProvider>
+        </NextIntlClientProvider>
         <Analytics />
       </body>
     </html>

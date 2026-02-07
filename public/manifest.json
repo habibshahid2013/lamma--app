@@ -2,7 +2,7 @@
   "name": "Lamma+ | Discover Islamic Scholars",
   "short_name": "Lamma+",
   "description": "Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.",
-  "start_url": "/",
+  "start_url": "/home",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0D7377",
@@ -26,7 +26,21 @@
       "purpose": "any maskable"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "url": "/home",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Discover Scholars",
+      "short_name": "Scholars",
+      "url": "/scholars",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ],
   "categories": ["education", "lifestyle", "social"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "auto"
 }

@@ -227,3 +227,24 @@ html {
   scrollbar-width: thin;
   scrollbar-color: oklch(0.7 0.05 160) transparent;
 }
+
+/* ── RTL Support ──────────────────────────────────────────────── */
+[dir="rtl"] {
+  font-family: var(--font-amiri), var(--font-inter), sans-serif;
+}
+
+[dir="rtl"] .skip-link {
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+/* Slide-up animation for install prompt */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out both;
+}

@@ -3,24 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Search, Moon, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/contexts/AuthContext";
+import { PalmIcon } from "@/components/LammaLogo";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-
-const navLinks = [
-  { href: "/home", label: "Home" },
-  { href: "/scholars", label: "Scholars" },
-  { href: "/about", label: "About" },
-];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const t = useTranslations("nav");
+
+  const navLinks = [
+    { href: "/home", label: t("home") },
+    { href: "/scholars", label: t("scholars") },
+    { href: "/about", label: t("about") },
+  ];
 
   // Don't show navbar on onboarding/splash pages
   if (pathname === "/" || pathname === "/start" || pathname === "/welcome") {
@@ -33,9 +37,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/home" className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <svg viewBox="0 0 24 24" className="h-5 w-5 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-            </svg>
+            <PalmIcon variant="white" size={22} />
           </div>
           <span className="text-xl font-bold tracking-tight">
             Lamma<span className="text-primary">+</span>
@@ -70,40 +72,42 @@ export default function Navbar() {
             )}
           >
             <Search className="h-4 w-4" />
-            <span>Search scholars, topics...</span>
+            <span>{t("search")}</span>
           </Link>
         </div>
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-2 md:flex">
+          <LanguageSwitcher />
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Toggle theme"
+            aria-label={t("toggleTheme")}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
           {user ? (
-            <Button variant="ghost" size="icon" aria-label="Your profile" asChild>
+            <Button variant="ghost" size="icon" aria-label={t("profile")} asChild>
               <Link href="/profile">
                 <User className="h-4 w-4" />
               </Link>
             </Button>
           ) : (
             <Button size="sm" className="rounded-full" asChild>
-              <Link href="/auth/login">Sign In</Link>
+              <Link href="/auth/login">{t("signIn")}</Link>
             </Button>
           )}
         </div>
 
         {/* Mobile Menu */}
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Toggle theme"
+            aria-label={t("toggleTheme")}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -111,7 +115,7 @@ export default function Navbar() {
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Button variant="ghost" size="icon" aria-label={t("openMenu")}>
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -138,7 +142,7 @@ export default function Navbar() {
                   className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <Search className="h-5 w-5" />
-                  Search
+                  {t("scholars")}
                 </Link>
                 {!user && (
                   <Link
@@ -146,7 +150,7 @@ export default function Navbar() {
                     onClick={() => setOpen(false)}
                     className="mt-4 rounded-lg bg-primary px-4 py-3 text-center text-base font-medium text-primary-foreground"
                   >
-                    Sign In
+                    {t("signIn")}
                   </Link>
                 )}
                 {user && (
@@ -155,7 +159,7 @@ export default function Navbar() {
                     onClick={() => setOpen(false)}
                     className="rounded-lg px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                   >
-                    Profile
+                    {t("profile")}
                   </Link>
                 )}
               </nav>
