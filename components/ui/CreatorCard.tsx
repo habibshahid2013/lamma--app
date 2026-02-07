@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -111,17 +112,21 @@ export default function CreatorCard(props: CreatorCardProps) {
 
   return (
     <>
-      <Link href={`/creator/${linkSlug}`} className="block">
-        <Card
-          className={cn(
-            "group relative overflow-hidden border-border/50 bg-card transition-all duration-300",
-            "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-          )}
+      <Link href={`/creator/${linkSlug}`} className="block cursor-pointer">
+        <motion.div
+          whileHover={{ y: -3 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
+          <Card
+            className={cn(
+              "group relative overflow-hidden border-border/60 bg-card transition-all duration-300",
+              "hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+            )}
+          >
           {/* Top gradient accent bar */}
           <div
             className={cn(
-              "h-1.5 w-full",
+              "h-2 w-full",
               isHistorical
                 ? "bg-gradient-to-r from-muted-foreground/40 to-muted-foreground/20"
                 : "bg-gradient-to-r from-primary via-primary/80 to-gold"
@@ -141,6 +146,7 @@ export default function CreatorCard(props: CreatorCardProps) {
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
                     : "border-primary/40 text-primary hover:bg-primary/5 hover:border-primary/60"
                 )}
+                aria-label={following ? `Unfollow ${displayName}` : `Follow ${displayName}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -237,9 +243,9 @@ export default function CreatorCard(props: CreatorCardProps) {
             <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-3">
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 {followerDisplay && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1 rounded-md px-1.5 py-0.5 transition-colors hover:bg-muted/50">
                     <Users className="h-3 w-3" />
-                    {followerDisplay}
+                    <span className="font-medium">{followerDisplay}</span>
                   </span>
                 )}
                 {languages.length > 0 && (
@@ -273,6 +279,7 @@ export default function CreatorCard(props: CreatorCardProps) {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
       </Link>
 
       <ShareModal

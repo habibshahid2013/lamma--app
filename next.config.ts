@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // ============================================================================
+  // REACT COMPILER (Next.js 16+)
+  // ============================================================================
+  reactCompiler: true,
+
+  // ============================================================================
   // IMAGE OPTIMIZATION
   // ============================================================================
   images: {
@@ -93,6 +98,11 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       'lucide-react',
     ],
+  },
+
+  // Suppress multiple lockfiles warning (Turbopack)
+  turbopack: {
+    root: '.',
   },
 
   // Production source maps (disabled for smaller bundles)

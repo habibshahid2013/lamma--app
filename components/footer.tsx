@@ -59,6 +59,13 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-border/50 pt-6 text-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Lamma+ 2.0. Built with love for the Ummah.</p>
+          <div className="mt-2 flex items-center justify-center gap-4 text-xs text-muted-foreground/60">
+            <Link href="/about" className="hover:text-primary transition-colors">Privacy</Link>
+            <span>&middot;</span>
+            <Link href="/about" className="hover:text-primary transition-colors">Terms</Link>
+            <span>&middot;</span>
+            <Link href="/about" className="hover:text-primary transition-colors">Contribute</Link>
+          </div>
         </div>
       </div>
     </footer>

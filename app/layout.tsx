@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Inter, Amiri } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import EngagementWrapper from "@/components/EngagementWrapper";
+import PostHogProvider from "@/components/PostHogProvider";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Analytics } from "@vercel/analytics/next";
@@ -91,6 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${amiri.variable} font-sans antialiased`} suppressHydrationWarning>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <AuthProvider>
           <EngagementWrapper>
             <ThemeProvider
@@ -99,11 +102,15 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
+              <Suspense fallback={null}>
+                <PostHogProvider>
+                  <div className="flex min-h-screen flex-col">
+                    <Navbar />
+                    <main id="main-content" className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
+                </PostHogProvider>
+              </Suspense>
             </ThemeProvider>
           </EngagementWrapper>
         </AuthProvider>

@@ -2,9 +2,10 @@
 
 export function SkeletonCreatorCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border/50 bg-card animate-pulse">
+    <div className="relative overflow-hidden rounded-xl border border-border/50 bg-card">
+      <div className="absolute inset-0 animate-shimmer pointer-events-none z-10" />
       {/* Top gradient accent bar */}
-      <div className="h-1.5 w-full bg-muted" />
+      <div className="h-2 w-full bg-muted" />
 
       <div className="p-5">
         <div className="flex gap-4">
@@ -45,7 +46,7 @@ export function SkeletonCreatorCard() {
 
 export function SkeletonCreatorGrid({ count = 4 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCreatorCard key={i} />
       ))}

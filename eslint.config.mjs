@@ -14,7 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "scripts/**",
     "lamma-plus/**",
-    "functions/**"
+    "functions/**",
+    ".agents/**"
   ]),
   {
     rules: {

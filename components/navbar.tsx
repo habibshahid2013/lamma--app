@@ -60,23 +60,33 @@ export default function Navbar() {
           ))}
         </nav>
 
+        {/* Desktop Search Bar */}
+        <div className="hidden md:flex flex-1 max-w-md mx-6">
+          <Link
+            href="/scholars"
+            className={cn(
+              "flex w-full items-center gap-2 rounded-lg border border-border/50 bg-muted/40 px-3.5 py-2 text-sm text-muted-foreground",
+              "transition-all hover:border-primary/30 hover:bg-muted/60"
+            )}
+          >
+            <Search className="h-4 w-4" />
+            <span>Search scholars, topics...</span>
+          </Link>
+        </div>
+
         {/* Desktop Actions */}
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/scholars">
-              <Search className="h-4 w-4" />
-            </Link>
-          </Button>
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Toggle theme"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
           {user ? (
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="ghost" size="icon" aria-label="Your profile" asChild>
               <Link href="/profile">
                 <User className="h-4 w-4" />
               </Link>
@@ -93,6 +103,7 @@ export default function Navbar() {
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Toggle theme"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -100,7 +111,7 @@ export default function Navbar() {
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Open menu">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -121,6 +132,14 @@ export default function Navbar() {
                     {link.label}
                   </Link>
                 ))}
+                <Link
+                  href="/scholars"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <Search className="h-5 w-5" />
+                  Search
+                </Link>
                 {!user && (
                   <Link
                     href="/auth/login"
