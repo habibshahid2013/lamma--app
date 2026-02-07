@@ -1,5 +1,5 @@
 # PROJECT_SYNC.md - Lamma+ Development Status
-## Last Updated: 2026-02-06 (Session 9)
+## Last Updated: 2026-02-06 (Session 10)
 
 This file is the **source of truth** for syncing between Claude Chat (planning) and Claude Code (implementation).
 
@@ -170,6 +170,36 @@ app/creator/[slug]/
 - [x] Stripe API routes kept intact but unused
 - [x] Admin dashboard updated: "Premium" stat → "Waitlist" counter
 
+### Priority 15: Data Enrichment Pipeline — PARTIALLY COMPLETE (Session 10)
+
+**Image Enrichment — COMPLETE:**
+- [x] Fixed image fetch API (`/api/creators/fetch-images`) — added `batchSize`/`offset` pagination
+- [x] Optimized image source priority: YouTube thumbnail (1 unit) → Wikipedia (FREE) → Knowledge Graph
+- [x] Removed expensive YouTube search (was 100 units/call)
+- [x] Ran batch image enrichment: **401 real images**, 180 placeholders, 0 missing (was 274/62/245)
+- [x] Filter skips already-attempted creators (`avatarSource === 'generated'`)
+
+**Wikipedia Bio Generation — COMPLETE:**
+- [x] Added `generate_bio` action to `/api/data-quality/fix`
+- [x] Wikipedia-based bio fetching with relevance validation (name matching + Islamic keywords + person indicators)
+- [x] Name cleaning: strips prefixes (Sheikh, Imam, Mufti, Dr., etc.) and parentheticals
+- [x] Generated **68 validated bios** from Wikipedia
+- [x] Cleared **49 wrong-person bios** (e.g., Nicki Minaj matched to Abdur Raheem McCarthy)
+- [x] Supports `overwriteExisting` (scoped to `bioSource === 'wikipedia'` only)
+
+**YouTube Enrichment Optimization — CODE COMPLETE, NOT YET RUN:**
+- [x] Replaced `search.list` (100 units) with `playlistItems.list` (1 unit) for popular videos
+- [x] Total cost reduced from ~104 units/creator to ~5 units/creator
+- [ ] **BLOCKED**: YouTube API quota was exhausted when attempted. Needs quota reset (midnight Pacific)
+- [ ] After quota reset: run enrichment for all 111 creators with YouTube channels (~555 units total)
+
+**Still Pending (blocked on API limits):**
+- [ ] YouTube channel enrichment — run after quota resets
+- [ ] ~55 creators still missing bios (no Wikipedia article found) — needs manual entry or Anthropic API when credits restored
+- [ ] ~5 wrong Wikipedia bios to review: Adam Saleh, Ali Dawah, Abdessalam Yassine, AbdelRahman Murphy, Bilal Rauf/Muhammad
+- [ ] Verify `GOOGLE_API_KEY` is set in Vercel env vars (needed for server-side YouTube/image enrichment from production)
+- [ ] Anthropic API credits exhausted — model IDs in `lib/ai/anthropic.ts` may also need updating
+
 ### Priority 14: CI Fix + UX Modernization — COMPLETE (Session 9)
 
 **CI Fix:**
@@ -193,6 +223,50 @@ app/creator/[slug]/
 ---
 
 ## RECENT CHANGES LOG
+
+### 2026-02-06 — Data Enrichment Pipeline (Session 10)
+
+**Context:** Creator profiles lacked images (~245 with no image), bios (~500 with no bio), and YouTube enrichment data. YouTube API quota was exhausted, Anthropic API credits were depleted. Pivoted to free Wikipedia-based approaches.
+
+**Image Enrichment (401 real / 180 placeholder / 0 missing):**
+1. **Fixed API route** — `POST /api/creators/fetch-images` previously required `{ fetchAll: true }` or `{ creatorId }`. Added `batchSize`/`offset` pagination support.
+2. **Optimized image sources** — Moved Wikipedia (free) before Knowledge Graph. Removed `searchYouTubeForImage()` function entirely (cost 100 quota units per call, not worth it for images).
+3. **Skip logic** — Creators with `avatarSource === 'generated'` are now skipped on re-runs (already attempted, no real image found).
+4. **Ran 12 batches** of 50 creators each against local dev server.
+
+**Wikipedia Bio Generation (68 new bios, 49 bad cleared):**
+1. **New `fetchWikipediaBio()` function** in `/api/data-quality/fix/route.ts` — searches Wikipedia, extracts intro text, validates relevance.
+2. **Validation pipeline:** Clean name (strip prefixes like Sheikh/Imam/Mufti/Dr.) → search Wikipedia → check name parts match in extract → verify Islamic keywords present → confirm person indicators → return first 500 chars.
+3. **Iteration history:** First run (no validation) → 20 bios with many wrong matches. Over-strict validation → only 3 matches. Final relaxed version → 68 validated bios.
+4. **Overwrite support:** `overwriteExisting: true` + `bioSource === 'wikipedia'` scope. Cleared 49 bad Wikipedia bios that had wrong-person matches.
+
+**YouTube Enrichment Optimization (code only, not run):**
+1. **`lib/youtube-enrichment.ts`** — `fetchPopularVideos()` now uses `playlistItems.list` (1 unit) instead of `search.list` (100 units). Fetches last 50 uploads, gets full video details, sorts by view count.
+2. **Cost reduction:** ~104 units/creator → ~5 units/creator. All 111 YouTube creators can be enriched in one run (~555 units vs ~11,440 previously).
+3. **Not run yet** — YouTube API daily quota was exhausted at time of session.
+
+**Files changed:**
+
+| File | Changes |
+|------|---------|
+| `app/api/creators/fetch-images/route.ts` | Added `batchSize`/`offset` pagination, skip already-attempted creators |
+| `lib/image-fetcher.ts` | Reordered: Wikipedia (free) before Knowledge Graph. Removed `searchYouTubeForImage()` |
+| `lib/youtube-enrichment.ts` | `fetchPopularVideos()`: search.list → playlistItems.list (100→1 unit) |
+| `app/api/data-quality/fix/route.ts` | Added `fetchWikipediaBio()`, `generate_bio` action, overwrite support |
+
+**Commit:** `3570938` — "Optimize enrichment pipeline and add Wikipedia bio generation"
+
+**API Status at End of Session:**
+- YouTube API: Quota exhausted (resets midnight Pacific daily)
+- Anthropic API: Credits exhausted (needs billing top-up)
+- Google Knowledge Graph: Working (separate quota from YouTube)
+- Wikipedia API: Working (free, no key needed)
+
+**Resume Steps (when quotas/credits are restored):**
+1. **YouTube enrichment:** `POST /api/data-quality/enrich-youtube` with `{ batchSize: 50 }` — run 2-3 batches to cover all 111 creators with YouTube channels. Cost: ~555 units total.
+2. **Remaining bios:** Either use Anthropic API (`generate_bio` action with AI model) or manually add via `/admin/manage-creators` page.
+3. **Review wrong bios:** Check and fix Adam Saleh, Ali Dawah, Abdessalam Yassine, AbdelRahman Murphy, Bilal Rauf/Muhammad — these got wrong Wikipedia articles.
+4. **Verify Vercel env vars:** Ensure `GOOGLE_API_KEY` is set in Vercel project settings (needed for server-side enrichment from production, not just local dev).
 
 ### 2026-02-06 — CI Fix + UX Modernization (Session 9)
 
@@ -419,7 +493,7 @@ Added 142 new creator profiles across all regions:
 
 ## KNOWN ISSUES
 
-1. **Creator images** — Some profiles may show fallback avatar (first-letter gradient) instead of actual photo. Image fetcher exists at `/api/creators/fetch-images` — needs batch run on production to populate missing avatars.
+1. ~~**Creator images**~~ — **MOSTLY RESOLVED (Session 10)**: Batch enrichment complete. 401 real images (YouTube/Wikipedia/Knowledge Graph), 180 placeholders (no real image found). 0 creators without any image. To re-run: `POST /api/creators/fetch-images { batchSize: 50, offset: 0 }`.
 2. ~~**Premium flow**~~ — **RESOLVED (Session 8)**: Stripe integration code kept intact but disabled for MVP. Premium page converted to email waitlist collection. Follow limits removed.
 3. ~~**`components/creator/` directory**~~ — **RESOLVED (Session 4)**: Old grey card components deleted.
 4. **Vercel branch situation** — Both `main` and `vercel/set-up-vercel-web-analytics-in-m9kl9x` must stay synced. Any push to `main` should also be pushed to the Vercel branch.
@@ -433,6 +507,11 @@ Added 142 new creator profiles across all regions:
 12. **Firestore seeding** — 487 creators in static data need to be seeded to Firestore via admin dashboard "Seed Data" button or `POST /api/admin/seed?action=seed`.
 13. **GitHub Actions secrets** — Firebase env vars need to be configured in repo settings (`github.com/habibshahid2013/lamma--app/settings/secrets/actions`) for CI to run Firebase-dependent tests. The lazy Proxy fix allows builds without secrets, but runtime features still need real keys.
 14. ~~**CI build failure**~~ — **RESOLVED (Session 9)**: Firebase lazy initialization via Proxy pattern. Build passes with or without env vars.
+15. **YouTube enrichment blocked** — API quota exhausted. Need to wait for daily reset (midnight Pacific) then run `POST /api/data-quality/enrich-youtube { batchSize: 50 }`. Code optimized to ~5 units/creator (was ~104).
+16. **Anthropic API credits exhausted** — Bio generation via AI model (`lib/ai/anthropic.ts`) will fail until credits are topped up. Model IDs may also need updating: `claude-3-5-haiku-20241022` → check latest, `claude-sonnet-4-5-20250514` → `claude-sonnet-4-5-20250929`.
+17. **~55 creators missing bios** — No Wikipedia article found. Options: (a) manual entry via `/admin/manage-creators`, (b) Anthropic API when credits restored, (c) accept as-is for MVP.
+18. **~5 wrong Wikipedia bios** — Adam Saleh, Ali Dawah, Abdessalam Yassine, AbdelRahman Murphy, Bilal Rauf/Muhammad got wrong-person Wikipedia articles. Need manual review/correction.
+19. **GOOGLE_API_KEY on Vercel** — Must verify this env var is set in Vercel project settings for server-side enrichment APIs to work from production (not just local dev).
 
 ---
 
@@ -476,8 +555,11 @@ lamma-app/
 │   ├── types/creator.ts      # Creator type definitions
 │   ├── utils/links.ts        # URL sanitization, platform detection
 │   ├── data/creators.ts      # Static seed data (487 creators)
-│   ├── image-fetcher.ts      # Auto-fetch creator images
+│   ├── image-fetcher.ts      # Auto-fetch creator images (YT → Wikipedia → KG)
 │   ├── youtube.ts            # YouTube API integration
+│   ├── youtube-enrichment.ts # Full YouTube channel enrichment (videos, playlists, categories)
+│   ├── data-quality.ts       # Creator data audit functions
+│   ├── ai/anthropic.ts       # Anthropic API for bio generation (credits exhausted)
 │   └── podcast.ts            # Podcast API integration
 ├── public/
 │   ├── robots.txt            # SEO robots file
@@ -581,6 +663,6 @@ Before switching between Claude Chat and Claude Code:
 
 ---
 
-*Last sync by: Claude Code (Session 9)*
+*Last sync by: Claude Code (Session 10)*
 *Last sync date: 2026-02-06*
-*Next action: Configure GitHub Actions Firebase secrets, seed 487 creators to Firestore, run image fetcher, production QA*
+*Next action: Run YouTube enrichment (after quota reset), fix ~5 wrong Wikipedia bios, verify GOOGLE_API_KEY on Vercel, top up Anthropic credits for remaining bios*
