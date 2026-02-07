@@ -179,4 +179,39 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Animated gradient background */
+  .gradient-animate {
+    background-size: 200% 200%;
+    animation: gradient-shift 6s ease infinite;
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    @apply backdrop-blur-lg bg-white/70 border border-white/20 shadow-lg;
+  }
+
+  /* Elevated card with depth */
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-[0_2px_20px_-4px_rgba(13,115,119,0.12)] border border-gray-100/80;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal to-teal-deep;
+  }
+
+  /* Featured section with mesh gradient */
+  .mesh-gradient {
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(13, 115, 119, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(245, 184, 32, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(29, 78, 95, 0.08) 0%, transparent 50%);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

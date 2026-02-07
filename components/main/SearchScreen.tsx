@@ -10,8 +10,12 @@ import FilterPanel from "./FilterPanel";
 
 // Mock Data
 const POPULAR_TOPICS = [
-  "📖 Quran", "👨‍👩‍👧 Family", "🌱 Growth",
-  "⚖️ Fiqh", "🏛️ History", "✨ Youth"
+  { emoji: "📖", label: "Quran" },
+  { emoji: "👨‍👩‍👧", label: "Family" },
+  { emoji: "🌱", label: "Growth" },
+  { emoji: "⚖️", label: "Fiqh" },
+  { emoji: "🏛️", label: "History" },
+  { emoji: "✨", label: "Youth" },
 ];
 
 import { useCreators } from "@/hooks/useCreators";
@@ -65,12 +69,12 @@ export default function SearchScreen() {
   // Quick toggle helpers (sync with consolidated state)
   const toggleLanguage = (lang: string) => {
     const current = filters.languages;
-    const updated = current.includes(lang) 
+    const updated = current.includes(lang)
         ? current.filter(l => l !== lang)
         : [...current, lang];
     setFilters({ ...filters, languages: updated });
   };
-  
+
   const toggleGender = () => {
       setFilters({ ...filters, gender: filters.gender === "female" ? "all" : "female" });
   };
@@ -134,29 +138,29 @@ export default function SearchScreen() {
     return filtered;
   }, [searchTerm, filters, allCreators, loading, sortBy]);
 
-  const activeFilterCount = 
-    filters.categories.length + 
-    filters.regions.length + 
-    filters.languages.length + 
-    filters.tiers.length + 
+  const activeFilterCount =
+    filters.categories.length +
+    filters.regions.length +
+    filters.languages.length +
+    filters.tiers.length +
     (filters.gender !== "all" ? 1 : 0) +
     (filters.includeHistorical ? 1 : 0);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 p-4">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-gray-100/50 p-4 shadow-[0_1px_12px_-2px_rgba(0,0,0,0.04)]">
         <div className="flex items-center space-x-3 mb-4">
-          <button onClick={() => router.back()}>
-            <ArrowLeft className="w-6 h-6 text-gray-dark" />
+          <button onClick={() => router.back()} className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-dark" />
           </button>
           <div className="flex-1 relative">
-            <SearchIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+            <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 transform -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search scholars, topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-gray-100 rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal/20"
+              className="w-full bg-gray-100/80 rounded-2xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:bg-white border border-transparent focus:border-teal/20 transition-all"
             />
              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
                 {searchTerm && (
@@ -164,10 +168,10 @@ export default function SearchScreen() {
                     <X className="w-4 h-4 text-gray-400" />
                 </button>
                 )}
-                <button onClick={() => setIsFilterOpen(true)} className="relative">
-                    <Settings2 className={`w-5 h-5 ${activeFilterCount > 0 ? "text-teal" : "text-gray-400"}`} />
+                <button onClick={() => setIsFilterOpen(true)} className="relative p-1">
+                    <Settings2 className={`w-5 h-5 transition-colors ${activeFilterCount > 0 ? "text-teal" : "text-gray-400"}`} />
                     {activeFilterCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-teal rounded-full border border-white" />
+                        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-teal rounded-full border-2 border-white" />
                     )}
                 </button>
             </div>
@@ -177,39 +181,34 @@ export default function SearchScreen() {
         {/* Active Filter Chips Area */}
         {activeFilterCount > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
-                 {/* Categories */}
                  {filters.categories.map(cat => (
-                     <span key={cat} className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium">
+                     <span key={cat} className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-teal to-teal-deep text-white text-xs font-semibold shadow-sm">
                          {cat.replace("_", " ")}
-                         <button onClick={() => removeFilterChip("categories", cat)} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
+                         <button onClick={() => removeFilterChip("categories", cat)} className="ml-1.5 p-0.5 hover:bg-white/20 rounded-full"><X className="w-3 h-3" /></button>
                      </span>
                  ))}
-                 {/* Languages */}
                  {filters.languages.map(lang => (
-                     <span key={lang} className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium">
+                     <span key={lang} className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-teal to-teal-deep text-white text-xs font-semibold shadow-sm">
                          {lang}
-                         <button onClick={() => removeFilterChip("languages", lang)} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
+                         <button onClick={() => removeFilterChip("languages", lang)} className="ml-1.5 p-0.5 hover:bg-white/20 rounded-full"><X className="w-3 h-3" /></button>
                      </span>
                  ))}
-                 {/* Gender */}
                  {filters.gender !== "all" && (
-                      <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-teal text-white text-xs font-medium capitalize">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold capitalize shadow-sm">
                       {filters.gender}
-                      <button onClick={() => setFilters({...filters, gender: "all"})} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => setFilters({...filters, gender: "all"})} className="ml-1.5 p-0.5 hover:bg-white/20 rounded-full"><X className="w-3 h-3" /></button>
                   </span>
                  )}
-                 {/* Historical */}
                  {filters.includeHistorical && (
-                       <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-xs font-medium capitalize">
+                       <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-amber-500 text-white text-xs font-semibold shadow-sm">
                        History Included
-                       <button onClick={() => setFilters({...filters, includeHistorical: false})} className="ml-1.5 p-0.5"><X className="w-3.5 h-3.5" /></button>
+                       <button onClick={() => setFilters({...filters, includeHistorical: false})} className="ml-1.5 p-0.5 hover:bg-white/20 rounded-full"><X className="w-3 h-3" /></button>
                    </span>
                  )}
             </div>
         )}
 
-        {/* Quick Filter Pills (Languages) - Only show if not fully filtered? Or always logic? */}
-        {/* We keep the horizontal scrollers for quick access but sync them with main state */}
+        {/* Quick Filter Pills (Languages) */}
         <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide mb-2">
            {languagesList.map((lang) => {
              const isSelected = filters.languages.includes(lang);
@@ -217,10 +216,10 @@ export default function SearchScreen() {
               <button
                 key={lang}
                 onClick={() => toggleLanguage(lang)}
-                className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors border ${
+                className={`px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 border ${
                   isSelected
-                    ? "bg-gray-800 text-white border-gray-800"
-                    : "bg-white text-gray-500 border-gray-200"
+                    ? "bg-gray-800 text-white border-gray-800 shadow-sm"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
                 }`}
               >
                 {lang}
@@ -233,29 +232,29 @@ export default function SearchScreen() {
         <div className="flex gap-2 pb-2">
             <button
                 onClick={toggleGender}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold transition-colors border ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold transition-all duration-200 border ${
                     filters.gender === "female"
-                    ? "bg-purple-100 text-purple-700 border-purple-200"
-                    : "bg-gray-50 text-gray-500 border-gray-100"
+                    ? "bg-purple-100 text-purple-700 border-purple-200 shadow-sm"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
                 }`}
             >
-                👩‍🎓 Women Only
+                Women Only
             </button>
         </div>
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-6">
-        
+
         {/* Results */}
         {(searchTerm || activeFilterCount > 0) ? (
             <section>
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-dark">{filteredCreators.length} Results</h3>
+                <div className="flex justify-between items-center mb-5">
+                    <h3 className="font-extrabold text-gray-dark text-lg">{filteredCreators.length} <span className="text-gray-400 font-medium text-base">results</span></h3>
                     <div className="relative">
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                        className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-1.5 text-xs font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal/20"
+                        className="appearance-none bg-white border border-gray-200 rounded-xl pl-3 pr-8 py-2 text-xs font-semibold text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal/20 shadow-sm"
                       >
                         <option value="relevant">Most Relevant</option>
                         <option value="az">A–Z</option>
@@ -276,14 +275,17 @@ export default function SearchScreen() {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-                        <Compass className="w-10 h-10 mb-3 text-gray-300" />
-                        <p className="font-medium text-gray-500">No creators found</p>
+                    <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                          <Compass className="w-8 h-8 text-gray-300" />
+                        </div>
+                        <p className="font-semibold text-gray-500 mb-1">No creators found</p>
+                        <p className="text-sm text-gray-400 mb-3">Try adjusting your filters</p>
                         <button
                             onClick={clearFilters}
-                            className="text-teal font-medium mt-2 text-sm hover:underline"
+                            className="text-teal font-semibold text-sm hover:underline px-4 py-2 rounded-full bg-teal/5 hover:bg-teal/10 transition-colors"
                         >
-                            Clear filters
+                            Clear all filters
                         </button>
                     </div>
                 )}
@@ -291,22 +293,27 @@ export default function SearchScreen() {
         ) : (
             <>
                 {/* Default View */}
-                
+
                 {/* Popular Topics */}
                 <section className="mb-8">
-                <h3 className="font-bold text-gray-dark mb-3">Popular Topics</h3>
-                <div className="grid grid-cols-2 gap-3">
+                <h3 className="font-extrabold text-gray-dark mb-4 text-lg">Popular Topics</h3>
+                <div className="grid grid-cols-3 gap-3">
                     {POPULAR_TOPICS.map(topic => (
-                    <div key={topic} className="bg-white p-4 rounded-xl border border-gray-100 text-center font-medium shadow-sm hover:border-teal transition-colors cursor-pointer">
-                        {topic}
-                    </div>
+                    <button
+                      key={topic.label}
+                      onClick={() => setSearchTerm(topic.label)}
+                      className="bg-white p-4 rounded-2xl border border-gray-100 text-center shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_20px_-4px_rgba(13,115,119,0.12)] hover:border-teal/20 transition-all duration-300 group"
+                    >
+                        <span className="text-2xl block mb-1 group-hover:scale-110 transition-transform">{topic.emoji}</span>
+                        <span className="text-xs font-semibold text-gray-600 group-hover:text-teal transition-colors">{topic.label}</span>
+                    </button>
                     ))}
                 </div>
                 </section>
 
                 {/* Trending */}
                 <section>
-                <h3 className="font-bold text-gray-dark mb-3">Trending Creators</h3>
+                <h3 className="font-extrabold text-gray-dark mb-4 text-lg">Trending Creators</h3>
                 <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
                     {loading ? (
                          <SkeletonCreatorRow count={3} />
@@ -321,7 +328,7 @@ export default function SearchScreen() {
         )}
       </main>
 
-      <FilterPanel 
+      <FilterPanel
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         filters={filters}
