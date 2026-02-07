@@ -36,20 +36,28 @@ function ensureInitialized() {
   }
 }
 
-export const auth: Auth = new Proxy({} as Auth, {
-  get(_, prop) { ensureInitialized(); return (_auth as never)[prop]; },
-});
+function createLazyProxy<T extends object>(getter: () => T): T {
+  return new Proxy({} as T, {
+    get(_, prop) {
+      ensureInitialized();
+      const target = getter();
+      const value = (target as Record<string | symbol, unknown>)[prop];
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+    has(_, prop) {
+      ensureInitialized();
+      return prop in getter();
+    },
+    getPrototypeOf() {
+      ensureInitialized();
+      return Object.getPrototypeOf(getter());
+    },
+  });
+}
 
-export const db: Firestore = new Proxy({} as Firestore, {
-  get(_, prop) { ensureInitialized(); return (_db as never)[prop]; },
-});
-
-export const storage: FirebaseStorage = new Proxy({} as FirebaseStorage, {
-  get(_, prop) { ensureInitialized(); return (_storage as never)[prop]; },
-});
-
-const app = new Proxy({} as FirebaseApp, {
-  get(_, prop) { ensureInitialized(); return (_app as never)[prop]; },
-});
+export const auth: Auth = createLazyProxy(() => _auth!);
+export const db: Firestore = createLazyProxy(() => _db!);
+export const storage: FirebaseStorage = createLazyProxy(() => _storage!);
+const app = createLazyProxy(() => _app!);
 
 export default app;
