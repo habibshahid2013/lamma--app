@@ -513,39 +513,45 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Creators Tab */}
+        {/* Creators Tab — redirect to dedicated page */}
         {activeTab === 'creators' && (
           <div className="bg-white rounded-xl border shadow-sm">
             <div className="p-5 border-b flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-800">Creator Management</h2>
               <div className="flex items-center gap-2">
-                <button className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
-                  <Filter className="w-4 h-4" />
-                  Filter
-                </button>
-                <button className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
                 <button
                   onClick={() => router.push('/admin/add-creator')}
-                  className="flex items-center gap-2 px-3 py-2 text-sm bg-teal text-white rounded-lg hover:bg-teal-deep"
+                  className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Creator
+                  AI Generator
+                </button>
+                <button
+                  onClick={() => router.push('/admin/manage-creators')}
+                  className="flex items-center gap-2 px-3 py-2 text-sm bg-teal text-white rounded-lg hover:bg-teal-deep"
+                >
+                  <Database className="w-4 h-4" />
+                  Manage Creators
                 </button>
               </div>
             </div>
             <div className="p-5">
-              <p className="text-gray-500 text-center py-12">
-                Creator table coming soon. Use the Data Quality page for detailed creator management.
-              </p>
-              <div className="flex justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
-                  onClick={() => router.push('/admin/data-quality')}
-                  className="px-4 py-2 bg-teal text-white rounded-lg hover:bg-teal-deep transition-colors"
+                  onClick={() => router.push('/admin/manage-creators')}
+                  className="group text-left p-6 rounded-xl border-2 hover:border-teal/50 transition-all hover:shadow-md"
                 >
-                  Go to Data Quality
+                  <Database className="w-8 h-8 text-teal mb-3" />
+                  <h3 className="font-bold text-gray-800 mb-1">Manage Creators</h3>
+                  <p className="text-sm text-gray-500">Search, edit, add, and delete creator profiles directly in the database. Full CRUD operations.</p>
+                </button>
+                <button
+                  onClick={() => router.push('/admin/add-creator')}
+                  className="group text-left p-6 rounded-xl border-2 hover:border-gold/50 transition-all hover:shadow-md"
+                >
+                  <Zap className="w-8 h-8 text-gold mb-3" />
+                  <h3 className="font-bold text-gray-800 mb-1">AI Profile Generator</h3>
+                  <p className="text-sm text-gray-500">Generate new creator profiles using AI. Auto-discovers YouTube, books, and social links.</p>
                 </button>
               </div>
             </div>
