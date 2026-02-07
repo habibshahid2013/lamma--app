@@ -1,175 +1,416 @@
 "use client";
 
 import { useState } from "react";
-import { Search, User, ChevronRight, Sparkles } from "lucide-react";
-import LammaLogo from "@/components/LammaLogo";
-import BottomNav from "../ui/BottomNav";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import CreatorCard from "../ui/CreatorCard";
-import LanguageRow from "./LanguageRow";
 import WomenScholarsRow from "./WomenScholarsRow";
 import HistoricalSection from "./HistoricalSection";
-import RegionSection from "./RegionSection";
-import TopicSection from "./TopicSection";
 import SurpriseMeButton from "../ui/SurpriseMeButton";
-import Link from "next/link";
 import { useCreators, useFeaturedCreators } from "@/hooks/useCreators";
 import { useFollow } from "@/hooks/useFollow";
 import { SkeletonCreatorRow } from "../ui/SkeletonCard";
+import {
+  Search,
+  BookOpen,
+  Heart,
+  Scale,
+  Star,
+  Shield,
+  Clock,
+  Users,
+  Sparkles,
+  ArrowRight,
+  GraduationCap,
+  Globe,
+  History,
+} from "lucide-react";
 
+// ── Topics data (matching TopicSection + prototype style) ──────────────
+const TOPICS = [
+  {
+    id: "spirituality",
+    name: "Spirituality",
+    arabicName: "الروحانية",
+    icon: "Heart",
+    description: "Inner purification, dhikr, tawbah, and the path to nearness to Allah.",
+    scholarCount: 6,
+  },
+  {
+    id: "quran",
+    name: "Quran",
+    arabicName: "القرآن",
+    icon: "BookOpen",
+    description: "Tafsir, tajweed, Quran memorization, and sciences of the Quran.",
+    scholarCount: 8,
+  },
+  {
+    id: "history",
+    name: "History",
+    arabicName: "التاريخ",
+    icon: "Clock",
+    description: "Islamic civilization, golden age, and lessons from our past.",
+    scholarCount: 4,
+  },
+  {
+    id: "family",
+    name: "Family",
+    arabicName: "الأسرة",
+    icon: "Users",
+    description: "Marriage, parenting, family rights, and building strong households.",
+    scholarCount: 5,
+  },
+  {
+    id: "fiqh",
+    name: "Fiqh",
+    arabicName: "الفقه",
+    icon: "Scale",
+    description: "Jurisprudence, rulings, schools of thought, and practical Islam.",
+    scholarCount: 7,
+  },
+  {
+    id: "social_justice",
+    name: "Justice",
+    arabicName: "العدالة",
+    icon: "Shield",
+    description: "Social justice, human rights, community activism, and civic duty.",
+    scholarCount: 4,
+  },
+  {
+    id: "youth",
+    name: "Youth",
+    arabicName: "الشباب",
+    icon: "Sparkles",
+    description: "Identity, faith in modern life, mentorship, and youth empowerment.",
+    scholarCount: 5,
+  },
+  {
+    id: "seerah",
+    name: "Seerah",
+    arabicName: "السيرة",
+    icon: "Star",
+    description: "Life of the Prophet (PBUH), companions, and prophetic traditions.",
+    scholarCount: 6,
+  },
+];
+
+const iconMap: Record<string, React.ReactNode> = {
+  BookOpen: <BookOpen className="h-5 w-5" />,
+  Heart: <Heart className="h-5 w-5" />,
+  Scale: <Scale className="h-5 w-5" />,
+  Star: <Star className="h-5 w-5" />,
+  Shield: <Shield className="h-5 w-5" />,
+  Clock: <Clock className="h-5 w-5" />,
+  Users: <Users className="h-5 w-5" />,
+  Sparkles: <Sparkles className="h-5 w-5" />,
+};
+
+// ── Component ──────────────────────────────────────────────────────────
 export default function HomeScreen() {
-  // Filters
   const [showHistorical, setShowHistorical] = useState(false);
 
-  // Hooks
+  // Firebase data hooks
   const { isFollowing, toggleFollow } = useFollow();
   const { creators: featuredData, loading: loadingFeatured } = useFeaturedCreators(20);
-  const { creators: publicFiguresData, loading: loadingPublic } = useCreators({ category: 'public_figure', limitCount: 10 });
+  const { creators: publicFiguresData, loading: loadingPublic } = useCreators({
+    category: "public_figure",
+    limitCount: 10,
+  });
 
   // Derived filtered lists
   const featuredCreators = featuredData
-      .filter(c => !c.isHistorical && c.category !== 'public_figure')
-      .slice(0, 10);
+    .filter((c) => !c.isHistorical && c.category !== "public_figure")
+    .slice(0, 6);
 
   const publicFigures = publicFiguresData;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      {/* Header - Glassmorphism */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl px-4 py-3 flex items-center gap-3 border-b border-gray-100/50 shadow-[0_1px_12px_-2px_rgba(0,0,0,0.06)]">
-        <LammaLogo variant="light" size="icon" />
-        <Link href="/search" className="flex-1 flex items-center bg-gray-100/80 rounded-2xl px-4 py-2.5 text-gray-400 text-sm gap-2 hover:bg-gray-200/60 transition-all duration-300 border border-gray-200/50">
-          <Search className="w-4 h-4 flex-shrink-0" />
-          <span>Search scholars, topics...</span>
-        </Link>
-        <Link href="/profile" className="w-9 h-9 rounded-full bg-gradient-to-br from-teal/10 to-gold/10 flex items-center justify-center border border-teal/20 flex-shrink-0 hover:scale-105 transition-transform">
-          <User className="w-5 h-5 text-teal" />
-        </Link>
-      </header>
+    <>
+      {/* ── Hero Section ─────────────────────────────────────────────── */}
+      <section className="islamic-pattern relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="font-serif text-2xl text-primary/60 mb-2" dir="rtl">
+              اجتمعوا في الإيمان
+            </p>
 
-      <main className="flex-1 overflow-y-auto w-full">
-        {/* Hero Banner - Full-width gradient with mesh pattern */}
-        <section className="relative overflow-hidden">
-          <div className="bg-gradient-to-br from-teal-deep via-teal to-teal-deep gradient-animate px-5 pt-8 pb-10 relative">
-            {/* Decorative mesh overlay */}
-            <div className="absolute inset-0 opacity-30">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-gold/40 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-teal-light/30 to-transparent rounded-full blur-2xl translate-y-1/4 -translate-x-1/4" />
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Discover the Scholars{" "}
+              <span className="bg-gradient-to-r from-teal to-gold bg-clip-text text-transparent">
+                Who Illuminate
+              </span>{" "}
+              Your Path
+            </h1>
+
+            <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
+              Your gateway to Islamic knowledge. Explore verified scholars,
+              find the right teacher for your journey, and connect with
+              centuries of wisdom.
+            </p>
+
+            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <Button size="lg" className="gap-2 rounded-full px-8" asChild>
+                <Link href="/search">
+                  <Search className="h-4 w-4" />
+                  Explore Scholars
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 rounded-full px-8"
+                asChild
+              >
+                <Link href="/about">
+                  Learn More
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
 
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-gold" />
-                <span className="text-gold/90 text-xs font-semibold uppercase tracking-widest">Discover</span>
+            <div className="mt-12 flex items-center justify-center gap-8 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-teal" />
+                <span>
+                  <strong className="text-foreground">12+</strong> Scholars
+                </span>
               </div>
-              <h2 className="text-3xl font-extrabold text-white mb-2 leading-tight">
-                Welcome to<br />the gathering
-              </h2>
-              <p className="text-white/70 text-sm font-medium max-w-[260px]">
-                Discover scholars and content that nourishes your soul.
-              </p>
-            </div>
-
-            {/* Wave separator */}
-            <div className="absolute bottom-0 left-0 right-0">
-              <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-                <path d="M0 60V20C240 0 480 40 720 30C960 20 1200 0 1440 20V60H0Z" fill="#f9fafb"/>
-              </svg>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-teal" />
+                <span>
+                  <strong className="text-foreground">8</strong> Topics
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-teal" />
+                <span>
+                  <strong className="text-foreground">Global</strong> Reach
+                </span>
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Filter Toggles */}
-        <section className="px-4 mb-4 -mt-1 flex justify-end">
-            <button
-                onClick={() => setShowHistorical(!showHistorical)}
-                className={`text-xs font-semibold px-4 py-2 rounded-full border transition-all duration-300 ${showHistorical ? 'bg-teal-deep text-white border-teal-deep shadow-md shadow-teal-deep/20' : 'bg-white text-gray-500 border-gray-200 hover:border-teal/30'}`}
-            >
-                {showHistorical ? "Hide History" : "Show History"}
-            </button>
-        </section>
-
-        {/* Sections */}
-        <div className="space-y-2">
-            {/* For You - Dark themed section */}
-            <section className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-8 -mx-0">
-              <div className="flex items-center justify-between px-5 mb-4">
-                <div>
-                  <h3 className="font-extrabold text-white text-xl">For You</h3>
-                  <p className="text-slate-400 text-xs mt-0.5">Personalized picks</p>
-                </div>
-                <Link href="/search" className="flex items-center gap-1 text-gold text-sm font-semibold hover:gap-2 transition-all">
-                  See All <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-              <div className="flex overflow-x-auto gap-4 px-5 pb-4 scrollbar-hide snap-x">
-                {loadingFeatured ? (
-                    <SkeletonCreatorRow count={3} />
-                ) : (
-                    featuredCreators.map(creator => (
-                    <CreatorCard
-                      key={creator.id}
-                      {...creator}
-                      theme="dark"
-                      isFollowing={isFollowing(creator.id)}
-                      onFollow={() => toggleFollow(creator.id)}
-                    />
-                    ))
-                )}
-              </div>
-            </section>
-
-             {/* Muslim Voices (Public Figures) - Teal gradient section */}
-             <section className="bg-gradient-to-br from-teal-light/40 via-white to-gold-light/30 py-8">
-                <div className="flex items-center justify-between px-5 mb-4">
-                    <div>
-                      <h3 className="font-extrabold text-teal-deep text-xl flex items-center">
-                           Muslim Voices
-                           <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/20 text-gold-dark uppercase tracking-wider">Featured</span>
-                      </h3>
-                      <p className="text-teal-deep/50 text-xs mt-0.5">Public figures & leaders</p>
-                    </div>
-                    <Link href="/search?category=public_figure" className="flex items-center gap-1 text-teal text-sm font-semibold hover:gap-2 transition-all">
-                      See All <ChevronRight className="w-4 h-4" />
-                    </Link>
-                </div>
-                <div className="flex overflow-x-auto gap-4 px-5 pb-2 scrollbar-hide snap-x">
-                    {loadingPublic ? (
-                        <SkeletonCreatorRow count={3} />
-                    ) : (
-                        publicFigures.map(creator => (
-                        <CreatorCard
-                          key={creator.id}
-                          {...creator}
-                          isFollowing={isFollowing(creator.id)}
-                          onFollow={() => toggleFollow(creator.id)}
-                        />
-                        ))
-                    )}
-                </div>
-            </section>
-
-            {/* "Speaks Somali" for Minneapolis Launch */}
-            <div className="py-2">
-              <LanguageRow language="Somali" defaultTitle="Speaks Somali" />
-            </div>
-
-            {/* Women Scholars */}
-            <WomenScholarsRow />
-
-            {/* Historical / Classical Scholars */}
-            {showHistorical && <HistoricalSection />}
-            {!showHistorical && <div className="px-4 py-4 text-center text-xs text-gray-400 italic">Toggle &quot;Show History&quot; to see classical scholars</div>}
-
-            {/* Regional Collections */}
-            <RegionSection />
-
-            {/* Topics */}
-            <TopicSection />
         </div>
-      </main>
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
+      </section>
 
+      {/* ── Topics Grid ──────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">Explore by Topic</h2>
+          <p className="mt-2 text-muted-foreground">
+            Browse scholars by their areas of expertise
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {TOPICS.map((topic) => (
+            <Link
+              key={topic.id}
+              href={`/search?q=${encodeURIComponent(topic.name)}`}
+              className="group rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-teal/30 hover:shadow-md"
+            >
+              <div className="flex items-start gap-3">
+                <div className="rounded-lg bg-teal/10 p-2 text-teal transition-colors group-hover:bg-teal group-hover:text-white">
+                  {iconMap[topic.icon] || <BookOpen className="h-5 w-5" />}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold group-hover:text-teal transition-colors">
+                    {topic.name}
+                  </h3>
+                  <p
+                    className="mt-0.5 text-[11px] font-serif text-muted-foreground/70"
+                    dir="rtl"
+                  >
+                    {topic.arabicName}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                {topic.description}
+              </p>
+              <div className="mt-2 text-[11px] text-teal font-medium">
+                {topic.scholarCount} scholars &rarr;
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Featured Scholars ────────────────────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold sm:text-3xl">Featured Scholars</h2>
+            <p className="mt-2 text-muted-foreground">
+              Leading voices in Islamic scholarship
+            </p>
+          </div>
+          <Button variant="outline" className="gap-2 rounded-full" asChild>
+            <Link href="/search">
+              View All
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {loadingFeatured ? (
+            <div className="col-span-full">
+              <SkeletonCreatorRow count={3} />
+            </div>
+          ) : (
+            featuredCreators.map((creator) => (
+              <div key={creator.id} className="flex justify-center">
+                <CreatorCard
+                  {...creator}
+                  isFollowing={isFollowing(creator.id)}
+                  onFollow={() => toggleFollow(creator.id)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* ── Muslim Voices (Public Figures) ───────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold sm:text-3xl">Muslim Voices</h2>
+            <p className="mt-2 text-muted-foreground">
+              Public figures &amp; leaders inspiring the ummah
+            </p>
+          </div>
+          <Button variant="outline" className="gap-2 rounded-full" asChild>
+            <Link href="/search?category=public_figure">
+              View All
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {loadingPublic ? (
+            <div className="col-span-full">
+              <SkeletonCreatorRow count={3} />
+            </div>
+          ) : (
+            publicFigures.slice(0, 6).map((creator) => (
+              <div key={creator.id} className="flex justify-center">
+                <CreatorCard
+                  {...creator}
+                  isFollowing={isFollowing(creator.id)}
+                  onFollow={() => toggleFollow(creator.id)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* ── Women Scholars ───────────────────────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-6 text-center sm:text-left">
+          <h2 className="text-2xl font-bold sm:text-3xl">Women Scholars</h2>
+          <p className="mt-2 text-muted-foreground">
+            Inspiring female scholarship &amp; leadership
+          </p>
+        </div>
+        <WomenScholarsRow />
+      </section>
+
+      {/* ── Historical Scholars ──────────────────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold sm:text-3xl">Giants of History</h2>
+            <p className="mt-2 text-muted-foreground">
+              Classical scholars &amp; their enduring legacy
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="gap-2 rounded-full"
+            onClick={() => setShowHistorical(!showHistorical)}
+          >
+            {showHistorical ? "Hide" : "Show"}
+            <History className="h-4 w-4" />
+          </Button>
+        </div>
+        {showHistorical && <HistoricalSection />}
+        {!showHistorical && (
+          <p className="text-center text-sm text-muted-foreground py-8 border border-dashed border-border rounded-xl">
+            Toggle &quot;Show&quot; above to reveal classical scholars
+          </p>
+        )}
+      </section>
+
+      {/* ── Why Lamma+ ───────────────────────────────────────────────── */}
+      <section className="border-y border-border/50 bg-muted/20 islamic-pattern">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="mb-4 inline-block rounded-full bg-teal/10 px-3 py-1 text-sm font-medium text-teal border-0">
+              Why Lamma+?
+            </span>
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              Finding the Right Teacher Matters
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              In a world of unverified content and AI-generated fatwas, Lamma+
+              connects you with real, verified scholars who carry authentic
+              chains of knowledge.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10">
+                <Shield className="h-6 w-6 text-teal" />
+              </div>
+              <h3 className="font-semibold">Verified Credentials</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Scholars with transparent qualifications, ijazah chains, and
+                institutional affiliations.
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
+                <Search className="h-6 w-6 text-gold-dark" />
+              </div>
+              <h3 className="font-semibold">Smart Discovery</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Filter by topic, language, region, teaching style, and school
+                of thought.
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10">
+                <Globe className="h-6 w-6 text-teal" />
+              </div>
+              <h3 className="font-semibold">Global Reach</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Discover scholars across every region and language of the
+                Muslim world.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ──────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 text-center">
+        <h2 className="text-2xl font-bold sm:text-3xl">
+          Ready to Find Your Teacher?
+        </h2>
+        <p className="mt-4 text-muted-foreground">
+          Start exploring the scholars who can guide your journey.
+        </p>
+        <Button size="lg" className="mt-8 gap-2 rounded-full px-10" asChild>
+          <Link href="/search">
+            <Search className="h-4 w-4" />
+            Start Discovering
+          </Link>
+        </Button>
+      </section>
+
+      {/* Surprise Me FAB */}
       <SurpriseMeButton />
-      <BottomNav />
-    </div>
+    </>
   );
 }

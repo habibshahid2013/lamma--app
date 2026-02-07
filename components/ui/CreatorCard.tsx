@@ -1,10 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Lock, Plus, Star, Share2 } from "lucide-react";
-import { Button } from "./button";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle,
+  Globe,
+  Star,
+  TrendingUp,
+  Clock,
+  Users,
+  Plus,
+  Check,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Creator } from "@/lib/types/creator";
-import { useRouter } from "next/navigation";
 import ShareModal from "./ShareModal";
 import ActionGateModal from "@/components/ActionGateModal";
 import { useEngagementContext } from "@/hooks/useEngagement";
@@ -15,41 +28,57 @@ interface CreatorCardProps extends Partial<Creator> {
   onFollow?: () => void;
   isFollowing?: boolean;
   showUnlock?: boolean;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
+}
+
+function formatFollowers(count?: number): string | null {
+  if (!count) return null;
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(0)}K`;
+  return count.toString();
 }
 
 export default function CreatorCard(props: CreatorCardProps) {
-  const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [showAuthGate, setShowAuthGate] = useState(false);
   const { trackAction, trackInteraction } = useEngagementContext();
   const { user } = useAuth();
-  const { isFollowing: isFollowingHook, toggleFollow, loading: followLoading } = useFollow();
+  const {
+    isFollowing: isFollowingHook,
+    toggleFollow,
+    loading: followLoading,
+  } = useFollow();
 
   const {
     id,
     name,
+    slug,
     category,
     verified,
     avatar,
     isFollowing: isFollowingProp,
     onFollow: onFollowProp,
-    showUnlock = false,
     isHistorical,
-    lifespan,
-    note,
-    tier,
     countryFlag,
-    topics,
+    country,
+    location,
+    topics = [],
     languages = [],
     trending,
-    theme = 'light',
+    featured,
     content,
     stats,
+    profile,
   } = props;
 
   // Use props if provided (from HomeScreen/FollowingList), otherwise use hook directly
-  const following = isFollowingProp !== undefined ? isFollowingProp : (id ? isFollowingHook(id) : false);
+  const following =
+    isFollowingProp !== undefined
+      ? isFollowingProp
+      : id
+        ? isFollowingHook(id)
+        : false;
+
   const handleFollowAction = async () => {
     if (!user) {
       setShowAuthGate(true);
@@ -66,177 +95,185 @@ export default function CreatorCard(props: CreatorCardProps) {
     }
   };
 
-  const isDark = theme === 'dark';
-
-  const displayName = name || "Unknown Creator";
+  const displayName = profile?.displayName || name || "Unknown Creator";
   const displayCategory = category ? category.replace("_", " ") : "Creator";
-  const youtubeThumbnail = content?.youtube?.thumbnailUrl;
-  const initialImage = avatar || youtubeThumbnail || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D7377&color=fff`;
-
-  const [imgSrc, setImgSrc] = useState(initialImage);
-
-  // Prevent card click when clicking share
-  const handleShare = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsShareOpen(true);
-  };
-
-  const isPublicFigure = category === "public_figure";
-
-  const formatFollowers = (count?: number) => {
-    if (!count) return null;
-    if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
-    if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
-    return count.toString();
-  };
+  const shortBio = profile?.shortBio || profile?.bio || "";
   const followerDisplay = formatFollowers(stats?.followerCount);
+  const linkSlug = slug || id;
+
+  // Avatar fallback chain: avatar prop -> profile.avatar -> youtube thumbnail -> generated
+  const youtubeThumbnail = content?.youtube?.thumbnailUrl;
+  const resolvedAvatar =
+    avatar ||
+    profile?.avatar ||
+    youtubeThumbnail ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D7377&color=fff`;
 
   return (
-    <div className={`group relative flex flex-col items-center p-3.5 sm:p-4 rounded-2xl border w-[168px] sm:w-48 flex-shrink-0 snap-center transition-all duration-300 ${
-        isDark
-          ? 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700/50 shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 hover:border-gold/30'
-          : `bg-white border-gray-100 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_-8px_rgba(13,115,119,0.15)] hover:-translate-y-1.5 ${isHistorical ? 'bg-gradient-to-b from-amber-50/50 to-white' : ''}`
-    }`}>
-      {/* Trending indicator */}
-      {trending && (
-        <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider z-10 ${
-          isDark ? 'bg-gold text-gray-dark' : 'bg-gradient-to-r from-teal to-teal-deep text-white'
-        }`}>
-          Trending
-        </div>
-      )}
-
-      {/* Share button */}
-      <button
-        onClick={handleShare}
-        className={`absolute top-2.5 right-2.5 p-1.5 rounded-full transition-all duration-200 z-20 opacity-0 group-hover:opacity-100 ${
-            isDark ? 'bg-slate-700/80 text-white/60 hover:text-gold hover:bg-slate-600' : 'bg-gray-100/80 text-gray-400 hover:text-teal hover:bg-white'
-        }`}
-      >
-        <Share2 className="w-3 h-3" />
-      </button>
-
-      {/* Clickable Area */}
-      <div
-        onClick={() => router.push(`/creator/${id}`)}
-        className="cursor-pointer w-full flex flex-col items-center"
-      >
-        {/* Avatar with ring */}
-        <div className={`relative mb-3 rounded-full ${
-          isDark
-            ? 'p-[2px] bg-gradient-to-br from-gold/60 to-teal/60'
-            : `p-[2px] ${isHistorical ? 'bg-gradient-to-br from-amber-300/60 to-slate-400/60' : 'bg-gradient-to-br from-teal/40 to-gold/40'}`
-        }`}>
-          <div className="rounded-full p-0.5 bg-white dark:bg-slate-900">
-            <img
-              src={imgSrc}
-              alt={displayName}
-              className={`w-[72px] h-[72px] rounded-full object-cover bg-gray-200 ${isHistorical ? 'sepia-[.3]' : ''}`}
-              onError={() => {
-                if (imgSrc === avatar && youtubeThumbnail) {
-                  setImgSrc(youtubeThumbnail);
-                } else if (imgSrc !== `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`) {
-                  setImgSrc(`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=random`);
-                }
-              }}
-            />
-          </div>
-          {verified && !isHistorical && (
-            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-gold border-slate-900 text-slate-900' : 'bg-teal text-white border-white'}`}>
-              <Check className="w-3 h-3" />
-            </div>
+    <>
+      <Link href={`/creator/${linkSlug}`} className="block">
+        <Card
+          className={cn(
+            "group relative overflow-hidden border-border/50 bg-card transition-all duration-300",
+            "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
           )}
-          {isPublicFigure && (
-            <div className={`absolute bottom-0 right-0 p-1 rounded-full border-2 ${isDark ? 'bg-gold border-slate-900 text-slate-900' : 'bg-gold text-teal-deep border-white'}`}>
-              <Star className="w-3 h-3 fill-current" />
-            </div>
-          )}
-        </div>
-
-        {/* Name */}
-        <h3 className={`font-bold text-sm text-center line-clamp-1 w-full mb-0.5 ${isDark ? 'text-white' : 'text-gray-dark'}`}>
-          {displayName}
-        </h3>
-
-        {/* Category / Lifespan */}
-        {isHistorical && lifespan ? (
-          <p className="text-[10px] text-gray-400 mb-1 font-mono">{lifespan}</p>
-        ) : (
-          <p className={`text-xs text-center capitalize ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
-              {displayCategory}
-          </p>
-        )}
-
-        {/* Follower count */}
-        {followerDisplay && (
-          <p className={`text-[10px] font-medium mb-1.5 ${isDark ? 'text-gold/60' : 'text-teal/60'}`}>
-            {followerDisplay} followers
-          </p>
-        )}
-        {!followerDisplay && !isHistorical && <div className="mb-1.5" />}
-
-        {/* Languages */}
-        <div className="flex flex-wrap justify-center gap-1 mb-2.5 px-1">
-          {languages?.slice(0, 2).map((lang) => (
-            <span key={lang} className={`text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider font-medium ${
-                isDark ? 'bg-slate-700/80 text-slate-300 border border-slate-600/50' : 'bg-gray-50 text-gray-500 border border-gray-200/80'
-            }`}>
-              {lang.substring(0, 2)}
-            </span>
-          ))}
-          {(languages?.length || 0) > 2 && (
-            <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium ${
-                isDark ? 'bg-slate-700/80 text-slate-300 border border-slate-600/50' : 'bg-gray-50 text-gray-500 border border-gray-200/80'
-            }`}>
-              +{(languages?.length || 0) - 2}
-            </span>
-          )}
-        </div>
-
-        {/* Note */}
-        {note && (
-          <p className={`text-[10px] text-center line-clamp-2 mb-3 h-8 leading-tight ${isDark ? 'text-amber-500/60' : 'text-teal-deep/60'}`}>
-              {note}
-          </p>
-        )}
-        {!note && <div className="mb-3 h-8" />}
-      </div>
-
-      {/* Follow Button */}
-      <div className="w-full mt-auto relative z-10">
-        {showUnlock ? (
-          <Button variant="secondary" size="sm" className="w-full text-xs rounded-full h-8">
-            <Lock className="w-3 h-3 mr-1" /> Unlock
-          </Button>
-        ) : (
-          <Button
-            variant={following ? "default" : "outline"}
-            size="sm"
-            disabled={followLoading}
-            className={`w-full text-xs rounded-full h-9 font-semibold active:scale-95 transition-all duration-200 ${
-              following
-                ? `${isDark ? 'bg-gold hover:bg-gold-dark text-gray-dark shadow-sm shadow-gold/20' : 'bg-gradient-to-r from-gold to-gold-dark text-gray-dark shadow-sm shadow-gold/20'}`
-                : `${isDark ? 'border-gold/40 text-gold hover:bg-gold/10 hover:border-gold/60' : 'border-teal/40 text-teal hover:bg-teal/5 hover:border-teal/60'}`
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              trackInteraction('follow_button_click');
-              const canProceed = trackAction('follow');
-              if (canProceed) handleFollowAction();
-            }}
-          >
-            {following ? (
-              <span className="flex items-center justify-center gap-1">
-                Following <Check className="w-3 h-3" />
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-1">
-                Follow <Plus className="w-3 h-3" />
-              </span>
+        >
+          {/* Top gradient accent bar */}
+          <div
+            className={cn(
+              "h-1.5 w-full",
+              isHistorical
+                ? "bg-gradient-to-r from-muted-foreground/40 to-muted-foreground/20"
+                : "bg-gradient-to-r from-primary via-primary/80 to-gold"
             )}
-          </Button>
-        )}
-      </div>
+          />
+
+          <CardContent className="p-5">
+            {/* Follow button - top-right */}
+            <div className="absolute right-4 top-8 z-10">
+              <Button
+                variant={following ? "default" : "outline"}
+                size="xs"
+                disabled={followLoading}
+                className={cn(
+                  "rounded-full font-semibold transition-all duration-200 active:scale-95",
+                  following
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "border-primary/40 text-primary hover:bg-primary/5 hover:border-primary/60"
+                )}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  trackInteraction("follow_button_click");
+                  const canProceed = trackAction("follow");
+                  if (canProceed) handleFollowAction();
+                }}
+              >
+                {following ? (
+                  <span className="flex items-center gap-0.5">
+                    <Check className="h-3 w-3" />
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-0.5">
+                    <Plus className="h-3 w-3" />
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            <div className="flex gap-4">
+              {/* Avatar */}
+              <Avatar
+                className={cn(
+                  "h-16 w-16 rounded-xl ring-2 ring-border",
+                  isHistorical && "sepia-[.3]"
+                )}
+              >
+                <AvatarImage
+                  src={resolvedAvatar}
+                  alt={displayName}
+                  className="object-cover"
+                />
+                <AvatarFallback className="rounded-xl bg-gradient-to-br from-primary to-gold text-lg font-bold text-primary-foreground">
+                  {(name || "U")[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="min-w-0 flex-1 pr-12">
+                {/* Name & Verification */}
+                <div className="flex items-center gap-1.5">
+                  <h3 className="truncate text-base font-semibold transition-colors group-hover:text-primary">
+                    {displayName}
+                  </h3>
+                  {verified && !isHistorical && (
+                    <CheckCircle className="h-4 w-4 shrink-0 fill-primary text-primary-foreground" />
+                  )}
+                </div>
+
+                {/* Category & Location */}
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span className="capitalize">{displayCategory}</span>
+                  {country && (
+                    <span className="flex items-center gap-0.5">
+                      {countryFlag && <span>{countryFlag}</span>}
+                      {location || country}
+                    </span>
+                  )}
+                </div>
+
+                {/* Bio */}
+                {shortBio && (
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                    {shortBio}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Topics */}
+            {topics.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {topics.slice(0, 3).map((topic) => (
+                  <Badge
+                    key={topic}
+                    variant="secondary"
+                    className="text-[11px] font-normal"
+                  >
+                    {topic}
+                  </Badge>
+                ))}
+                {topics.length > 3 && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[11px] font-normal"
+                  >
+                    +{topics.length - 3}
+                  </Badge>
+                )}
+              </div>
+            )}
+
+            {/* Bottom Stats & Badges */}
+            <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-3">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                {followerDisplay && (
+                  <span className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {followerDisplay}
+                  </span>
+                )}
+                {languages.length > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Globe className="h-3 w-3" />
+                    {languages.slice(0, 2).join(", ")}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {featured && (
+                  <Badge className="border-0 bg-gold/20 text-[10px] text-gold-deep dark:text-gold">
+                    <Star className="mr-0.5 h-2.5 w-2.5 fill-current" />
+                    Featured
+                  </Badge>
+                )}
+                {trending && (
+                  <Badge className="border-0 bg-destructive/10 text-[10px] text-destructive">
+                    <TrendingUp className="mr-0.5 h-2.5 w-2.5" />
+                    Trending
+                  </Badge>
+                )}
+                {isHistorical && (
+                  <Badge variant="secondary" className="text-[10px]">
+                    <Clock className="mr-0.5 h-2.5 w-2.5" />
+                    Historical
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <ShareModal
         creator={props as Creator}
@@ -249,6 +286,6 @@ export default function CreatorCard(props: CreatorCardProps) {
         onClose={() => setShowAuthGate(false)}
         triggerAction="follow"
       />
-    </div>
+    </>
   );
 }

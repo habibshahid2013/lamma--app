@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import SearchScreen from "@/components/main/SearchScreen";
+import { redirect } from "next/navigation";
 
 export default function SearchPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
-      <SearchScreen />
-    </Suspense>
-  );
+  redirect("/scholars");
 }

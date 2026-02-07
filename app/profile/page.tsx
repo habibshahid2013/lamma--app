@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import CreatorProfile from "@/components/main/CreatorProfile";
 import UserProfile from "@/components/main/UserProfile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfilePage() {
   const { user, userData, loading } = useAuth();
@@ -18,8 +19,12 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Skeleton className="h-20 w-20 rounded-full" />
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-3 w-32" />
+        </div>
       </div>
     );
   }
@@ -31,6 +36,6 @@ export default function ProfilePage() {
   // But per request "Sign Out" is priority, so let's stick to UserProfile which handles general account stuff
   // and maybe link to their creator page if they are one.
   // Actually, let's keep it simple: Everyone sees UserProfile which has "Sign Out".
-  
+
   return <UserProfile />;
 }

@@ -2,33 +2,52 @@
 
 export function SkeletonCreatorCard() {
   return (
-    <div className="flex flex-col items-center p-3.5 sm:p-4 rounded-2xl border border-gray-100 w-[168px] sm:w-48 flex-shrink-0 bg-white animate-pulse shadow-[0_2px_16px_-4px_rgba(0,0,0,0.05)]">
-      {/* Avatar with ring */}
-      <div className="w-[76px] h-[76px] rounded-full bg-gradient-to-br from-gray-200 to-gray-100 mb-3 ring-2 ring-gray-100" />
-      {/* Name */}
-      <div className="h-4 w-24 bg-gray-200 rounded-full mb-1.5" />
-      {/* Category */}
-      <div className="h-3 w-16 bg-gray-100 rounded-full mb-2" />
-      {/* Language badges */}
-      <div className="flex gap-1.5 mb-2.5">
-        <div className="h-4 w-8 bg-gray-100 rounded-md" />
-        <div className="h-4 w-8 bg-gray-100 rounded-md" />
+    <div className="overflow-hidden rounded-xl border border-border/50 bg-card animate-pulse">
+      {/* Top gradient accent bar */}
+      <div className="h-1.5 w-full bg-muted" />
+
+      <div className="p-5">
+        <div className="flex gap-4">
+          {/* Avatar */}
+          <div className="h-16 w-16 shrink-0 rounded-xl bg-muted" />
+
+          <div className="min-w-0 flex-1 space-y-2">
+            {/* Name */}
+            <div className="h-5 w-32 rounded bg-muted" />
+            {/* Category & location */}
+            <div className="h-3 w-24 rounded bg-muted" />
+            {/* Bio line 1 */}
+            <div className="h-3 w-full rounded bg-muted" />
+            {/* Bio line 2 */}
+            <div className="h-3 w-3/4 rounded bg-muted" />
+          </div>
+        </div>
+
+        {/* Topic badges */}
+        <div className="mt-3 flex gap-1.5">
+          <div className="h-5 w-14 rounded-full bg-muted" />
+          <div className="h-5 w-16 rounded-full bg-muted" />
+          <div className="h-5 w-12 rounded-full bg-muted" />
+        </div>
+
+        {/* Bottom stats bar */}
+        <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-3">
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-12 rounded bg-muted" />
+            <div className="h-3 w-16 rounded bg-muted" />
+          </div>
+          <div className="h-5 w-16 rounded-full bg-muted" />
+        </div>
       </div>
-      {/* Spacer for note area */}
-      <div className="h-8 mb-3" />
-      {/* Button */}
-      <div className="w-full h-9 bg-gray-100 rounded-full" />
     </div>
   );
 }
 
 export function SkeletonCreatorGrid({ count = 4 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex justify-center">
-          <SkeletonCreatorCard />
-        </div>
+        <SkeletonCreatorCard key={i} />
       ))}
     </div>
   );
@@ -36,7 +55,7 @@ export function SkeletonCreatorGrid({ count = 4 }: { count?: number }) {
 
 export function SkeletonCreatorRow({ count = 3 }: { count?: number }) {
   return (
-    <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCreatorCard key={i} />
       ))}

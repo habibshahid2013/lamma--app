@@ -1,95 +1,93 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
-import BottomNav from "../ui/BottomNav";
-import CreatorCard from "../ui/CreatorCard";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import CreatorCard from "../ui/CreatorCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreatorsByIds, useCreators } from "@/hooks/useCreators";
 import { useFollow } from "@/hooks/useFollow";
+import { Users, Search, Heart } from "lucide-react";
 
 export default function FollowingList() {
-  const router = useRouter();
   const { userData, loading: authLoading } = useAuth();
   const { isFollowing, toggleFollow } = useFollow();
-  
+
   // Real Data: Get IDs from user data
   const followingIds = userData?.following || [];
-  
+
   // Fetch Followed Creators
   const { creators: followingCreators, loading: followingLoading } = useCreatorsByIds(followingIds);
-  
+
   // Fetch Suggested Creators (Public Figures + not already following)
   const { creators: publicFigures } = useCreators({ category: 'public_figure', limitCount: 10 });
-  const suggestedCreators = publicFigures.filter(c => !isFollowing(c.id)).slice(0, 5);
+  const suggestedCreators = publicFigures.filter(c => !isFollowing(c.id)).slice(0, 6);
 
   const isLoading = authLoading || followingLoading;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-20">
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 p-4 flex items-center">
-        <button onClick={() => router.back()} className="mr-4">
-          <ArrowLeft className="w-6 h-6 text-gray-dark" />
-        </button>
-        <h1 className="font-bold text-xl text-gray-dark">Following</h1>
-      </header>
-
-      {/* Status Banner */}
-      <div className="bg-teal-light px-4 py-3 flex items-center justify-between text-sm">
-        <span className="text-teal-deep font-medium">
-          Following {followingIds.length} creators
-        </span>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Following</h1>
+        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+          <Users className="h-4 w-4" />
+          <span>Following {followingIds.length} scholar{followingIds.length !== 1 ? "s" : ""}</span>
+        </div>
       </div>
 
-      <main className="flex-1 overflow-y-auto px-4 py-6">
-        {isLoading ? (
-           <div className="grid grid-cols-2 gap-4 mb-8">
-             {[1, 2].map(i => (
-               <div key={i} className="h-56 bg-gray-100 rounded-2xl animate-pulse" />
-             ))}
-           </div>
-        ) : followingCreators.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {followingCreators.map(creator => (
-              <CreatorCard 
-                key={creator.id} 
-                {...creator} 
-                isFollowing={true} // explicit since we are in following list
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-48 rounded-xl" />
+          ))}
+        </div>
+      ) : followingCreators.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {followingCreators.map(creator => (
+            <CreatorCard
+              key={creator.id}
+              {...creator}
+              isFollowing={true}
+              onFollow={() => toggleFollow(creator.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-border/50 bg-card p-12 text-center mb-12">
+          <Heart className="mx-auto h-12 w-12 text-muted-foreground/30" />
+          <h3 className="mt-4 text-lg font-semibold">No one followed yet</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Start following scholars to see them here.</p>
+          <Button variant="outline" className="mt-4 rounded-full" asChild>
+            <Link href="/scholars">Explore Scholars</Link>
+          </Button>
+        </div>
+      )}
+
+      {/* Suggested Section */}
+      {suggestedCreators.length > 0 && (
+        <section>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Suggested for You</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Discover more scholars</p>
+            </div>
+            <Button variant="outline" className="rounded-full gap-2" asChild>
+              <Link href="/scholars"><Search className="h-4 w-4" />Browse All</Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {suggestedCreators.map(creator => (
+              <CreatorCard
+                key={creator.id}
+                {...creator}
+                isFollowing={isFollowing(creator.id)}
                 onFollow={() => toggleFollow(creator.id)}
               />
             ))}
           </div>
-        ) : (
-          <div className="text-center py-10 text-gray-500 text-sm mb-8">
-            You are not following anyone yet.
-          </div>
-        )}
-
-        <section>
-          <h3 className="font-bold text-gray-dark mb-4">Suggested for you</h3>
-           <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
-            {suggestedCreators.map(creator => (
-               <CreatorCard 
-                 key={creator.id} 
-                 {...creator} 
-                 isFollowing={isFollowing(creator.id)}
-                 onFollow={() => toggleFollow(creator.id)}
-               />
-            ))}
-             {/* Locked state example */}
-            <CreatorCard
-              id="locked"
-              name="Exclusive Scholar"
-              category="scholar"
-              avatar="https://ui-avatars.com/api/?name=Exclusive+Scholar&background=0D7377&color=fff"
-              showUnlock={true}
-            />
-          </div>
         </section>
-      </main>
-
-      <BottomNav />
+      )}
     </div>
   );
 }

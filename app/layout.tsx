@@ -1,13 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Inter, Amiri } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import EngagementWrapper from "@/components/EngagementWrapper";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const amiri = Amiri({
+  weight: ["400", "700"],
+  subsets: ["arabic"],
+  variable: "--font-amiri",
 });
 
 export const viewport: Viewport = {
@@ -20,10 +29,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://lamma.app'),
   title: {
-    default: 'Lamma+ | Discover Islamic Scholars',
+    default: 'Lamma+ | Discover Islamic Scholars Worldwide',
     template: '%s | Lamma+',
   },
-  description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.',
+  description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide. Gather in faith.',
   keywords: ['Islamic scholars', 'Islamic education', 'Muslim scholars', 'Islamic content', 'faith learning'],
   authors: [{ name: 'Lamma+' }],
   creator: 'Lamma+',
@@ -41,7 +50,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: 'Lamma+ | Discover Islamic Scholars',
+    title: 'Lamma+ | Discover Islamic Scholars Worldwide',
     description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.',
     siteName: 'Lamma+',
     type: 'website',
@@ -57,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lamma+ | Discover Islamic Scholars',
+    title: 'Lamma+ | Discover Islamic Scholars Worldwide',
     description: 'Your gateway to Islamic knowledge. Discover, follow, and learn from scholars worldwide.',
     images: ['/og-image.png'],
   },
@@ -80,11 +89,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} antialiased font-sans`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${amiri.variable} font-sans antialiased`} suppressHydrationWarning>
         <AuthProvider>
           <EngagementWrapper>
-            {children}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </ThemeProvider>
           </EngagementWrapper>
         </AuthProvider>
         <Analytics />

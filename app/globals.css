@@ -1,217 +1,156 @@
 @import "tailwindcss";
-@config "../tailwind.config.ts";
+@import "tw-animate-css";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+@custom-variant dark (&:is(.dark *));
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-amiri);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+  /* Islamic-inspired custom colors */
+  --color-emerald: var(--emerald);
+  --color-emerald-light: var(--emerald-light);
+  --color-emerald-deep: var(--emerald-deep);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-deep: var(--gold-deep);
+  --color-indigo: var(--indigo-accent);
+  --color-ivory: var(--ivory);
+}
 
-    --primary: 182 80% 26%; /* Lamma Teal #0D7377 */
-    --primary-foreground: 210 40% 98%;
+:root {
+  --radius: 0.75rem;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+  /* Islamic-inspired Light Mode */
+  --background: oklch(0.975 0.005 90);
+  --foreground: oklch(0.15 0.02 260);
+  --card: oklch(0.995 0.003 90);
+  --card-foreground: oklch(0.15 0.02 260);
+  --popover: oklch(0.995 0.003 90);
+  --popover-foreground: oklch(0.15 0.02 260);
+  --primary: oklch(0.42 0.14 160);
+  --primary-foreground: oklch(0.98 0.005 90);
+  --secondary: oklch(0.93 0.01 90);
+  --secondary-foreground: oklch(0.25 0.02 260);
+  --muted: oklch(0.93 0.008 90);
+  --muted-foreground: oklch(0.5 0.02 260);
+  --accent: oklch(0.93 0.01 90);
+  --accent-foreground: oklch(0.25 0.02 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.88 0.015 90);
+  --input: oklch(0.88 0.015 90);
+  --ring: oklch(0.42 0.14 160);
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+  /* Custom Islamic palette */
+  --emerald: oklch(0.42 0.14 160);
+  --emerald-light: oklch(0.92 0.04 160);
+  --emerald-deep: oklch(0.32 0.12 160);
+  --gold: oklch(0.75 0.14 85);
+  --gold-light: oklch(0.95 0.04 85);
+  --gold-deep: oklch(0.62 0.14 85);
+  --indigo-accent: oklch(0.52 0.1 250);
+  --ivory: oklch(0.975 0.005 90);
+}
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+.dark {
+  --background: oklch(0.14 0.015 260);
+  --foreground: oklch(0.93 0.01 90);
+  --card: oklch(0.18 0.015 260);
+  --card-foreground: oklch(0.93 0.01 90);
+  --popover: oklch(0.18 0.015 260);
+  --popover-foreground: oklch(0.93 0.01 90);
+  --primary: oklch(0.62 0.16 160);
+  --primary-foreground: oklch(0.14 0.015 260);
+  --secondary: oklch(0.22 0.015 260);
+  --secondary-foreground: oklch(0.93 0.01 90);
+  --muted: oklch(0.22 0.015 260);
+  --muted-foreground: oklch(0.65 0.01 260);
+  --accent: oklch(0.22 0.015 260);
+  --accent-foreground: oklch(0.93 0.01 90);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.28 0.015 260);
+  --input: oklch(0.28 0.015 260);
+  --ring: oklch(0.62 0.16 160);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 182 80% 26%; /* Lamma Teal */
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 182 80% 26%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 182 80% 26%;
-  }
+  --emerald: oklch(0.62 0.16 160);
+  --emerald-light: oklch(0.25 0.06 160);
+  --emerald-deep: oklch(0.45 0.14 160);
+  --gold: oklch(0.78 0.14 85);
+  --gold-light: oklch(0.25 0.06 85);
+  --gold-deep: oklch(0.65 0.14 85);
+  --indigo-accent: oklch(0.62 0.1 250);
+  --ivory: oklch(0.14 0.015 260);
 }
 
 @layer base {
   * {
-    border-color: var(--border);
+    @apply border-border outline-ring/50;
   }
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    @apply bg-background text-foreground;
   }
 }
 
-@theme {
-  --font-sans: var(--font-inter);
-
-  /* LAMMA+ Official Brand Colors */
-  --color-teal: #0d7377;
-  --color-teal-deep: #1d4e5f;
-  --color-teal-light: #e6f4f4;
-
-  --color-gold: #f5b820;
-  --color-gold-light: #fef9e7;
-  --color-gold-dark: #d4a01a;
-
-  --color-gray-dark: #333333;
-  --color-gray-offwhite: #fafafa;
-  --color-gray-light: #f5f5f5;
-
-  /* Dark Mode Navy */
-  --color-navy: #0f172a;
-  --color-navy-card: #1e293b;
-  --color-navy-border: #334155;
+/* Geometric Islamic pattern for decorative backgrounds */
+.islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23167a6e' fill-opacity='0.06'%3E%3Cpath d='M30 0L60 30L30 60L0 30z M30 8L52 30L30 52L8 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-@layer components {
-  /* Primary Button (Gold) - Main CTA */
-  .btn-primary {
-    @apply bg-gold hover:bg-gold-dark text-gray-dark font-semibold py-2 px-4 rounded-lg transition-all shadow-sm;
-  }
-
-  /* Secondary Button (Navy) */
-  .btn-secondary {
-    @apply bg-navy hover:bg-navy-card text-white font-semibold py-2 px-4 rounded-lg border border-navy-border transition-all;
-  }
-
-  /* Teal Button - Primary Actions */
-  .btn-teal {
-    @apply bg-teal hover:bg-teal-deep text-white font-semibold py-2 px-4 rounded-lg transition-all shadow-sm;
-  }
-
-  /* Outline Button */
-  .btn-outline {
-    @apply bg-transparent border-2 border-teal text-teal hover:bg-teal hover:text-white font-semibold py-2 px-4 rounded-lg transition-all;
-  }
-
-  /* Card Component (Dark) */
-  .card-lamma {
-    @apply bg-navy-card border border-navy-border rounded-xl p-6 shadow-xl;
-  }
-
-  /* Card Component (Light) */
-  .card-lamma-light {
-    @apply bg-white border border-gray-light rounded-xl p-6 shadow-sm;
-  }
-
-  /* Card with hover effect */
-  .card-lamma-hover {
-    @apply bg-navy-card border border-navy-border rounded-xl p-6 shadow-xl
-           hover:border-gold/50 hover:shadow-gold/10 transition-all duration-300;
-  }
-
-  /* Topic/Tag pill */
-  .tag-pill {
-    @apply px-3 py-1 bg-navy-card text-white/80 rounded-full text-sm
-           border border-navy-border hover:border-teal hover:text-teal transition-all;
-  }
-
-  /* Tag pill light mode */
-  .tag-pill-light {
-    @apply px-3 py-1 bg-gray-offwhite text-gray-dark rounded-full text-sm
-           border border-gray-light hover:border-teal hover:text-teal transition-all;
-  }
-
-  /* Category badge */
-  .category-badge {
-    @apply px-3 py-1 bg-gold/20 text-gold rounded-full text-sm font-medium;
-  }
-
-  /* Admin card */
-  .admin-card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-light p-6;
-  }
-
-  /* Feature section with gold background */
-  .section-gold {
-    @apply bg-gold text-teal-deep;
-  }
-
-  /* Verified badge */
-  .verified-badge {
-    @apply bg-teal text-white p-1 rounded-full;
-  }
-
-  /* Safe area bottom padding for notch devices */
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 8px);
-  }
-
-  /* Hide scrollbar but allow scrolling */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Animated gradient background */
-  .gradient-animate {
-    background-size: 200% 200%;
-    animation: gradient-shift 6s ease infinite;
-  }
-
-  /* Glass card effect */
-  .glass-card {
-    @apply backdrop-blur-lg bg-white/70 border border-white/20 shadow-lg;
-  }
-
-  /* Elevated card with depth */
-  .card-elevated {
-    @apply bg-white rounded-2xl shadow-[0_2px_20px_-4px_rgba(13,115,119,0.12)] border border-gray-100/80;
-  }
-
-  /* Gradient text */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal to-teal-deep;
-  }
-
-  /* Featured section with mesh gradient */
-  .mesh-gradient {
-    background:
-      radial-gradient(ellipse at 20% 50%, rgba(13, 115, 119, 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, rgba(245, 184, 32, 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(29, 78, 95, 0.08) 0%, transparent 50%);
-  }
+.dark .islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2340c9a2' fill-opacity='0.05'%3E%3Cpath d='M30 0L60 30L30 60L0 30z M30 8L52 30L30 52L8 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.7 0.05 160);
+  border-radius: 3px;
+}
+
+/* Safe area bottom padding for notch devices */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
