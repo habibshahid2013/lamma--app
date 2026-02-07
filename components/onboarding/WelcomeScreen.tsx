@@ -23,7 +23,7 @@ export default function WelcomeScreen({ onNext }: WelcomeScreenProps) {
         </h2>
 
         <p className="text-white/60 mb-auto leading-relaxed max-w-xs">
-          Discover scholars and educators who inspire your journey
+          Discover scholars, educators, and creators who inspire your journey
         </p>
 
         <div className="w-full pb-10 space-y-4">

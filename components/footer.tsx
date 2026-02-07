@@ -40,10 +40,10 @@ export default function Footer() {
           <div>
             <h3 className="mb-3 text-sm font-semibold">{t("explore")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/scholars" className="hover:text-primary transition-colors">{t("allScholars")}</Link></li>
-              <li><Link href="/scholars?topic=Quran" className="hover:text-primary transition-colors">{t("quranTafsir")}</Link></li>
-              <li><Link href="/scholars?topic=Spirituality" className="hover:text-primary transition-colors">{t("spirituality")}</Link></li>
-              <li><Link href="/scholars?gender=female" className="hover:text-primary transition-colors">{t("womenScholars")}</Link></li>
+              <li><Link href="/discover" className="hover:text-primary transition-colors">{t("allCreators")}</Link></li>
+              <li><Link href="/discover?topic=Quran" className="hover:text-primary transition-colors">{t("quranTafsir")}</Link></li>
+              <li><Link href="/discover?topic=Spirituality" className="hover:text-primary transition-colors">{t("spirituality")}</Link></li>
+              <li><Link href="/discover?gender=female" className="hover:text-primary transition-colors">{t("womenVoices")}</Link></li>
             </ul>
           </div>
 

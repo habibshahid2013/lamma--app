@@ -34,9 +34,9 @@
       "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     },
     {
-      "name": "Discover Scholars",
-      "short_name": "Scholars",
-      "url": "/scholars",
+      "name": "Discover Creators",
+      "short_name": "Discover",
+      "url": "/discover",
       "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     }
   ],

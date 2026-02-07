@@ -16,6 +16,10 @@ import {
   Users,
   Plus,
   Check,
+  Youtube,
+  Podcast,
+  BookOpen,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Creator } from "@/lib/types/creator";
@@ -38,6 +42,19 @@ function formatFollowers(count?: number): string | null {
   if (count >= 1_000) return `${(count / 1_000).toFixed(0)}K`;
   return count.toString();
 }
+
+const categoryColorMap: Record<string, string> = {
+  scholar: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+  speaker: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+  educator: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  reciter: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  author: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  activist: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+  influencer: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+  public_figure: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400",
+  youth_leader: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+  podcaster: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+};
 
 export default function CreatorCard(props: CreatorCardProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -198,7 +215,15 @@ export default function CreatorCard(props: CreatorCardProps) {
 
                 {/* Category & Location */}
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="capitalize">{displayCategory}</span>
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-[10px] font-medium capitalize",
+                      category && categoryColorMap[category]
+                    )}
+                  >
+                    {displayCategory}
+                  </Badge>
                   {country && (
                     <span className="flex items-center gap-0.5">
                       {countryFlag && <span>{countryFlag}</span>}
@@ -235,6 +260,24 @@ export default function CreatorCard(props: CreatorCardProps) {
                   >
                     +{topics.length - 3}
                   </Badge>
+                )}
+              </div>
+            )}
+
+            {/* Content Type Indicators */}
+            {(content?.youtube || content?.podcast || (content?.books?.length || 0) > 0 || (content?.courses?.length || 0) > 0) && (
+              <div className="mt-2 flex items-center gap-2">
+                {content?.youtube && (
+                  <Youtube className="h-3.5 w-3.5 text-red-500" aria-label="YouTube" />
+                )}
+                {content?.podcast && (
+                  <Podcast className="h-3.5 w-3.5 text-purple-500" aria-label="Podcast" />
+                )}
+                {(content?.books?.length || 0) > 0 && (
+                  <BookOpen className="h-3.5 w-3.5 text-amber-600" aria-label="Books" />
+                )}
+                {(content?.courses?.length || 0) > 0 && (
+                  <GraduationCap className="h-3.5 w-3.5 text-blue-500" aria-label="Courses" />
                 )}
               </div>
             )}

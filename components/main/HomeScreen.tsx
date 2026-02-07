@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import CreatorCard from "../ui/CreatorCard";
-import WomenScholarsRow from "./WomenScholarsRow";
+import WomenVoicesRow from "./WomenScholarsRow";
 import HistoricalSection from "./HistoricalSection";
 import SurpriseMeButton from "../ui/SurpriseMeButton";
-import { useCreators, useFeaturedCreators } from "@/hooks/useCreators";
+import AnimatedSection from "../ui/AnimatedSection";
+import StaggerGrid, { StaggerItem } from "../ui/StaggerGrid";
+import {
+  useCreators,
+  useFeaturedCreators,
+  useTrendingCreators,
+  useCategoryCount,
+  useContentTypeCounts,
+} from "@/hooks/useCreators";
 import { useFollow } from "@/hooks/useFollow";
 import { SkeletonCreatorRow } from "../ui/SkeletonCard";
 import {
@@ -24,74 +33,47 @@ import {
   GraduationCap,
   Globe,
   History,
+  Mic,
+  Youtube,
+  Podcast,
+  Crown,
+  Megaphone,
+  Pen,
+  MessageCircle,
+  UserCheck,
+  Flame,
+  Compass,
+  Zap,
 } from "lucide-react";
 
-// ── Topics data (matching TopicSection + prototype style) ──────────────
+// ── Category data ───────────────────────────────────────────────────
+const CATEGORIES = [
+  { id: "scholar", name: "Scholars", icon: BookOpen, color: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" },
+  { id: "speaker", name: "Speakers", icon: Mic, color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400" },
+  { id: "educator", name: "Educators", icon: GraduationCap, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+  { id: "reciter", name: "Reciters", icon: BookOpen, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
+  { id: "author", name: "Authors", icon: Pen, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+  { id: "activist", name: "Activists", icon: Megaphone, color: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400" },
+  { id: "influencer", name: "Influencers", icon: Zap, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400" },
+  { id: "public_figure", name: "Public Figures", icon: UserCheck, color: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400" },
+  { id: "youth_leader", name: "Youth Leaders", icon: Sparkles, color: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400" },
+  { id: "podcaster", name: "Podcasters", icon: Podcast, color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" },
+];
+
+// ── Topics data (expanded from 8 → 12) ─────────────────────────────
 const TOPICS = [
-  {
-    id: "spirituality",
-    name: "Spirituality",
-    arabicName: "الروحانية",
-    icon: "Heart",
-    description: "Inner purification, dhikr, tawbah, and the path to nearness to Allah.",
-    scholarCount: 6,
-  },
-  {
-    id: "quran",
-    name: "Quran",
-    arabicName: "القرآن",
-    icon: "BookOpen",
-    description: "Tafsir, tajweed, Quran memorization, and sciences of the Quran.",
-    scholarCount: 8,
-  },
-  {
-    id: "history",
-    name: "History",
-    arabicName: "التاريخ",
-    icon: "Clock",
-    description: "Islamic civilization, golden age, and lessons from our past.",
-    scholarCount: 4,
-  },
-  {
-    id: "family",
-    name: "Family",
-    arabicName: "الأسرة",
-    icon: "Users",
-    description: "Marriage, parenting, family rights, and building strong households.",
-    scholarCount: 5,
-  },
-  {
-    id: "fiqh",
-    name: "Fiqh",
-    arabicName: "الفقه",
-    icon: "Scale",
-    description: "Jurisprudence, rulings, schools of thought, and practical Islam.",
-    scholarCount: 7,
-  },
-  {
-    id: "social_justice",
-    name: "Justice",
-    arabicName: "العدالة",
-    icon: "Shield",
-    description: "Social justice, human rights, community activism, and civic duty.",
-    scholarCount: 4,
-  },
-  {
-    id: "youth",
-    name: "Youth",
-    arabicName: "الشباب",
-    icon: "Sparkles",
-    description: "Identity, faith in modern life, mentorship, and youth empowerment.",
-    scholarCount: 5,
-  },
-  {
-    id: "seerah",
-    name: "Seerah",
-    arabicName: "السيرة",
-    icon: "Star",
-    description: "Life of the Prophet (PBUH), companions, and prophetic traditions.",
-    scholarCount: 6,
-  },
+  { id: "spirituality", name: "Spirituality", arabicName: "الروحانية", icon: "Heart", description: "Inner purification, dhikr, tawbah, and the path to nearness to Allah." },
+  { id: "quran", name: "Quran", arabicName: "القرآن", icon: "BookOpen", description: "Tafsir, tajweed, Quran memorization, and sciences of the Quran." },
+  { id: "history", name: "History", arabicName: "التاريخ", icon: "Clock", description: "Islamic civilization, golden age, and lessons from our past." },
+  { id: "family", name: "Family", arabicName: "الأسرة", icon: "Users", description: "Marriage, parenting, family rights, and building strong households." },
+  { id: "fiqh", name: "Fiqh", arabicName: "الفقه", icon: "Scale", description: "Jurisprudence, rulings, schools of thought, and practical Islam." },
+  { id: "social_justice", name: "Justice", arabicName: "العدالة", icon: "Shield", description: "Social justice, human rights, community activism, and civic duty." },
+  { id: "youth", name: "Youth", arabicName: "الشباب", icon: "Sparkles", description: "Identity, faith in modern life, mentorship, and youth empowerment." },
+  { id: "seerah", name: "Seerah", arabicName: "السيرة", icon: "Star", description: "Life of the Prophet (PBUH), companions, and prophetic traditions." },
+  { id: "community", name: "Community", arabicName: "مجتمع", icon: "Globe", description: "Building strong communities, outreach, and social cohesion." },
+  { id: "dawah", name: "Dawah", arabicName: "دعوة", icon: "Megaphone", description: "Inviting others to Islam, interfaith dialogue, and outreach." },
+  { id: "leadership", name: "Leadership", arabicName: "قيادة", icon: "Crown", description: "Organizational leadership, civic engagement, and community building." },
+  { id: "education", name: "Education", arabicName: "تعليم", icon: "GraduationCap", description: "Teaching methodologies, Islamic schools, and lifelong learning." },
 ];
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -103,56 +85,97 @@ const iconMap: Record<string, React.ReactNode> = {
   Clock: <Clock className="h-5 w-5" />,
   Users: <Users className="h-5 w-5" />,
   Sparkles: <Sparkles className="h-5 w-5" />,
+  Globe: <Globe className="h-5 w-5" />,
+  Megaphone: <Megaphone className="h-5 w-5" />,
+  Crown: <Crown className="h-5 w-5" />,
+  GraduationCap: <GraduationCap className="h-5 w-5" />,
+};
+
+// Content type cards data
+const CONTENT_TYPES = [
+  { id: "youtube", name: "YouTube Channels", icon: Youtube, color: "text-red-500", bgColor: "bg-red-50 dark:bg-red-950/20" },
+  { id: "podcast", name: "Podcasts", icon: Podcast, color: "text-purple-500", bgColor: "bg-purple-50 dark:bg-purple-950/20" },
+  { id: "books", name: "Books & Publications", icon: BookOpen, color: "text-amber-600", bgColor: "bg-amber-50 dark:bg-amber-950/20" },
+  { id: "courses", name: "Online Courses", icon: GraduationCap, color: "text-blue-500", bgColor: "bg-blue-50 dark:bg-blue-950/20" },
+];
+
+// ── Hero stagger variants ───────────────────────────────────────────
+const heroStagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+const heroItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 // ── Component ──────────────────────────────────────────────────────────
 export default function HomeScreen() {
-  const [showHistorical, setShowHistorical] = useState(false);
+  const [showHistorical, setShowHistorical] = useState(true);
 
   // Firebase data hooks
   const { isFollowing, toggleFollow } = useFollow();
   const { creators: featuredData, loading: loadingFeatured } = useFeaturedCreators(20);
-  const { creators: publicFiguresData, loading: loadingPublic } = useCreators({
-    category: "public_figure",
-    limitCount: 10,
-  });
+  const { creators: trendingData, loading: loadingTrending } = useTrendingCreators(10);
+  const { counts: categoryCounts, loading: loadingCategories } = useCategoryCount();
+  const { counts: contentCounts, loading: loadingContent } = useContentTypeCounts();
 
-  // Derived filtered lists
+  // Derived filtered lists — include all categories
   const featuredCreators = featuredData
-    .filter((c) => !c.isHistorical && c.category !== "public_figure")
+    .filter((c) => !c.isHistorical)
     .slice(0, 6);
 
-  const publicFigures = publicFiguresData;
+  const trendingCreators = trendingData
+    .filter((c) => !c.isHistorical)
+    .slice(0, 8);
 
   return (
     <>
       {/* ── Hero Section ─────────────────────────────────────────────── */}
       <section className="islamic-pattern relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="font-serif text-2xl text-primary/60 mb-2" dir="rtl">
+          <motion.div
+            className="mx-auto max-w-3xl text-center"
+            variants={heroStagger}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.p
+              variants={heroItem}
+              className="font-serif text-2xl text-primary/60 mb-2"
+              dir="rtl"
+            >
               اجتمعوا في الإيمان
-            </p>
+            </motion.p>
 
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Discover the Scholars{" "}
-              <span className="bg-gradient-to-r from-teal to-gold bg-clip-text text-transparent">
-                Who Illuminate
+            <motion.h1
+              variants={heroItem}
+              className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
+            >
+              Discover the Voices{" "}
+              <span className="bg-gradient-to-r from-primary to-gold bg-clip-text text-transparent">
+                That Inspire
               </span>{" "}
-              Your Path
-            </h1>
+              Your Journey
+            </motion.h1>
 
-            <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-              Your gateway to Islamic knowledge. Explore verified scholars,
-              find the right teacher for your journey, and connect with
-              centuries of wisdom.
-            </p>
+            <motion.p
+              variants={heroItem}
+              className="mt-6 text-lg text-muted-foreground sm:text-xl"
+            >
+              Your gathering place for Islamic knowledge and culture. Explore
+              scholars, educators, podcasters, and creators from around the
+              world.
+            </motion.p>
 
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <motion.div
+              variants={heroItem}
+              className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+            >
               <Button size="lg" className="gap-2 rounded-full px-8" asChild>
-                <Link href="/search">
-                  <Search className="h-4 w-4" />
-                  Explore Scholars
+                <Link href="/discover">
+                  <Compass className="h-4 w-4" />
+                  Explore Creators
                 </Link>
               </Button>
               <Button
@@ -166,158 +189,227 @@ export default function HomeScreen() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-            </div>
+            </motion.div>
 
-            <div className="mt-12 flex items-center justify-center gap-8 text-sm text-muted-foreground">
+            <motion.div
+              variants={heroItem}
+              className="mt-12 flex items-center justify-center gap-8 text-sm text-muted-foreground"
+            >
               <div className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-teal" />
+                <Users className="h-4 w-4 text-primary" />
                 <span>
-                  <strong className="text-foreground">12+</strong> Scholars
+                  <strong className="text-foreground">500+</strong> Creators
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4 text-teal" />
+                <Globe className="h-4 w-4 text-primary" />
                 <span>
-                  <strong className="text-foreground">8</strong> Topics
+                  <strong className="text-foreground">12</strong> Topics
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-teal" />
+                <Flame className="h-4 w-4 text-primary" />
                 <span>
-                  <strong className="text-foreground">Global</strong> Reach
+                  <strong className="text-foreground">10</strong> Categories
                 </span>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* ── Topics Grid ──────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      {/* ── Explore by Category ────────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-10 text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">Explore by Topic</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Explore by Category</h2>
           <p className="mt-2 text-muted-foreground">
-            Browse scholars by their areas of expertise
+            Find creators across every discipline
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {TOPICS.map((topic) => (
-            <Link
-              key={topic.id}
-              href={`/search?q=${encodeURIComponent(topic.name)}`}
-              className="group rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-teal/30 hover:shadow-md"
-            >
-              <div className="flex items-start gap-3">
-                <div className="rounded-lg bg-teal/10 p-2 text-teal transition-colors group-hover:bg-teal group-hover:text-white">
-                  {iconMap[topic.icon] || <BookOpen className="h-5 w-5" />}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-sm font-semibold group-hover:text-teal transition-colors">
-                    {topic.name}
-                  </h3>
-                  <p
-                    className="mt-0.5 text-[11px] font-serif text-muted-foreground/70"
-                    dir="rtl"
-                  >
-                    {topic.arabicName}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
-                {topic.description}
-              </p>
-              <div className="mt-2 text-[11px] text-teal font-medium">
-                {topic.scholarCount} scholars &rarr;
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+        <StaggerGrid className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const count = categoryCounts[cat.id] || 0;
+            return (
+              <StaggerItem key={cat.id}>
+                <Link
+                  href={`/discover?category=${cat.id}`}
+                  className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
+                >
+                  <div className={`rounded-lg p-2.5 transition-colors ${cat.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium text-center group-hover:text-primary transition-colors">
+                    {cat.name}
+                  </span>
+                  {!loadingCategories && count > 0 && (
+                    <span className="text-[11px] text-muted-foreground">
+                      {count} creators
+                    </span>
+                  )}
+                </Link>
+              </StaggerItem>
+            );
+          })}
+        </StaggerGrid>
+      </AnimatedSection>
 
-      {/* ── Featured Scholars ────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      {/* ── Trending Now ───────────────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-10 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold sm:text-3xl">Featured Scholars</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">Trending Now</h2>
             <p className="mt-2 text-muted-foreground">
-              Leading voices in Islamic scholarship
+              Popular creators this week
             </p>
           </div>
           <Button variant="outline" className="gap-2 rounded-full" asChild>
-            <Link href="/search">
+            <Link href="/discover">
               View All
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+          {loadingTrending ? (
+            <SkeletonCreatorRow count={4} />
+          ) : (
+            trendingCreators.map((creator) => (
+              <div key={creator.id} className="flex-shrink-0 snap-start">
+                <CreatorCard
+                  {...creator}
+                  isFollowing={isFollowing(creator.id)}
+                  onFollow={() => toggleFollow(creator.id)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+      </AnimatedSection>
+
+      {/* ── Browse by Content Type ─────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">Browse by Content Type</h2>
+          <p className="mt-2 text-muted-foreground">
+            Find the format that works for you
+          </p>
+        </div>
+        <StaggerGrid className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {CONTENT_TYPES.map((ct) => {
+            const Icon = ct.icon;
+            const count = contentCounts[ct.id as keyof typeof contentCounts] || 0;
+            return (
+              <StaggerItem key={ct.id}>
+                <Link
+                  href={`/discover?content=${ct.id}`}
+                  className={`group flex flex-col items-center gap-3 rounded-xl border border-border/50 p-6 transition-all hover:border-primary/30 hover:shadow-md ${ct.bgColor}`}
+                >
+                  <Icon className={`h-8 w-8 ${ct.color}`} />
+                  <span className="text-sm font-semibold text-center group-hover:text-primary transition-colors">
+                    {ct.name}
+                  </span>
+                  {!loadingContent && count > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {count} creators
+                    </span>
+                  )}
+                </Link>
+              </StaggerItem>
+            );
+          })}
+        </StaggerGrid>
+      </AnimatedSection>
+
+      {/* ── Topics Grid (expanded) ─────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">Explore by Topic</h2>
+          <p className="mt-2 text-muted-foreground">
+            Browse creators by their areas of expertise
+          </p>
+        </div>
+        <StaggerGrid className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {TOPICS.map((topic) => (
+            <StaggerItem key={topic.id}>
+              <Link
+                href={`/discover?topic=${encodeURIComponent(topic.name)}`}
+                className="group rounded-xl border border-border/50 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                    {iconMap[topic.icon] || <BookOpen className="h-5 w-5" />}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold group-hover:text-primary transition-colors">
+                      {topic.name}
+                    </h3>
+                    <p
+                      className="mt-0.5 text-[11px] font-serif text-muted-foreground/70"
+                      dir="rtl"
+                    >
+                      {topic.arabicName}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                  {topic.description}
+                </p>
+              </Link>
+            </StaggerItem>
+          ))}
+        </StaggerGrid>
+      </AnimatedSection>
+
+      {/* ── Featured Voices ────────────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-10 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold sm:text-3xl">Featured Voices</h2>
+            <p className="mt-2 text-muted-foreground">
+              Leading creators across the Muslim community
+            </p>
+          </div>
+          <Button variant="outline" className="gap-2 rounded-full" asChild>
+            <Link href="/discover">
+              View All
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <StaggerGrid className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {loadingFeatured ? (
             <div className="col-span-full">
               <SkeletonCreatorRow count={3} />
             </div>
           ) : (
             featuredCreators.map((creator) => (
-              <div key={creator.id} className="flex justify-center">
+              <StaggerItem key={creator.id} className="flex justify-center">
                 <CreatorCard
                   {...creator}
                   isFollowing={isFollowing(creator.id)}
                   onFollow={() => toggleFollow(creator.id)}
                 />
-              </div>
+              </StaggerItem>
             ))
           )}
-        </div>
-      </section>
+        </StaggerGrid>
+      </AnimatedSection>
 
-      {/* ── Muslim Voices (Public Figures) ───────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="mb-10 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold sm:text-3xl">Muslim Voices</h2>
-            <p className="mt-2 text-muted-foreground">
-              Public figures &amp; leaders inspiring the ummah
-            </p>
-          </div>
-          <Button variant="outline" className="gap-2 rounded-full" asChild>
-            <Link href="/search?category=public_figure">
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {loadingPublic ? (
-            <div className="col-span-full">
-              <SkeletonCreatorRow count={3} />
-            </div>
-          ) : (
-            publicFigures.slice(0, 6).map((creator) => (
-              <div key={creator.id} className="flex justify-center">
-                <CreatorCard
-                  {...creator}
-                  isFollowing={isFollowing(creator.id)}
-                  onFollow={() => toggleFollow(creator.id)}
-                />
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      {/* ── Women Scholars ───────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      {/* ── Women in the Community ─────────────────────────────────── */}
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-6 text-center sm:text-left">
-          <h2 className="text-2xl font-bold sm:text-3xl">Women Scholars</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Women in the Community</h2>
           <p className="mt-2 text-muted-foreground">
-            Inspiring female scholarship &amp; leadership
+            Inspiring women across every field
           </p>
         </div>
-        <WomenScholarsRow />
-      </section>
+        <WomenVoicesRow />
+      </AnimatedSection>
 
       {/* ── Historical Scholars ──────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold sm:text-3xl">Giants of History</h2>
@@ -335,79 +427,79 @@ export default function HomeScreen() {
           </Button>
         </div>
         {showHistorical && <HistoricalSection />}
-        {!showHistorical && (
-          <p className="text-center text-sm text-muted-foreground py-8 border border-dashed border-border rounded-xl">
-            Toggle &quot;Show&quot; above to reveal classical scholars
-          </p>
-        )}
-      </section>
+      </AnimatedSection>
 
       {/* ── Why Lamma+ ───────────────────────────────────────────────── */}
-      <section className="border-y border-border/50 bg-muted/20 islamic-pattern">
+      <AnimatedSection className="border-y border-border/50 bg-muted/20 islamic-pattern">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <span className="mb-4 inline-block rounded-full bg-teal/10 px-3 py-1 text-sm font-medium text-teal border-0">
+            <span className="mb-4 inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary border-0">
               Why Lamma+?
             </span>
             <h2 className="text-2xl font-bold sm:text-3xl">
-              Finding the Right Teacher Matters
+              Your Gathering Place for Knowledge &amp; Culture
             </h2>
             <p className="mt-4 text-muted-foreground">
-              In a world of unverified content and AI-generated fatwas, Lamma+
-              connects you with real, verified scholars who carry authentic
-              chains of knowledge.
+              Lamma+ brings together scholars, educators, speakers, and creators
+              from around the Muslim world &mdash; all in one place.
             </p>
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10">
-                <Shield className="h-6 w-6 text-teal" />
+          <StaggerGrid className="mt-12 grid gap-6 sm:grid-cols-3">
+            <StaggerItem>
+              <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Verified Profiles</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Creators with transparent credentials, verified qualifications,
+                  and authentic content.
+                </p>
               </div>
-              <h3 className="font-semibold">Verified Credentials</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Scholars with transparent qualifications, ijazah chains, and
-                institutional affiliations.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
-                <Search className="h-6 w-6 text-gold-dark" />
+            </StaggerItem>
+            <StaggerItem>
+              <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10">
+                  <Search className="h-6 w-6 text-gold-deep" />
+                </div>
+                <h3 className="font-semibold">Smart Discovery</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Filter by category, content type, topic, language, region, and
+                  more.
+                </p>
               </div>
-              <h3 className="font-semibold">Smart Discovery</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Filter by topic, language, region, teaching style, and school
-                of thought.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10">
-                <Globe className="h-6 w-6 text-teal" />
+            </StaggerItem>
+            <StaggerItem>
+              <div className="rounded-xl border border-border/50 bg-card p-6 text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Globe className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Global Community</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Discover creators across every region and language of the
+                  Muslim world.
+                </p>
               </div>
-              <h3 className="font-semibold">Global Reach</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Discover scholars across every region and language of the
-                Muslim world.
-              </p>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerGrid>
         </div>
-      </section>
+      </AnimatedSection>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 text-center">
+      <AnimatedSection className="mx-auto max-w-7xl px-4 py-20 sm:px-6 text-center">
         <h2 className="text-2xl font-bold sm:text-3xl">
-          Ready to Find Your Teacher?
+          Ready to Discover Your Next Inspiration?
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Start exploring the scholars who can guide your journey.
+          Explore creators who can guide and inspire your journey.
         </p>
         <Button size="lg" className="mt-8 gap-2 rounded-full px-10" asChild>
-          <Link href="/search">
-            <Search className="h-4 w-4" />
+          <Link href="/discover">
+            <Compass className="h-4 w-4" />
             Start Discovering
           </Link>
         </Button>
-      </section>
+      </AnimatedSection>
 
       {/* Surprise Me FAB */}
       <SurpriseMeButton />

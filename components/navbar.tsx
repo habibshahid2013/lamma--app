@@ -22,7 +22,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/home", label: t("home") },
-    { href: "/scholars", label: t("scholars") },
+    { href: "/discover", label: t("discover") },
     { href: "/about", label: t("about") },
   ];
 
@@ -52,7 +52,7 @@ export default function Navbar() {
               href={link.href}
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                pathname === link.href || (link.href === "/scholars" && pathname === "/search")
+                pathname === link.href || (link.href === "/discover" && pathname === "/search")
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
@@ -65,7 +65,7 @@ export default function Navbar() {
         {/* Desktop Search Bar */}
         <div className="hidden md:flex flex-1 max-w-md mx-6">
           <Link
-            href="/scholars"
+            href="/discover"
             className={cn(
               "flex w-full items-center gap-2 rounded-lg border border-border/50 bg-muted/40 px-3.5 py-2 text-sm text-muted-foreground",
               "transition-all hover:border-primary/30 hover:bg-muted/60"
@@ -137,12 +137,12 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <Link
-                  href="/scholars"
+                  href="/discover"
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <Search className="h-5 w-5" />
-                  {t("scholars")}
+                  {t("discover")}
                 </Link>
                 {!user && (
                   <Link

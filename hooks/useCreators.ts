@@ -155,6 +155,36 @@ export const useHistoricalScholars = (limitCount = 10) =>
 export const useCreatorsByLanguage = (language: string, limitCount = 10) => 
   useCreators({ language, limitCount });
 
+export const useTrendingCreators = (limitCount = 10) =>
+  useCreators({ trending: true, limitCount });
+
+export function useCategoryCount() {
+  const { creators, loading } = useCreators({ limitCount: 600 });
+  const counts = creators.reduce<Record<string, number>>((acc, c) => {
+    const cat = c.category || 'unknown';
+    acc[cat] = (acc[cat] || 0) + 1;
+    return acc;
+  }, {});
+  return { counts, loading };
+}
+
+export function useContentTypeCounts() {
+  const { creators, loading } = useCreators({ limitCount: 600 });
+  const counts = {
+    youtube: 0,
+    podcast: 0,
+    books: 0,
+    courses: 0,
+  };
+  for (const c of creators) {
+    if (c.content?.youtube) counts.youtube++;
+    if (c.content?.podcast) counts.podcast++;
+    if ((c.content?.books?.length || 0) > 0) counts.books++;
+    if ((c.content?.courses?.length || 0) > 0) counts.courses++;
+  }
+  return { counts, loading };
+}
+
 export function useCreatorsByIds(ids: string[]) {
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
