@@ -13,51 +13,27 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-function getApp(): FirebaseApp {
-  if (!firebaseConfig.apiKey) {
-    throw new Error('Firebase API key is not configured. Set NEXT_PUBLIC_FIREBASE_API_KEY.');
-  }
-  return getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-}
+// Conditionally initialize Firebase.
+// When env vars exist (runtime, Vercel): creates real instances eagerly.
+// When env vars are missing (CI build): exports are null (cast to typed).
+// This avoids Proxy pitfalls with Firebase's internal instanceof/assertion checks.
+const hasConfig = !!firebaseConfig.apiKey;
 
-// Lazy initialization — Firebase is only initialized when first accessed at runtime,
-// not at module import time. This allows the build to succeed without Firebase env vars.
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
 let _db: Firestore | null = null;
 let _storage: FirebaseStorage | null = null;
 
-function ensureInitialized() {
-  if (!_app) {
-    _app = getApp();
-    _auth = getAuth(_app);
-    _db = getFirestore(_app);
-    _storage = getStorage(_app);
-  }
+if (hasConfig) {
+  _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  _auth = getAuth(_app);
+  _db = getFirestore(_app);
+  _storage = getStorage(_app);
 }
 
-function createLazyProxy<T extends object>(getter: () => T): T {
-  return new Proxy({} as T, {
-    get(_, prop) {
-      ensureInitialized();
-      const target = getter();
-      const value = (target as Record<string | symbol, unknown>)[prop];
-      return typeof value === 'function' ? value.bind(target) : value;
-    },
-    has(_, prop) {
-      ensureInitialized();
-      return prop in getter();
-    },
-    getPrototypeOf() {
-      ensureInitialized();
-      return Object.getPrototypeOf(getter());
-    },
-  });
-}
-
-export const auth: Auth = createLazyProxy(() => _auth!);
-export const db: Firestore = createLazyProxy(() => _db!);
-export const storage: FirebaseStorage = createLazyProxy(() => _storage!);
-const app = createLazyProxy(() => _app!);
-
-export default app;
+// Cast to non-optional types. At runtime with env vars these are real instances.
+// During CI builds they're null, but build doesn't execute runtime code paths.
+export const auth = _auth as unknown as Auth;
+export const db = _db as unknown as Firestore;
+export const storage = _storage as unknown as FirebaseStorage;
+export default (_app as unknown as FirebaseApp);
