@@ -186,7 +186,7 @@ interface CreatorMetadataOptions {
 export function generateCreatorMetadata({
   name,
   slug,
-  category = 'Scholar',
+  category = 'Creator',
   bio,
   avatar,
   region,
@@ -196,6 +196,7 @@ export function generateCreatorMetadata({
   const description = bio
     ? bio.substring(0, 160)
     : `Discover ${name}, an Islamic ${category.toLowerCase()}. Follow their content on Lamma+.`;
+
   const url = `${siteConfig.url}/creator/${slug}`;
   const image = avatar || siteConfig.ogImage;
 
@@ -203,7 +204,7 @@ export function generateCreatorMetadata({
   const keywords = [
     name,
     category,
-    'Islamic scholar',
+    'Islamic creator',
     'Muslim educator',
     ...(languages || []),
     region || '',
@@ -270,7 +271,7 @@ export function generateWebsiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${siteConfig.url}/search?q={search_term_string}`,
+        urlTemplate: `${siteConfig.url}/discover?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -292,7 +293,7 @@ export function generateCreatorSchema(creator: {
     url: `${siteConfig.url}/creator/${creator.slug}`,
     description: creator.bio,
     image: creator.avatar,
-    jobTitle: creator.category || 'Scholar',
+    jobTitle: creator.category || 'Creator',
     sameAs: Object.values(creator.socialLinks || {}).filter(Boolean),
   };
 }

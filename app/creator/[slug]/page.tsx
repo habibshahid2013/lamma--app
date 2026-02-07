@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const name = data.profile?.displayName || data.profile?.name || data.name || 'Unknown Creator';
     const bio = data.profile?.shortBio || data.profile?.bio || '';
     const avatar = data.profile?.avatar || data.avatar || undefined;
-    const category = data.category || 'Scholar';
+    const category = data.category || 'Creator';
     const region = data.region || undefined;
     const languages = data.languages || [];
 

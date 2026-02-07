@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { TreeDeciduous, Mail, Lock, User, AlertCircle, Loader2 } from "lucide-react";
+import { useTrack } from '@/hooks/useTrack';
+import { useTranslations } from "next-intl";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -18,6 +20,8 @@ export default function SignupPage() {
 
   const { signUp, signInWithGoogle, user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { track } = useTrack();
+  const t = useTranslations("auth");
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -32,6 +36,7 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, name);
+      track('user_signed_up', { method: 'email' });
       router.push("/home");
     } catch (err: any) {
       console.error(err);
@@ -46,6 +51,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await signInWithGoogle();
+      track('user_signed_up', { method: 'google' });
       router.push("/home");
     } catch (err: any) {
       console.error(err);
@@ -67,8 +73,8 @@ export default function SignupPage() {
                 <TreeDeciduous className="w-8 h-8 text-primary" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Join Lamma+</h1>
-            <p className="text-muted-foreground mt-2">Create your gathering place</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("joinLamma")}</h1>
+            <p className="text-muted-foreground mt-2">{t("joinSubtitle")}</p>
           </div>
 
           {/* Error Message */}
@@ -82,7 +88,7 @@ export default function SignupPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground ml-1">Full Name</label>
+              <label className="text-sm font-medium text-muted-foreground ml-1">{t("fullName")}</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -97,7 +103,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground ml-1">Email</label>
+              <label className="text-sm font-medium text-muted-foreground ml-1">{t("email")}</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -112,7 +118,7 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground ml-1">Password</label>
+              <label className="text-sm font-medium text-muted-foreground ml-1">{t("password")}</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -131,10 +137,10 @@ export default function SignupPage() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Creating account...
+                  {t("creatingAccount")}
                 </>
               ) : (
-                "Create Account"
+                t("signUp")
               )}
             </Button>
 
@@ -143,7 +149,7 @@ export default function SignupPage() {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
+                <span className="px-2 bg-background text-muted-foreground">{t("continueWith")}</span>
               </div>
             </div>
 
@@ -171,14 +177,14 @@ export default function SignupPage() {
                   fill="#EA4335"
                 />
               </svg>
-              <span>Google</span>
+              <span>{t("google")}</span>
             </button>
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            {t("hasAccount")}{" "}
             <Link href="/auth/login" className="text-primary font-semibold hover:underline">
-              Sign in
+              {t("signIn")}
             </Link>
           </p>
         </CardContent>

@@ -4,13 +4,16 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreatorBySlug } from '@/hooks/useCreators';
 import { useFollow } from '@/hooks/useFollow';
 import CreatorLinks from '@/components/ui/CreatorLinks';
 import ExternalLink, { ExternalLinkButton } from '@/components/ui/ExternalLink';
+import AnimatedSection from '@/components/ui/AnimatedSection';
+import BookList from '@/components/content/BookList';
+import CourseList from '@/components/content/CourseList';
 import ActionGateModal from '@/components/ActionGateModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -19,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { useTrack } from '@/hooks/useTrack';
 import { generateCreatorSchema, generateBreadcrumbSchema, siteConfig } from '@/lib/seo';
 import type { Creator } from '@/lib/types/creator';
 import {
@@ -337,6 +341,19 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
   const [showAuthGate, setShowAuthGate] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [followError, setFollowError] = useState<string | null>(null);
+  const { track } = useTrack();
+
+  useEffect(() => {
+    if (creator) {
+      track('creator_profile_viewed', {
+        creator_id: creator.id,
+        creator_name: creator.name,
+        category: creator.category,
+        has_youtube: !!creator.content?.youtube,
+        has_podcast: !!creator.content?.podcast,
+      });
+    }
+  }, [creator?.id]);
 
   const handleFollow = async () => {
     if (!user) {
@@ -345,6 +362,10 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
     }
     try {
       setFollowError(null);
+      track(isFollowing(creator!.id) ? 'creator_unfollowed' : 'creator_followed', {
+        creator_id: creator!.id,
+        creator_name: creator!.name,
+      });
       await toggleFollow(creator!.id);
     } catch (err: any) {
       setFollowError(err.message);
@@ -472,6 +493,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
       {/* PROFILE HEADER */}
       {/* ================================================================ */}
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <AnimatedSection>
         <div className="relative -mt-20 md:-mt-24 pb-6">
           <div className="flex flex-col items-center md:flex-row md:items-end md:gap-6">
             {/* Avatar */}
@@ -654,7 +676,10 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 variant="secondary"
                 size="icon"
                 className="rounded-full"
-                onClick={() => setShowShareModal(true)}
+                onClick={() => {
+                  track('share_modal_opened', { creator_id: creator!.id });
+                  setShowShareModal(true);
+                }}
               >
                 <Share2 className="h-4 w-4" />
               </Button>
@@ -676,11 +701,13 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
             <p className="text-destructive text-xs mt-2 text-center md:text-left">{followError}</p>
           )}
         </div>
+        </AnimatedSection>
 
         {/* ================================================================ */}
         {/* SOCIAL LINKS */}
         {/* ================================================================ */}
         {socialEntries.length > 0 && (
+          <AnimatedSection delay={0.1}>
           <div className="flex flex-wrap items-center gap-2 pb-6">
             <CreatorLinks
               socialLinks={socialLinks as Record<string, string | null | undefined>}
@@ -691,12 +718,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
               className="justify-center md:justify-start"
             />
           </div>
+          </AnimatedSection>
         )}
 
         {/* ================================================================ */}
         {/* TOPICS */}
         {/* ================================================================ */}
         {topics && topics.length > 0 && (
+          <AnimatedSection delay={0.2}>
           <div className="flex flex-wrap gap-2 pb-6">
             {topics.map((topic) => (
               <Link
@@ -709,6 +738,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
               </Link>
             ))}
           </div>
+          </AnimatedSection>
         )}
 
         <Separator className="mb-6" />
@@ -778,6 +808,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
           {/* ABOUT TAB */}
           {/* ============================================================ */}
           <TabsContent value="about" className="space-y-8">
+            <AnimatedSection>
             {/* Biography */}
             <div>
               <h2 className="mb-4 text-xl font-semibold">Biography</h2>
@@ -899,12 +930,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 </CardContent>
               </Card>
             )}
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* YOUTUBE TAB */}
           {/* ============================================================ */}
           <TabsContent value="youtube" className="space-y-8">
+            <AnimatedSection>
             {hasYouTube && youtubeData && (
               <>
                 {/* Channel Stats Bar */}
@@ -1043,12 +1076,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 )}
               </>
             )}
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* PODCAST TAB */}
           {/* ============================================================ */}
           <TabsContent value="podcast" className="space-y-4">
+            <AnimatedSection>
             {hasPodcast && podcastData && (
               <>
                 <h2 className="text-xl font-semibold">Podcast</h2>
@@ -1104,123 +1139,32 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 </Card>
               </>
             )}
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* COURSES TAB */}
           {/* ============================================================ */}
           <TabsContent value="courses" className="space-y-4">
-            <h2 className="text-xl font-semibold">Courses</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {coursesData?.map((course, i) => (
-                <Card key={i} className="group transition-all hover:border-primary/30">
-                  <CardContent className="flex items-start gap-4 p-5">
-                    <div className="rounded-xl bg-primary/10 p-3">
-                      <GraduationCap className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold group-hover:text-primary transition-colors">
-                        {course.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {course.platform}
-                      </p>
-                      {course.url && (
-                        <ExternalLink
-                          href={course.url}
-                          className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                          showIcon
-                        >
-                          View Course
-                        </ExternalLink>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <AnimatedSection>
+              <CourseList courses={coursesData || []} />
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* BOOKS TAB */}
           {/* ============================================================ */}
           <TabsContent value="books" className="space-y-4">
-            <h2 className="text-xl font-semibold">
-              Books by {displayName}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {booksData?.map((book, i) => (
-                <Card key={book.bookId || i} className="group transition-all hover:border-primary/30">
-                  <CardContent className="flex items-start gap-4 p-5">
-                    {(book.thumbnail || book.imageUrl) ? (
-                      <div className="w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
-                        <img
-                          src={book.thumbnail || book.imageUrl}
-                          alt={book.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-xl bg-gold/10 p-3">
-                        <Book className="h-6 w-6 text-gold-deep dark:text-gold" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold group-hover:text-primary transition-colors line-clamp-2">
-                        {book.title}
-                      </h3>
-                      {book.authors && book.authors.length > 0 && (
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          by {book.authors.join(', ')}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
-                        {book.publishedDate && (
-                          <span>{new Date(book.publishedDate).getFullYear()}</span>
-                        )}
-                        {book.year && !book.publishedDate && (
-                          <span>{book.year}</span>
-                        )}
-                        {book.publisher && <span>{book.publisher}</span>}
-                        {book.pageCount && <span>{book.pageCount} pages</span>}
-                      </div>
-                      {book.description && (
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                          {book.description}
-                        </p>
-                      )}
-                      {book.categories && book.categories.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {book.categories.slice(0, 2).map((cat) => (
-                            <span key={cat} className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
-                              {cat}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div className="flex gap-3 mt-3">
-                        {book.previewLink && (
-                          <ExternalLink href={book.previewLink} className="text-xs text-primary hover:underline">
-                            Preview
-                          </ExternalLink>
-                        )}
-                        {book.amazonUrl && (
-                          <ExternalLink href={book.amazonUrl} className="text-xs text-primary hover:underline">
-                            Amazon
-                          </ExternalLink>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <AnimatedSection>
+              <BookList books={booksData || []} creatorName={displayName} />
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* EBOOKS TAB */}
           {/* ============================================================ */}
           <TabsContent value="ebooks" className="space-y-4">
+            <AnimatedSection>
             <h2 className="text-xl font-semibold">eBooks</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {ebooksData?.map((ebook, idx) => (
@@ -1253,12 +1197,14 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 </Card>
               ))}
             </div>
+            </AnimatedSection>
           </TabsContent>
 
           {/* ============================================================ */}
           {/* AUDIOBOOKS TAB */}
           {/* ============================================================ */}
           <TabsContent value="audiobooks" className="space-y-4">
+            <AnimatedSection>
             <h2 className="text-xl font-semibold">Audiobooks</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {audiobooksData?.map((audiobook, idx) => (
@@ -1291,6 +1237,7 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 </Card>
               ))}
             </div>
+            </AnimatedSection>
           </TabsContent>
         </Tabs>
       </div>

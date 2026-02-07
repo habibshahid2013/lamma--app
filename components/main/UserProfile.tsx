@@ -139,8 +139,8 @@ export default function UserProfile() {
                 <EmptyState
                   icon={<Heart className="w-12 h-12 text-muted-foreground/30" />}
                   title="No followers yet"
-                  description="Follow scholars to see them here and get updates."
-                  actionLabel="Discover Scholars"
+                  description="Follow creators to see them here and get updates."
+                  actionLabel="Discover Creators"
                   onAction={() => router.push('/home')}
                 />
               )}
@@ -175,7 +175,7 @@ export default function UserProfile() {
                 <EmptyState
                   icon={<Bookmark className="w-12 h-12 text-muted-foreground/30" />}
                   title="Nothing saved"
-                  description="Save scholars to quickly access them later."
+                  description="Save creators to quickly access them later."
                   actionLabel="Start Exploring"
                   onAction={() => router.push('/home')}
                 />

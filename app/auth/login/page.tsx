@@ -8,15 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { TreeDeciduous, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { useTrack } from '@/hooks/useTrack';
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
-  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
+  const { signIn, signInWithGoogle, resetPassword, user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { track } = useTrack();
+  const t = useTranslations("auth");
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -31,6 +36,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
+      track('user_logged_in', { method: 'email' });
       router.push("/home");
     } catch (err: any) {
       console.error(err);
@@ -45,12 +51,28 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithGoogle();
+      track('user_logged_in', { method: 'google' });
       router.push("/home");
     } catch (err: any) {
       console.error(err);
       setError("Failed to sign in with Google.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email address first.");
+      return;
+    }
+    setError(null);
+    try {
+      await resetPassword(email);
+      setResetSent(true);
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to send reset email. Please try again.");
     }
   };
 
@@ -66,8 +88,8 @@ export default function LoginPage() {
                 <TreeDeciduous className="w-8 h-8 text-primary" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-            <p className="text-muted-foreground mt-2">Sign in to continue to Lamma+</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("welcomeBack")}</h1>
+            <p className="text-muted-foreground mt-2">{t("signInSubtitle")}</p>
           </div>
 
           {/* Error Message */}
@@ -81,7 +103,7 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground ml-1">Email</label>
+              <label className="text-sm font-medium text-muted-foreground ml-1">{t("email")}</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -96,7 +118,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground ml-1">Password</label>
+              <label className="text-sm font-medium text-muted-foreground ml-1">{t("password")}</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -111,19 +133,25 @@ export default function LoginPage() {
             </div>
 
             <div className="flex justify-end">
-              <button type="button" className="text-sm text-primary font-medium hover:underline">
-                Forgot password?
+              <button type="button" onClick={handleForgotPassword} className="text-sm text-primary font-medium hover:underline">
+                {t("forgotPassword")}
               </button>
             </div>
+
+            {resetSent && (
+              <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl text-sm text-primary">
+                {t("resetSent")}
+              </div>
+            )}
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing in...
+                  {t("signingIn")}
                 </>
               ) : (
-                "Sign In"
+                t("signIn")
               )}
             </Button>
 
@@ -132,7 +160,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
+                <span className="px-2 bg-background text-muted-foreground">{t("continueWith")}</span>
               </div>
             </div>
 
@@ -160,14 +188,14 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              <span>Google</span>
+              <span>{t("google")}</span>
             </button>
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
+            {t("noAccount")}{" "}
             <Link href="/auth/signup" className="text-primary font-semibold hover:underline">
-              Sign up
+              {t("signUp")}
             </Link>
           </p>
         </CardContent>

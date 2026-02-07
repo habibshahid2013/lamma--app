@@ -182,6 +182,26 @@
     "books": "Books & Publications",
     "courses": "Online Courses"
   },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Create Account",
+    "welcomeBack": "Welcome Back",
+    "signInSubtitle": "Sign in to continue to Lamma+",
+    "joinLamma": "Join Lamma+",
+    "joinSubtitle": "Create your gathering place",
+    "continueWith": "Or continue with",
+    "forgotPassword": "Forgot password?",
+    "resetSent": "Password reset email sent! Check your inbox.",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
+    "google": "Google",
+    "emailPlaceholder": "name@example.com"
+  },
   "footer": {
     "tagline": "Your gateway to Islamic knowledge and culture. Discover, follow, and learn from creators worldwide. Gather in faith.",
     "lammaArabic": "\u0644\u0645\u0651 \u2014 Arabic for \u201cto gather, to bring together\u201d",
