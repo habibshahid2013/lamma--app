@@ -17,8 +17,12 @@ import { db } from '@/lib/firebase';
 import { CREATORS } from '@/lib/data/creators';
 import { ALL_EXPANSION_PROFILES } from '@/lib/data/profile-expansion';
 import { fetchCreatorImage, generatePlaceholderImage } from '@/lib/image-fetcher';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   const startTime = Date.now();
 
   try {
@@ -399,7 +403,10 @@ async function fetchMissingImagesInternal() {
 }
 
 // GET endpoint to check status
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   try {
     const creatorsSnapshot = await getDocs(collection(db, 'creators'));
 

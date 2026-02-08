@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { collection, query, orderBy, limit, getDocs, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
+import { adminFetch } from '@/lib/admin-fetch';
 
 export default function PipelinePage() {
   const { user, userData } = useAuth();
@@ -43,7 +44,7 @@ export default function PipelinePage() {
           });
           
           // Trigger cron manually for immediate feedback
-          fetch('/api/cron/process-queue');
+          adminFetch('/api/cron/process-queue');
           
       } catch (err) {
           alert('Failed to retry');
@@ -62,7 +63,7 @@ export default function PipelinePage() {
           </div>
           <div className="flex gap-3">
              <button 
-                onClick={() => fetch('/api/cron/process-queue')}
+                onClick={() => adminFetch('/api/cron/process-queue')}
                 className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 font-mono text-sm"
              >
                 ▶ Run Worker

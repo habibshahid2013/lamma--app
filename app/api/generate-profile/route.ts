@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addToQueue } from '@/lib/queue';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
   try {
     const { name } = await request.json();
 

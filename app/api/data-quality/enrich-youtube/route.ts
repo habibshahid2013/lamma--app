@@ -11,8 +11,11 @@ import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Creator } from '@/lib/types/creator';
 import { enrichYouTubeChannel, resolveChannelId } from '@/lib/youtube-enrichment';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
   try {
     const body = await request.json().catch(() => ({}));
     const creatorIds: string[] | undefined = body.creatorIds;

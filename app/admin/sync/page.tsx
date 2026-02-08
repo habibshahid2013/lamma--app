@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface SyncResult {
   creatorId: string;
@@ -59,7 +60,7 @@ export default function SyncDashboard() {
   const loadProfiles = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/sync', {
+      const response = await adminFetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'all' }),
@@ -95,7 +96,7 @@ export default function SyncDashboard() {
     setResults([]);
 
     try {
-      const response = await fetch('/api/sync', {
+      const response = await adminFetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -123,7 +124,7 @@ export default function SyncDashboard() {
     setError(null);
 
     try {
-      const response = await fetch('/api/sync', {
+      const response = await adminFetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

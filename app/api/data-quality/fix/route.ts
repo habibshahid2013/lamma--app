@@ -17,6 +17,7 @@ import { Creator } from '@/lib/types/creator';
 import { auditCreator } from '@/lib/data-quality';
 import { fetchCreatorImage } from '@/lib/image-fetcher';
 import { getChannelInfo, extractChannelId } from '@/lib/youtube';
+import { verifyAdmin } from '@/lib/admin-auth';
 const ALL_ACTIONS = ['refetch_avatar', 'update_subscribers', 'remove_invalid_link', 'generate_bio'];
 
 /**
@@ -86,6 +87,9 @@ async function fetchWikipediaBio(name: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   try {
     const body = await request.json().catch(() => ({}));
     const actions: string[] = body.actions || ALL_ACTIONS;

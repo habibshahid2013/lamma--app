@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { adminFetch } from '@/lib/admin-fetch';
 
 export default function AddCreatorPage() {
   const { user, userData, loading: authLoading } = useAuth();
@@ -58,7 +59,7 @@ export default function AddCreatorPage() {
     setStageResults(null);
 
     try {
-      const response = await fetch('/api/generate-profile', {
+      const response = await adminFetch('/api/generate-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), saveToDatabase: false }),

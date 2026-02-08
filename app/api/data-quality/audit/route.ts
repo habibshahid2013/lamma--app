@@ -4,14 +4,17 @@
  * Returns a detailed report with scores, issues, and fix suggestions
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Creator } from '@/lib/types/creator';
 import { auditAllCreators } from '@/lib/data-quality';
 import { CREATORS as SEED_CREATORS } from '@/lib/data/creators';
+import { verifyAdmin } from '@/lib/admin-auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
   try {
     // Try Firestore first, fall back to seed data
     let creators: Creator[] = [];

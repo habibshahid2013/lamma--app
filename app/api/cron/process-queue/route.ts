@@ -6,11 +6,15 @@ import { runProfilePipeline } from '@/lib/profile-generator/pipeline';
 
 export async function GET(request: NextRequest) {
   try {
-    // 1. Auth Check (for Vercel Cron)
+    // Auth Check: accept either Vercel Cron secret or admin Firebase token
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}` && process.env.NODE_ENV === 'production') {
-      // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      // Allow for now for testing, or check query param
+    const isCronSecret = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (!isCronSecret) {
+      // Not a cron call — verify as admin user
+      const { verifyAdmin } = await import('@/lib/admin-auth');
+      const authResult = await verifyAdmin(request);
+      if (!authResult.authorized) return authResult.response;
     }
 
     // 2. Get Next Item

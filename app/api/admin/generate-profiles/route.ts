@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { CreatorCategory, CreatorRegion } from '@/lib/types/creator';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -237,7 +238,7 @@ Return the data as a JSON array with this exact structure:
 Only return the JSON array, no other text. Ensure the JSON is valid.`;
 
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-5-20250514',
     max_tokens: 4096,
     messages: [
       {
@@ -365,7 +366,7 @@ async function saveProfilesToFirestore(profiles: GeneratedProfile[]): Promise<{
         },
         aiGenerated: {
           generatedAt: new Date().toISOString(),
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5-20250514',
           confidence: 'medium' as const,
           notes: [profile.verificationNotes],
         },
@@ -409,6 +410,9 @@ async function saveProfilesToFirestore(profiles: GeneratedProfile[]): Promise<{
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   const startTime = Date.now();
 
   try {

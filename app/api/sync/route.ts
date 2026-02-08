@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProfileSyncService } from '@/lib/profile-pipeline/sync-service';
 import { withTimeout, TimeoutError } from '@/lib/utils/fetch-with-timeout';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 // Timeout for single profile sync (60 seconds)
 const SINGLE_SYNC_TIMEOUT_MS = 60000;
@@ -16,6 +17,9 @@ const BATCH_SYNC_TIMEOUT_MS = 300000;
 const LIST_TIMEOUT_MS = 30000;
 
 export async function POST(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   const startTime = Date.now();
 
   try {
@@ -169,7 +173,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authResult = await verifyAdmin(request);
+  if (!authResult.authorized) return authResult.response;
+
   try {
     const syncService = new ProfileSyncService();
 

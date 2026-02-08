@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import LammaLogo from '@/components/LammaLogo';
+import { adminFetch } from '@/lib/admin-fetch';
 import {
   ArrowLeft,
   Search,
@@ -114,7 +115,7 @@ export default function DataQualityPage() {
     setAuditLoading(true);
     setAuditError(null);
     try {
-      const res = await fetch('/api/data-quality/audit');
+      const res = await adminFetch('/api/data-quality/audit');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setAuditReport(data);
@@ -128,7 +129,7 @@ export default function DataQualityPage() {
   const runFixes = async (actions?: string[]) => {
     setFixLoading(true);
     try {
-      const res = await fetch('/api/data-quality/fix', {
+      const res = await adminFetch('/api/data-quality/fix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(actions ? { actions } : {}),
@@ -146,7 +147,7 @@ export default function DataQualityPage() {
   const runEnrichYouTube = async () => {
     setEnrichLoading(true);
     try {
-      const res = await fetch('/api/data-quality/enrich-youtube', {
+      const res = await adminFetch('/api/data-quality/enrich-youtube', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),

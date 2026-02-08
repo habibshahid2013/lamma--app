@@ -1,15 +1,16 @@
 import { db } from '@/lib/firebase';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
   serverTimestamp,
+  arrayUnion,
   Timestamp
 } from 'firebase/firestore';
 
@@ -84,14 +85,11 @@ export async function updateQueueStatus(id: string, updates: Partial<QueueItem>)
  * Log a message to the queue item
  */
 export async function logQueueMessage(id: string, message: string) {
-    const docRef = doc(db, QUEUE_COLLECTION, id);
-    // Note: In a real app, use arrayUnion, but keeping it simple for now
-    // We would need to fetch logs first or use arrayUnion
-    // For now, let's just update updatedAt to show activity
-     await updateDoc(docRef, {
-        updatedAt: serverTimestamp(),
-    });
-    // In production, we'd append to 'logs' array field
+  const docRef = doc(db, QUEUE_COLLECTION, id);
+  await updateDoc(docRef, {
+    logs: arrayUnion(`[${new Date().toISOString()}] ${message}`),
+    updatedAt: serverTimestamp(),
+  });
 }
 
 /**

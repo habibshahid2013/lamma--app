@@ -15,6 +15,7 @@ import {
 import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import LammaLogo from '@/components/LammaLogo';
+import { adminFetch } from '@/lib/admin-fetch';
 import {
   Database, Zap, Users, Home, Settings, RefreshCw, Plus, Leaf, ImageIcon,
   Search, BarChart3, AlertTriangle, CheckCircle2, Clock, Play, Pause,
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
 
   const fetchDataQuality = useCallback(async () => {
     try {
-      const response = await fetch('/api/data-quality/audit');
+      const response = await adminFetch('/api/data-quality/audit');
       const data = await response.json();
 
       const missingBios = data.topIssues?.find((i: any) => i.issue.includes('bio'))?.count || 0;
@@ -168,7 +169,7 @@ export default function AdminDashboard() {
             break;
         }
 
-        const response = await fetch(endpoint, { method: 'POST' });
+        const response = await adminFetch(endpoint, { method: 'POST' });
         const data = await response.json();
 
         setPipelineSteps(prev => prev.map((p, idx) =>
