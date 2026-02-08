@@ -1,5 +1,5 @@
 # PROJECT_SYNC.md - Lamma+ Development Status
-## Last Updated: 2026-02-07 (Session 16)
+## Last Updated: 2026-02-08 (Session 18)
 
 This file is the **source of truth** for syncing between Claude Chat (planning) and Claude Code (implementation).
 
@@ -138,11 +138,19 @@ app/discover/
 - Mobile Responsiveness, Data Quality, Database Expansion (487 creators)
 - Branding Fix, Premium → Waitlist, CI Fix + UX Modernization
 
-### Priority 15: Data Enrichment Pipeline — PARTIALLY COMPLETE (Session 10)
+### Priority 15: Data Enrichment Pipeline — EXPANDED (Sessions 10, 17, 18)
 - [x] Image enrichment: 401 real images, 180 placeholders
 - [x] Wikipedia bio generation: 68 new bios, 49 bad cleared
 - [x] YouTube enrichment code optimized: ~5 units/creator (was ~104)
-- [ ] **BLOCKED**: YouTube API quota — run `POST /api/data-quality/enrich-youtube { batchSize: 50 }` after reset
+- [x] Admin API security: All 8 routes secured with Firebase Auth (Session 17)
+- [x] Queue logging fixed: `arrayUnion` for log appending (Session 17)
+- [x] **Multi-source enrichment pipeline** (Session 18):
+  - Google Books API: books by author (40K queries/day free)
+  - iTunes Search API: podcast discovery (free, no auth)
+  - Google Knowledge Graph: bio, image, website (100K req/day free)
+  - Social links discovery: YouTube description extraction + Wikidata SPARQL
+  - Admin UI: per-source enrichment buttons + combined results display
+- [ ] **BLOCKED**: YouTube API quota — run `POST /api/data-quality/enrich-youtube` after reset
 - [ ] ~55 creators missing bios (no Wikipedia article)
 - [ ] ~5 wrong Wikipedia bios to review
 
@@ -176,6 +184,41 @@ app/discover/
 ---
 
 ## RECENT CHANGES LOG
+
+### 2026-02-08 — Multi-Source Enrichment Pipeline + Social Links (Sessions 17-18)
+
+**Context:** Session 17 secured all admin API routes with Firebase Auth. Session 18 built a comprehensive data enrichment pipeline using free APIs to automatically populate books, podcasts, entity data, and social media links for all 487 creators.
+
+**7 files changed, 1062 insertions.**
+
+**Session 17 — Admin Security:**
+1. `lib/firebase-admin.ts` — **NEW** — Firebase Admin SDK with lazy init
+2. `lib/admin-auth.ts` — **NEW** — `verifyAdmin()` middleware (token + role check)
+3. `lib/admin-fetch.ts` — **NEW** — Client helper auto-attaches auth token
+4. All 8 admin API routes secured with `verifyAdmin()`
+5. `lib/queue.ts` — Fixed `logQueueMessage()` with `arrayUnion`
+6. `app/api/cron/process-queue/route.ts` — Re-enabled auth (cron secret + admin token)
+
+**Session 18 — Multi-Source Enrichment:**
+1. `lib/enrichment/google-books.ts` — **NEW** — Google Books API: find books by author (40K queries/day free)
+2. `lib/enrichment/itunes-podcast.ts` — **NEW** — iTunes Search API: podcast discovery (free, no auth)
+3. `lib/enrichment/knowledge-graph.ts` — **NEW** — Google KG API: bio, image, website (100K req/day free)
+4. `lib/enrichment/social-links.ts` — **NEW** — Social links discovery: YouTube description URL extraction + Wikidata SPARQL
+5. `app/api/data-quality/enrich-multi/route.ts` — **NEW** — Orchestrator API: iterates creators, calls all sources, updates Firestore
+6. `app/admin/data-quality/page.tsx` — Added 5 enrichment buttons (All Sources, Books, Podcasts, Knowledge Graph, Social Links) + results display with source breakdown badges
+
+**Enrichment sources & costs:**
+| Source | API | Cost | Rate Limit |
+|--------|-----|------|------------|
+| Books | Google Books API | $0 | 40K queries/day |
+| Podcasts | iTunes Search API | $0 | ~20 req/min |
+| Bio/Image/Website | Google Knowledge Graph | $0 | 100K req/day |
+| Social Links (YouTube) | YouTube description regex | $0 | Already fetched |
+| Social Links (Wikidata) | Wikidata SPARQL | $0 | Generous |
+
+**Commits:** `b5879ab` (Session 17), `804b78c` (Session 18)
+
+**Build:** Passes with 0 errors. 48 routes.
 
 ### 2026-02-07 — Platform Enhancement: 7 Features (Session 16)
 
