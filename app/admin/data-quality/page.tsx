@@ -21,6 +21,8 @@ import {
   Globe,
   Sparkles,
   Link2,
+  Newspaper,
+  Video,
 } from 'lucide-react';
 
 // ============================================================================
@@ -297,7 +299,7 @@ export default function DataQualityPage() {
           <div className="mt-5 pt-5 border-t border-gray-light">
             <h3 className="text-sm font-semibold text-gray-dark mb-1">Multi-Source Enrichment</h3>
             <p className="text-gray-500 text-xs mb-3">
-              Discover books, podcasts, entity data, and social media links from free APIs (Google Books, iTunes, Knowledge Graph, Wikidata).
+              Discover books, podcasts, entity data, social links, news articles, and YouTube mentions from free APIs.
             </p>
             <div className="flex flex-wrap gap-3">
               <button
@@ -339,6 +341,22 @@ export default function DataQualityPage() {
               >
                 {multiEnrichLoading === 'social_links' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
                 Social Links
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['news'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'news' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Newspaper className="w-4 h-4" />}
+                News Articles
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['youtube_mentions'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'youtube_mentions' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
+                YouTube Mentions
               </button>
             </div>
           </div>
@@ -663,6 +681,16 @@ export default function DataQualityPage() {
                     <Link2 className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.social_links} social
                   </span>
                 )}
+                {multiEnrichResult.sourceBreakdown.news > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-cyan-100 text-cyan-700 px-3 py-1.5 rounded-full font-medium">
+                    <Newspaper className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.news} news
+                  </span>
+                )}
+                {multiEnrichResult.sourceBreakdown.youtube_mentions > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-rose-100 text-rose-700 px-3 py-1.5 rounded-full font-medium">
+                    <Video className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.youtube_mentions} mentions
+                  </span>
+                )}
               </div>
             )}
 
@@ -680,6 +708,8 @@ export default function DataQualityPage() {
                     d.source === 'podcast' ? 'bg-orange-100 text-orange-700' :
                     d.source === 'knowledge_graph' ? 'bg-emerald-100 text-emerald-700' :
                     d.source === 'social_links' ? 'bg-pink-100 text-pink-700' :
+                    d.source === 'news' ? 'bg-cyan-100 text-cyan-700' :
+                    d.source === 'youtube_mentions' ? 'bg-rose-100 text-rose-700' :
                     'bg-gray-100 text-gray-700'
                   }`}>{d.source}</span>
                   <span className={`text-xs px-2 py-0.5 rounded font-medium ${

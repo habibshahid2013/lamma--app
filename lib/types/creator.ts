@@ -105,6 +105,8 @@ export interface Creator {
     ebooks?: EbookContent[];
     audioBooks?: AudiobookContent[];
     courses?: CourseContent[];
+    news?: NewsArticle[];
+    mentions?: MentionVideo[];
   };
 
   // AI Generation Metadata
@@ -262,4 +264,24 @@ export interface CourseContent {
   title: string;
   platform: string;
   url?: string;
+}
+
+export interface NewsArticle {
+  title: string;
+  description?: string;
+  url: string;
+  imageUrl?: string;
+  source: string;
+  publishedAt?: string;
+}
+
+export interface MentionVideo {
+  videoId: string;
+  title: string;
+  channelTitle: string;
+  channelId?: string;
+  thumbnail: string;
+  publishedAt: string;
+  viewCount?: number;
+  description?: string;
 }

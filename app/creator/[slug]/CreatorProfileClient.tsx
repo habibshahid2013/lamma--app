@@ -14,6 +14,8 @@ import ExternalLink, { ExternalLinkButton } from '@/components/ui/ExternalLink';
 import AnimatedSection from '@/components/ui/AnimatedSection';
 import BookList from '@/components/content/BookList';
 import CourseList from '@/components/content/CourseList';
+import NewsList from '@/components/content/NewsList';
+import MentionsList from '@/components/content/MentionsList';
 import ActionGateModal from '@/components/ActionGateModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -57,6 +59,7 @@ import {
   Mail,
   ChevronRight,
   Calendar,
+  Newspaper,
 } from 'lucide-react';
 
 // ============================================================================
@@ -438,6 +441,8 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
   const ebooksData = content?.ebooks;
   const audiobooksData = content?.audioBooks;
   const coursesData = content?.courses;
+  const newsData = content?.news || [];
+  const mentionsData = content?.mentions || [];
 
   // Content availability flags
   const hasYouTube = !!youtubeData;
@@ -446,6 +451,8 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
   const hasEbooks = ebooksData && ebooksData.length > 0;
   const hasAudiobooks = audiobooksData && audiobooksData.length > 0;
   const hasCourses = coursesData && coursesData.length > 0;
+  const hasNews = newsData.length > 0;
+  const hasMentions = mentionsData.length > 0;
 
   // Social links for pills
   const socialEntries = socialLinks
@@ -800,6 +807,22 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
               >
                 Audiobooks ({audiobooksData.length})
+              </TabsTrigger>
+            )}
+            {hasNews && (
+              <TabsTrigger
+                value="news"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
+                News ({newsData.length})
+              </TabsTrigger>
+            )}
+            {hasMentions && (
+              <TabsTrigger
+                value="mentions"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              >
+                Mentions ({mentionsData.length})
               </TabsTrigger>
             )}
           </TabsList>
@@ -1237,6 +1260,24 @@ export default function CreatorProfileClient({ slug }: { slug: string }) {
                 </Card>
               ))}
             </div>
+            </AnimatedSection>
+          </TabsContent>
+
+          {/* ============================================================ */}
+          {/* NEWS TAB */}
+          {/* ============================================================ */}
+          <TabsContent value="news" className="space-y-4">
+            <AnimatedSection>
+              <NewsList articles={newsData} />
+            </AnimatedSection>
+          </TabsContent>
+
+          {/* ============================================================ */}
+          {/* MENTIONS TAB */}
+          {/* ============================================================ */}
+          <TabsContent value="mentions" className="space-y-4">
+            <AnimatedSection>
+              <MentionsList videos={mentionsData} creatorName={displayName} />
             </AnimatedSection>
           </TabsContent>
         </Tabs>

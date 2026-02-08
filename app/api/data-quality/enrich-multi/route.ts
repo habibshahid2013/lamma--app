@@ -1,9 +1,9 @@
 /**
  * POST /api/data-quality/enrich-multi
- * Multi-source enrichment: books, podcasts, knowledge graph, social links
+ * Multi-source enrichment: books, podcasts, knowledge graph, social links, news, YouTube mentions
  *
  * Body: {
- *   sources?: ('books' | 'podcast' | 'knowledge_graph' | 'social_links' | 'all')[],
+ *   sources?: ('books' | 'podcast' | 'knowledge_graph' | 'social_links' | 'news' | 'youtube_mentions' | 'all')[],
  *   creatorIds?: string[],
  *   batchLimit?: number
  * }
@@ -17,9 +17,11 @@ import { searchBooksByAuthor } from '@/lib/enrichment/google-books';
 import { searchPodcastsByName } from '@/lib/enrichment/itunes-podcast';
 import { searchKnowledgeGraph } from '@/lib/enrichment/knowledge-graph';
 import { discoverSocialLinks } from '@/lib/enrichment/social-links';
+import { searchNews } from '@/lib/enrichment/newsapi';
+import { searchYouTubeMentions } from '@/lib/enrichment/youtube-mentions';
 import { verifyAdmin } from '@/lib/admin-auth';
 
-const ALL_SOURCES = ['books', 'podcast', 'knowledge_graph', 'social_links'] as const;
+const ALL_SOURCES = ['books', 'podcast', 'knowledge_graph', 'social_links', 'news', 'youtube_mentions'] as const;
 
 interface EnrichDetail {
   creatorId: string;
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
       skipped: 0,
       errors: 0,
       details: [] as EnrichDetail[],
-      sourceBreakdown: { books: 0, podcast: 0, knowledge_graph: 0, social_links: 0 },
+      sourceBreakdown: { books: 0, podcast: 0, knowledge_graph: 0, social_links: 0, news: 0, youtube_mentions: 0 },
     };
 
     let processed = 0;
@@ -228,6 +230,73 @@ export async function POST(request: NextRequest) {
               creatorId: creator.id,
               name: creator.name,
               source: 'social_links',
+              status: `error: ${String(err)}`,
+            });
+          }
+        }
+      }
+
+      // ================================================================
+      // NEWS ARTICLES: Find articles about the creator
+      // ================================================================
+      if (sources.includes('news')) {
+        const existingNews = creator.content?.news || [];
+        if (existingNews.length === 0) {
+          try {
+            const articles = await searchNews(creator.name);
+            if (articles.length > 0) {
+              updates['content.news'] = articles;
+              enrichedSomething = true;
+              results.sourceBreakdown.news++;
+              results.details.push({
+                creatorId: creator.id,
+                name: creator.name,
+                source: 'news',
+                status: 'enriched',
+                data: `Found ${articles.length} articles: ${articles.map(a => a.source).join(', ')}`,
+              });
+            }
+            await delay(200);
+          } catch (err) {
+            results.details.push({
+              creatorId: creator.id,
+              name: creator.name,
+              source: 'news',
+              status: `error: ${String(err)}`,
+            });
+          }
+        }
+      }
+
+      // ================================================================
+      // YOUTUBE MENTIONS: Find videos about the creator by others
+      // ================================================================
+      if (sources.includes('youtube_mentions')) {
+        const existingMentions = creator.content?.mentions || [];
+        if (existingMentions.length === 0 && !creator.isHistorical) {
+          try {
+            const mentions = await searchYouTubeMentions(
+              creator.name,
+              creator.content?.youtube?.channelId,
+            );
+            if (mentions.length > 0) {
+              updates['content.mentions'] = mentions;
+              enrichedSomething = true;
+              results.sourceBreakdown.youtube_mentions++;
+              results.details.push({
+                creatorId: creator.id,
+                name: creator.name,
+                source: 'youtube_mentions',
+                status: 'enriched',
+                data: `Found ${mentions.length} mention videos by ${[...new Set(mentions.map(m => m.channelTitle))].slice(0, 3).join(', ')}`,
+              });
+            }
+            await delay(1500); // Quota preservation — 100 units per search
+          } catch (err) {
+            results.details.push({
+              creatorId: creator.id,
+              name: creator.name,
+              source: 'youtube_mentions',
               status: `error: ${String(err)}`,
             });
           }
