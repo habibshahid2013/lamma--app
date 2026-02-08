@@ -16,6 +16,11 @@ import {
   Loader2,
   ChevronDown,
   ChevronRight,
+  BookOpen,
+  Podcast,
+  Globe,
+  Sparkles,
+  Link2,
 } from 'lucide-react';
 
 // ============================================================================
@@ -105,6 +110,10 @@ export default function DataQualityPage() {
   const [enrichResult, setEnrichResult] = useState<EnrichResult | null>(null);
   const [enrichLoading, setEnrichLoading] = useState(false);
 
+  // Multi-source enrich state
+  const [multiEnrichResult, setMultiEnrichResult] = useState<any>(null);
+  const [multiEnrichLoading, setMultiEnrichLoading] = useState<string | null>(null);
+
   // UI state
   const [expandedCreators, setExpandedCreators] = useState<Set<string>>(new Set());
   const [scoreFilter, setScoreFilter] = useState<'all' | 'excellent' | 'good' | 'fair' | 'poor'>('all');
@@ -159,6 +168,25 @@ export default function DataQualityPage() {
       alert(`Enrich error: ${String(err)}`);
     } finally {
       setEnrichLoading(false);
+    }
+  };
+
+  const runMultiEnrich = async (sources: string[]) => {
+    const label = sources.join('+');
+    setMultiEnrichLoading(label);
+    try {
+      const res = await adminFetch('/api/data-quality/enrich-multi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sources, batchLimit: 50 }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setMultiEnrichResult(data);
+    } catch (err) {
+      alert(`Enrich error: ${String(err)}`);
+    } finally {
+      setMultiEnrichLoading(null);
     }
   };
 
@@ -263,6 +291,56 @@ export default function DataQualityPage() {
               {enrichLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Youtube className="w-4 h-4" />}
               {enrichLoading ? 'Enriching...' : 'Enrich YouTube'}
             </button>
+          </div>
+
+          {/* Multi-Source Enrichment */}
+          <div className="mt-5 pt-5 border-t border-gray-light">
+            <h3 className="text-sm font-semibold text-gray-dark mb-1">Multi-Source Enrichment</h3>
+            <p className="text-gray-500 text-xs mb-3">
+              Discover books, podcasts, entity data, and social media links from free APIs (Google Books, iTunes, Knowledge Graph, Wikidata).
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => runMultiEnrich(['all'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'all' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {multiEnrichLoading === 'all' ? 'Enriching All...' : 'Enrich All Sources'}
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['books'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'books' ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
+                Books
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['podcast'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'podcast' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Podcast className="w-4 h-4" />}
+                Podcasts
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['knowledge_graph'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'knowledge_graph' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
+                Knowledge Graph
+              </button>
+              <button
+                onClick={() => runMultiEnrich(['social_links'])}
+                disabled={!!multiEnrichLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+              >
+                {multiEnrichLoading === 'social_links' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+                Social Links
+              </button>
+            </div>
           </div>
         </div>
 
@@ -533,6 +611,82 @@ export default function DataQualityPage() {
                         <span key={cat} className="text-[10px] bg-teal-light text-teal px-1.5 py-0.5 rounded">{cat}</span>
                       ))}
                     </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Multi-Source Enrichment Results */}
+        {multiEnrichResult && (
+          <div className="mt-8 bg-white rounded-xl p-6 border border-gray-light shadow-sm">
+            <h3 className="text-md font-bold text-gray-dark mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              Multi-Source Enrichment Results
+            </h3>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-700">{multiEnrichResult.enriched}</div>
+                <div className="text-xs text-green-600">Enriched</div>
+              </div>
+              <div className="text-center p-3 bg-gray-100 rounded-lg">
+                <div className="text-2xl font-bold text-gray-600">{multiEnrichResult.skipped}</div>
+                <div className="text-xs text-gray-500">Skipped</div>
+              </div>
+              <div className="text-center p-3 bg-red-50 rounded-lg">
+                <div className="text-2xl font-bold text-red-700">{multiEnrichResult.errors}</div>
+                <div className="text-xs text-red-600">Errors</div>
+              </div>
+            </div>
+
+            {/* Source Breakdown */}
+            {multiEnrichResult.sourceBreakdown && (
+              <div className="flex gap-3 mb-4">
+                {multiEnrichResult.sourceBreakdown.books > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full font-medium">
+                    <BookOpen className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.books} books
+                  </span>
+                )}
+                {multiEnrichResult.sourceBreakdown.podcast > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full font-medium">
+                    <Podcast className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.podcast} podcasts
+                  </span>
+                )}
+                {multiEnrichResult.sourceBreakdown.knowledge_graph > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full font-medium">
+                    <Globe className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.knowledge_graph} entities
+                  </span>
+                )}
+                {multiEnrichResult.sourceBreakdown.social_links > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs bg-pink-100 text-pink-700 px-3 py-1.5 rounded-full font-medium">
+                    <Link2 className="w-3.5 h-3.5" /> {multiEnrichResult.sourceBreakdown.social_links} social
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className="text-xs text-gray-400 mb-3">
+              Sources: {multiEnrichResult.sourcesRequested?.join(', ')} &middot; {multiEnrichResult.creatorsProcessed} creators processed &middot; {new Date(multiEnrichResult.timestamp).toLocaleString()}
+            </div>
+
+            {/* Detail Rows */}
+            <div className="max-h-[400px] overflow-y-auto space-y-1">
+              {multiEnrichResult.details?.map((d: { creatorId: string; name: string; source: string; status: string; data?: string }, i: number) => (
+                <div key={i} className="flex flex-wrap gap-2 text-sm py-2 border-b border-gray-100 last:border-0 items-center">
+                  <span className="font-medium text-gray-dark w-40 flex-shrink-0 truncate">{d.name}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                    d.source === 'books' ? 'bg-blue-100 text-blue-700' :
+                    d.source === 'podcast' ? 'bg-orange-100 text-orange-700' :
+                    d.source === 'knowledge_graph' ? 'bg-emerald-100 text-emerald-700' :
+                    d.source === 'social_links' ? 'bg-pink-100 text-pink-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}>{d.source}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                    d.status === 'enriched' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>{d.status}</span>
+                  {d.data && (
+                    <span className="text-xs text-gray-500 truncate max-w-sm">{d.data}</span>
                   )}
                 </div>
               ))}
